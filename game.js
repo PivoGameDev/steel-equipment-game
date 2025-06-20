@@ -12,10 +12,25 @@ const config = {
 const game = new Phaser.Game(config);
 
 function preload() {
+    // 1. Загрузка изображений (оставьте ваши текущие пути)
     this.load.image('background', 'assets/images/background.png');
-    this.load.image('tank', 'assets/images/tank.png');  // Правильное
-    this.load.image('pump', 'assets/images/pump.png');  // Неправильное
+    this.load.image('tank', 'assets/images/tank.png');
+    this.load.image('pump', 'assets/images/pump.png');
     this.load.image('slot', 'assets/images/slot.png');
+    
+    // 2. Загрузка звуков (добавьте эти строки)
+    this.load.audio('success', [
+        'assets/sounds/success.mp3',  // Основной формат
+        'assets/sounds/success.ogg'   // Резервный формат
+    ]);
+    this.load.audio('error', [
+        'assets/sounds/error.mp3',
+        'assets/sounds/error.ogg'
+    ]);
+    
+    // Для случаев, если есть только MP3:
+    // this.load.audio('success', 'assets/sounds/success.mp3');
+    // this.load.audio('error', 'assets/sounds/error.mp3');
 }
 
 function create() {
