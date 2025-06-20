@@ -1,4 +1,3 @@
-// Конфигурация игры
 const config = {
     type: Phaser.AUTO,
     width: 800,
@@ -12,29 +11,44 @@ const config = {
 
 const game = new Phaser.Game(config);
 
-// Загрузка изображений
 function preload() {
     this.load.image('background', 'assets/images/background.png');
-    this.load.image('tank', 'assets/images/tank.png');    // Оборудование
-    this.load.image('slot', 'assets/images/slot.png');    // Слот для размещения
+    this.load.image('tank', 'assets/images/tank.png');  // Правильное
+    this.load.image('pump', 'assets/images/pump.png');  // Неправильное
+    this.load.image('slot', 'assets/images/slot.png');
 }
 
-// Создание уровня
 function create() {
-    // 1. Добавляем фон
-    this.add.image(400, 300, 'background');
+    // 1. Добавляем текст задания
+    const taskText = this.add.text(50, 30, 
+        'Перетащите ТАНК на схему', 
+        { 
+            fontFamily: 'Arial', 
+            fontSize: '24px', 
+            fill: '#000000',
+            backgroundColor: '#ffffff',
+            padding: { x: 10, y: 5 }
+        }
+    );
 
-    // 2. Создаем слот для оборудования (куда нужно перетащить танк)
-    const slot = this.add.image(500, 300, 'slot')
-        .setData('type', 'tank');  // Помечаем, что слот для танка
+    // 2. Создаем слот (только для танка)
+    const slot = this.add.image(600, 300, 'slot')
+        .setData('correctType', 'tank');  // Помечаем правильный тип
 
-    // 3. Создаем перетаскиваемый танк
-    const tank = this.add.image(200, 300, 'tank')
+    // 3. Создаем оборудование
+    const tank = this.add.image(200, 300, 'tank')  // Правильное
         .setInteractive()
-        .setScale(0.7);
+        .setScale(0.7)
+        .setData('isCorrect', true);  // Помечаем как верный объект
+
+    const pump = this.add.image(200, 150, 'pump')  // Неправильное
+        .setInteractive()
+        .setScale(0.7)
+        .setData('isCorrect', false);
 
     // 4. Включаем перетаскивание
     this.input.setDraggable(tank);
+    this.input.setDraggable(pump);
 
     // 5. Обработка перетаскивания
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
@@ -42,20 +56,33 @@ function create() {
         gameObject.y = dragY;
     });
 
-    // 6. Проверка, попал ли танк в слот
+    // 6. Проверка при отпускании
     this.input.on('dragend', (pointer, gameObject) => {
+        // Проверяем пересечение со слотом И правильный тип
         if (Phaser.Geom.Intersects.RectangleToRectangle(
             gameObject.getBounds(),
             slot.getBounds()
         )) {
-            // Танк в слоте — фиксируем его
-            gameObject.x = slot.x;
-            gameObject.y = slot.y;
-            this.add.text(300, 100, 'Успех!', { 
-                fontSize: '40px', 
-                fill: '#0f0',
-                fontFamily: 'Arial'
-            });
+            if (gameObject.texture.key === slot.getData('correctType')) {
+                // Правильно!
+                gameObject.x = slot.x;
+                gameObject.y = slot.y;
+                this.add.text(300, 100, 'Успех! Танк установлен!', { 
+                    fontSize: '32px', 
+                    fill: '#0f0',
+                    fontFamily: 'Arial'
+                });
+            } else {
+                // Неправильно
+                this.add.text(250, 100, 'Ошибка! Это не танк!', { 
+                    fontSize: '32px', 
+                    fill: '#f00',
+                    fontFamily: 'Arial'
+                });
+                // Возвращаем объект на место
+                gameObject.x = gameObject.input.dragStartX;
+                gameObject.y = gameObject.input.dragStartY;
+            }
         }
     });
 }
