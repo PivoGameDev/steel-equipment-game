@@ -25,6 +25,7 @@ let timerEvent;
 let timeLeft = 90;
 let draggedItem = null;
 let slot;
+let equipmentItems = []; // Массив для хранения элементов оборудования
 
 function preload() {
     // Загрузка ваших изображений
@@ -39,10 +40,13 @@ function preload() {
 function create() {
     this.sound.pauseOnBlur = false;
     
-    // === 1. ВЕРХНЯЯ ПАНЕЛЬ ===
+    // === 1. СОЗДАЕМ ЭЛЕМЕНТЫ ПЕРЕТАСКИВАНИЯ ПЕРВЫМИ ===
+    createEquipmentItems(this);
+    
+    // === 2. ВЕРХНЯЯ ПАНЕЛЬ ===
     const headerBg = this.add.rectangle(
         config.width / 2, 30, config.width, 70, 0x16213e
-    ).setDepth(10).setAlpha(0.92);
+    ).setDepth(5).setAlpha(0.92);
     
     // Текст задания
     taskText = this.add.text(
@@ -56,7 +60,7 @@ function create() {
             fontWeight: 'bold',
             wordWrap: { width: config.width - 40 }
         }
-    ).setOrigin(0.5, 0).setDepth(11);
+    ).setOrigin(0.5, 0).setDepth(6);
     
     // Таймер
     timerText = this.add.text(
@@ -70,7 +74,7 @@ function create() {
             padding: { x: 15, y: 5 },
             borderRadius: 5
         }
-    ).setOrigin(0.5, 0).setDepth(11);
+    ).setOrigin(0.5, 0).setDepth(6);
     
     timerEvent = this.time.addEvent({
         delay: 1000,
@@ -79,22 +83,12 @@ function create() {
         loop: true
     });
 
-    // === 2. ПАНЕЛЬ ОБОРУДОВАНИЯ ===
-    const panelBg = this.add.rectangle(
-        config.width / 2, config.height - 60, 
-        config.width, 130, 0x16213e
-    ).setDepth(5).setAlpha(0.92);
-    
-    // Создаем элементы оборудования с вашими изображениями
-    createEquipmentItem(this, config.width * 0.3, config.height - 60, 'tank', 'ЦКТ');
-    createEquipmentItem(this, config.width * 0.7, config.height - 60, 'bgv', 'БГВ');
-
     // === 3. СЛОТ ДЛЯ ОБОРУДОВАНИЯ ===
     slot = this.add.rectangle(
         config.width * 0.7, config.height * 0.5, 
         120, 120, 0x4ecca3
     )
-    .setDepth(15)
+    .setDepth(7)
     .setAlpha(0.3)
     .setStrokeStyle(3, 0xffffff)
     .setData('correctType', 'tank'); // Правильный элемент - tank (ЦКТ)
@@ -120,17 +114,26 @@ function create() {
             backgroundColor: '#4ecca3',
             padding: { x: 10, y: 5 }
         }
-    ).setOrigin(0.5).setDepth(16);
+    ).setOrigin(0.5).setDepth(7);
 
-    // === ЛОГИКА ПЕРЕТАСКИВАНИЯ ===
+    // === 4. ПАНЕЛЬ ОБОРУДОВАНИЯ ===
+    const panelBg = this.add.rectangle(
+        config.width / 2, config.height - 60, 
+        config.width, 130, 0x16213e
+    ).setDepth(4).setAlpha(0.92);
+    
+    // === 5. ЛОГИКА ПЕРЕТАСКИВАНИЯ ===
     this.input.on('dragstart', (pointer, gameObject) => {
         draggedItem = gameObject;
-        gameObject.setDepth(20); // Поднимаем над всеми элементами
+        gameObject.setDepth(10); // Поднимаем над всеми элементами
         this.tweens.add({
             targets: gameObject,
             scale: 1.1,
             duration: 200
         });
+        
+        // Отладочное сообщение
+        console.log(`Начато перетаскивание: ${gameObject.getData('type')}`);
     });
 
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
@@ -168,13 +171,20 @@ function create() {
             });
         }
     });
+    
+    // Отладочная информация
+    console.log('Игра создана!');
+    console.log(`Создано элементов: ${equipmentItems.length}`);
+    equipmentItems.forEach(item => {
+        console.log(`Элемент: ${item.getData('type')} на глубине ${item.depth}`);
+    });
 }
 
 function handleSuccess() {
     this.sound.play('success');
     draggedItem.x = slot.x;
     draggedItem.y = slot.y;
-    draggedItem.setDepth(15);
+    draggedItem.setDepth(7);
     
     // Делаем элемент неактивным
     draggedItem.disableInteractive();
@@ -183,7 +193,7 @@ function handleSuccess() {
     this.add.graphics()
         .lineStyle(4, 0x4ecca3)
         .strokeRect(slot.x - 60, slot.y - 60, 120, 120)
-        .setDepth(16);
+        .setDepth(8);
     
     // Сообщение об успехе
     const successText = this.add.text(
@@ -197,7 +207,7 @@ function handleSuccess() {
             backgroundColor: 'rgba(0,0,0,0.7)',
             padding: { x: 15, y: 10 }
         }
-    ).setOrigin(0.5).setDepth(16);
+    ).setOrigin(0.5).setDepth(8);
     
     // Победа!
     this.time.delayedCall(3000, () => {
@@ -212,7 +222,7 @@ function handleSuccess() {
                 stroke: '#000',
                 strokeThickness: 4
             }
-        ).setOrigin(0.5).setDepth(16);
+        ).setOrigin(0.5).setDepth(8);
         timerEvent.remove();
     }, null, this);
 }
@@ -232,7 +242,7 @@ function handleError() {
             backgroundColor: 'rgba(0,0,0,0.7)',
             padding: { x: 15, y: 10 }
         }
-    ).setOrigin(0.5).setDepth(16);
+    ).setOrigin(0.5).setDepth(8);
     
     // Анимация ошибки
     this.tweens.add({
@@ -257,18 +267,29 @@ function handleError() {
     });
 }
 
-// Создание элемента оборудования с изображением
+// Создание элементов оборудования с изображением
+function createEquipmentItems(scene) {
+    // Создаем элементы оборудования с вашими изображениями
+    const tank = createEquipmentItem(scene, config.width * 0.3, config.height - 60, 'tank', 'ЦКТ');
+    const bgv = createEquipmentItem(scene, config.width * 0.7, config.height - 60, 'bgv', 'БГВ');
+    
+    // Сохраняем ссылки на элементы
+    equipmentItems = [tank, bgv];
+}
+
+// Функция создания одного элемента
 function createEquipmentItem(scene, x, y, type, label) {
     // Создаем спрайт с изображением
     const sprite = scene.add.sprite(0, 0, type)
         .setDisplaySize(80, 80)
-        .setDepth(10);
+        .setDepth(5); // Начальная глубина
     
     // Контейнер для элемента
     const container = scene.add.container(x, y, [sprite])
         .setSize(100, 100)
         .setInteractive(new Phaser.Geom.Rectangle(-50, -50, 100, 100), Phaser.Geom.Rectangle.Contains)
-        .setData('type', type);
+        .setData('type', type)
+        .setDepth(5); // Устанавливаем глубину контейнера
     
     scene.input.setDraggable(container);
     
@@ -284,10 +305,10 @@ function createEquipmentItem(scene, x, y, type, label) {
         backgroundColor: (type === 'tank') ? '#3498db' : '#4ecca3',
         padding: { x: 10, y: 5 },
         borderRadius: 5
-    }).setOrigin(0.5).setDepth(11);
+    }).setOrigin(0.5).setDepth(5);
     
     // Отладочное сообщение
-    console.log(`Создан элемент: ${type} по координатам (${x}, ${y})`);
+    console.log(`Создан элемент: ${type} на позиции (${x}, ${y})`);
     
     return container;
 }
@@ -315,7 +336,7 @@ function updateTimer() {
                 stroke: '#000',
                 strokeThickness: 4
             }
-        ).setOrigin(0.5).setDepth(20);
+        ).setOrigin(0.5).setDepth(10);
     }
 }
 
