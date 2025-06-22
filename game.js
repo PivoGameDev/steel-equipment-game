@@ -15,13 +15,6 @@ const config = {
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
-    },
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 0 },
-            debug: false
-        }
     }
 };
 
@@ -34,6 +27,7 @@ let timeLeft = 90;
 let breweryParts = [];
 let draggedItem = null;
 let slot;
+let equipmentItems = [];
 
 function preload() {
     // Загрузка звуков
@@ -44,7 +38,7 @@ function preload() {
 function create() {
     this.sound.pauseOnBlur = false;
     
-    // Создаем схему пивоварни
+    // Создаем схему пивоварни (улучшенную)
     createBreweryScheme(this);
     
     // === 1. ВЕРХНЯЯ ПАНЕЛЬ ===
@@ -60,10 +54,10 @@ function create() {
     taskText = this.add.text(
         config.width / 2, 
         10,
-        'ПИВОВАРНЕ ТРЕБУЕТСЯ ОБОРУДОВАНИЕ!\nВЫБЕРИТЕ: БГВ ДЛЯ ФИЛЬТРАЦИИ ИЛИ ЦКТ ДЛЯ БРОЖЕНИЯ?', 
+        'УСТАНОВИТЕ БГВ НА СХЕМУ ПИВОВАРНИ\nПЕРЕТАЩИТЕ ПРАВИЛЬНОЕ ОБОРУДОВАНИЕ', 
         {
             fontFamily: 'Arial',
-            fontSize: isMobile ? '14px' : '18px',
+            fontSize: isMobile ? '16px' : '20px',
             fill: '#ffffff',
             align: 'center',
             fontWeight: 'bold',
@@ -95,15 +89,28 @@ function create() {
         loop: true
     });
 
-    // === 2. ИГРОВАЯ ЗОНА - СХЕМА ПИВОВАРНИ ===
-    // Слот для оборудования
+    // === 2. ИГРОВАЯ ЗОНА - СХЕМА ПИВОВАРНИ (улучшенная) ===
+    // Слот для оборудования (более заметный)
     slot = this.add.rectangle(
         config.width * 0.65, 
         config.height * 0.45, 
         isMobile ? 100 : 120, 
         isMobile ? 100 : 120,
         0x4ecca3
-    ).setDepth(5).setAlpha(0.25).setStrokeStyle(3, 0x4ecca3).setData('correctType', 'bgv');
+    )
+    .setDepth(5)
+    .setAlpha(0.3)
+    .setStrokeStyle(3, 0xffffff)
+    .setData('correctType', 'bgv');
+    
+    // Анимация слота (пульсация)
+    this.tweens.add({
+        targets: slot,
+        alpha: 0.5,
+        duration: 1000,
+        yoyo: true,
+        repeat: -1
+    });
     
     // Подпись слота
     this.add.text(
@@ -112,11 +119,11 @@ function create() {
         'МЕСТО ДЛЯ БГВ', 
         {
             fontFamily: 'Arial',
-            fontSize: isMobile ? '12px' : '16px',
-            fill: '#4ecca3',
+            fontSize: isMobile ? '14px' : '16px',
+            fill: '#ffffff',
             fontWeight: 'bold',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            padding: { x: 8, y: 3 },
+            backgroundColor: '#4ecca3',
+            padding: { x: 10, y: 5 },
             wordWrap: { width: 150 }
         }
     ).setOrigin(0.5).setDepth(11);
@@ -130,21 +137,27 @@ function create() {
         0x16213e
     ).setDepth(10).setAlpha(0.92);
     
-    // Элементы оборудования
+    // Элементы оборудования (более заметные)
     const equipment = [
-        { x: config.width * 0.25, type: 'tank', label: 'ЦКТ (Ферментатор)', color: '#3498db' },
-        { x: config.width * 0.5, type: 'bgv', label: 'БГВ (Фильтрация)', color: '#4ecca3' },
+        { x: config.width * 0.25, type: 'tank', label: 'ЦКТ', color: '#3498db' },
+        { x: config.width * 0.5, type: 'bgv', label: 'БГВ', color: '#4ecca3' },
         { x: config.width * 0.75, type: 'filter', label: 'Фильтр', color: '#9b59b6' }
     ];
     
     equipment.forEach(item => {
-        createEquipmentItem(this, item.x, config.height - (isMobile ? 45 : 60), item.type, item.label, item.color);
+        const eqItem = createEquipmentItem(this, item.x, config.height - (isMobile ? 45 : 60), item.type, item.label, item.color);
+        equipmentItems.push(eqItem);
     });
 
     // === ЛОГИКА ПЕРЕТАСКИВАНИЯ ===
     this.input.on('dragstart', (pointer, gameObject) => {
         draggedItem = gameObject;
         gameObject.setDepth(20);
+        this.tweens.add({
+            targets: gameObject,
+            scale: 1.1,
+            duration: 200
+        });
         if (successText) successText.destroy();
         if (errorText) errorText.destroy();
     });
@@ -156,6 +169,12 @@ function create() {
 
     this.input.on('dragend', () => {
         if (!draggedItem) return;
+        
+        this.tweens.add({
+            targets: draggedItem,
+            scale: 1.0,
+            duration: 200
+        });
         
         if (Phaser.Geom.Intersects.RectangleToRectangle(
             draggedItem.getBounds(),
@@ -187,12 +206,21 @@ function handleSuccess() {
     draggedItem.y = slot.y;
     draggedItem.setDepth(10);
     
+    // Делаем элемент неактивным
+    draggedItem.disableInteractive();
+    
+    // Подсветка успеха
+    this.add.graphics()
+        .lineStyle(4, 0x4ecca3)
+        .strokeRect(slot.x - slot.width/2, slot.y - slot.height/2, slot.width, slot.height)
+        .setDepth(12);
+    
     successText = this.add.text(
         config.width / 2, 
         config.height * 0.7, 
-        'ВЕРНО! БГВ ДЛЯ ФИЛЬТРАЦИИ ПИВА\nИСПОЛЬЗУЕТСЯ НА ЗАВЕРШАЮЩЕМ ЭТАПЕ', 
+        'ВЕРНО! БГВ УСПЕШНО УСТАНОВЛЕН\nНА СХЕМУ ПИВОВАРЕННОГО ЗАВОДА', 
         {
-            fontSize: isMobile ? '14px' : '18px',
+            fontSize: isMobile ? '16px' : '20px',
             fill: '#4ecca3',
             fontFamily: 'Arial',
             fontWeight: 'bold',
@@ -211,11 +239,13 @@ function handleSuccess() {
             config.height / 2, 
             'УРОВЕНЬ ПРОЙДЕН!', 
             {
-                fontSize: isMobile ? '28px' : '38px', 
+                fontSize: isMobile ? '32px' : '42px', 
                 fill: '#4ecca3',
                 fontFamily: 'Arial',
                 fontWeight: 'bold',
-                shadow: { offsetY: 2, color: '#000', blur: 4 }
+                stroke: '#000',
+                strokeThickness: 4,
+                shadow: { offsetY: 3, color: '#000', blur: 8 }
             }
         ).setOrigin(0.5).setDepth(11);
         timerEvent.remove();
@@ -227,9 +257,9 @@ function handleError() {
     errorText = this.add.text(
         config.width / 2, 
         config.height * 0.7, 
-        'НЕВЕРНО! ЭТО ОБОРУДОВАНИЕ НЕ ПОДХОДИТ\nДЛЯ ДАННОГО ТЕХНОЛОГИЧЕСКОГО ЭТАПА', 
+        'НЕВЕРНО! ЭТО ОБОРУДОВАНИЕ\nНЕ ПОДХОДИТ ДЛЯ УСТАНОВКИ', 
         {
-            fontSize: isMobile ? '14px' : '18px',
+            fontSize: isMobile ? '16px' : '20px',
             fill: '#e94560',
             fontFamily: 'Arial',
             fontWeight: 'bold',
@@ -239,6 +269,14 @@ function handleError() {
             wordWrap: { width: config.width - 40 }
         }
     ).setOrigin(0.5).setDepth(11);
+    
+    // Анимация ошибки
+    this.tweens.add({
+        targets: draggedItem,
+        x: { value: draggedItem.x + 10, duration: 100 },
+        yoyo: true,
+        repeat: 3
+    });
     
     // Возвращаем на панель
     this.tweens.add({
@@ -251,28 +289,29 @@ function handleError() {
     });
 }
 
-// Создание схемы пивоварни
+// Создание схемы пивоварни (улучшенной)
 function createBreweryScheme(scene) {
-    // Основные емкости
+    // Основные емкости (более детализированные)
     const tanks = [
-        { x: config.width * 0.15, y: config.height * 0.3, type: 'fermentor', scale: isMobile ? 0.5 : 0.7 },
-        { x: config.width * 0.3, y: config.height * 0.4, type: 'tank', scale: isMobile ? 0.4 : 0.6 },
-        { x: config.width * 0.45, y: config.height * 0.35, type: 'tank', scale: isMobile ? 0.6 : 0.8 }
+        { x: config.width * 0.15, y: config.height * 0.3, type: 'fermentor', scale: isMobile ? 0.6 : 0.8 },
+        { x: config.width * 0.3, y: config.height * 0.4, type: 'tank', scale: isMobile ? 0.5 : 0.7 },
+        { x: config.width * 0.45, y: config.height * 0.35, type: 'tank', scale: isMobile ? 0.7 : 0.9 }
     ];
     
-    // Трубы и арматура
+    // Трубы и арматура (более реалистичные)
     const pipes = [
-        { x: config.width * 0.22, y: config.height * 0.32, rotation: 0, length: isMobile ? 40 : 60 },
-        { x: config.width * 0.35, y: config.height * 0.42, rotation: 45, length: isMobile ? 60 : 80 },
-        { x: config.width * 0.52, y: config.height * 0.38, rotation: 90, length: isMobile ? 30 : 50 },
-        { x: config.width * 0.58, y: config.height * 0.45, rotation: 30, length: isMobile ? 50 : 70 }
+        { x: config.width * 0.22, y: config.height * 0.32, rotation: 0, length: isMobile ? 50 : 70 },
+        { x: config.width * 0.35, y: config.height * 0.42, rotation: 45, length: isMobile ? 70 : 90 },
+        { x: config.width * 0.52, y: config.height * 0.38, rotation: 90, length: isMobile ? 40 : 60 },
+        { x: config.width * 0.58, y: config.height * 0.45, rotation: 30, length: isMobile ? 60 : 80 },
+        { x: config.width * 0.5, y: config.height * 0.25, rotation: 120, length: isMobile ? 50 : 70 }
     ];
     
-    // Насосы и клапаны
+    // Насосы и клапаны (более детализированные)
     const equipment = [
-        { x: config.width * 0.25, y: config.height * 0.5, type: 'pump', scale: isMobile ? 0.8 : 1 },
-        { x: config.width * 0.4, y: config.height * 0.55, type: 'valve', scale: isMobile ? 0.8 : 1 },
-        { x: config.width * 0.55, y: config.height * 0.52, type: 'pump', scale: isMobile ? 0.8 : 1 }
+        { x: config.width * 0.25, y: config.height * 0.5, type: 'pump', scale: isMobile ? 0.9 : 1.1 },
+        { x: config.width * 0.4, y: config.height * 0.55, type: 'valve', scale: isMobile ? 0.9 : 1.1 },
+        { x: config.width * 0.55, y: config.height * 0.52, type: 'pump', scale: isMobile ? 0.9 : 1.1 }
     ];
     
     // Рендерим схему
@@ -280,26 +319,43 @@ function createBreweryScheme(scene) {
         const container = scene.add.container(tank.x, tank.y);
         const graphics = scene.add.graphics();
         
-        // Рисуем оборудование
+        // Рисуем оборудование (более детализированное)
         switch(tank.type) {
             case 'tank':
-                // ЦКТ (цилиндр с крышкой)
-                graphics.fillStyle(0x3498db, 0.8);
-                graphics.lineStyle(3, 0xd0e0e8);
-                graphics.fillRoundedRect(-40, -30, 80, 60, 10);
-                graphics.strokeRoundedRect(-40, -30, 80, 60, 10);
+                // ЦКТ (цилиндр с крышкой и деталями)
+                graphics.fillStyle(0x3498db, 0.85);
+                graphics.lineStyle(4, 0xd0e0e8);
+                graphics.fillRoundedRect(-50, -35, 100, 70, 12);
+                graphics.strokeRoundedRect(-50, -35, 100, 70, 12);
+                
+                // Крышка
                 graphics.fillStyle(0x2c3e50);
-                graphics.fillEllipse(0, -30, 40, 8);
+                graphics.fillEllipse(0, -35, 45, 10);
+                
+                // Люки
+                graphics.fillStyle(0x1a2c3d);
+                graphics.fillCircle(-25, 0, 8);
+                graphics.fillCircle(25, 0, 8);
                 break;
                 
             case 'fermentor':
-                // Ферментер (высокий цилиндр)
-                graphics.fillStyle(0x3498db, 0.8);
-                graphics.lineStyle(3, 0xd0e0e8);
-                graphics.fillRoundedRect(-30, -50, 60, 100, 15);
-                graphics.strokeRoundedRect(-30, -50, 60, 100, 15);
+                // Ферментер (высокий цилиндр с деталями)
+                graphics.fillStyle(0x3498db, 0.85);
+                graphics.lineStyle(4, 0xd0e0e8);
+                graphics.fillRoundedRect(-35, -60, 70, 120, 18);
+                graphics.strokeRoundedRect(-35, -60, 70, 120, 18);
+                
+                // Крышка
                 graphics.fillStyle(0x2c3e50);
-                graphics.fillEllipse(0, -50, 30, 10);
+                graphics.fillEllipse(0, -60, 30, 12);
+                
+                // Лестница
+                graphics.lineStyle(3, 0xd0e0e8);
+                for (let i = -50; i <= 30; i += 10) {
+                    graphics.lineBetween(-35, i, 35, i);
+                }
+                graphics.lineBetween(-35, -50, -35, 30);
+                graphics.lineBetween(35, -50, 35, 30);
                 break;
         }
         
@@ -310,11 +366,18 @@ function createBreweryScheme(scene) {
     
     pipes.forEach(pipe => {
         const graphics = scene.add.graphics();
-        graphics.lineStyle(12, 0xd0e0e8);
+        graphics.lineStyle(14, 0xd0e0e8);
         graphics.lineBetween(-pipe.length/2, 0, pipe.length/2, 0);
         graphics.setPosition(pipe.x, pipe.y);
         graphics.rotation = pipe.rotation * (Math.PI / 180);
         breweryParts.push(graphics);
+        
+        // Соединительные элементы
+        const connector = scene.add.graphics();
+        connector.fillStyle(0xa0b0c0);
+        connector.fillCircle(pipe.x, pipe.y, 6);
+        connector.setDepth(5);
+        breweryParts.push(connector);
     });
     
     equipment.forEach(item => {
@@ -323,29 +386,42 @@ function createBreweryScheme(scene) {
         
         switch(item.type) {
             case 'pump':
-                // Насос (круг с треугольником)
-                graphics.fillStyle(0x9b59b6, 0.8);
-                graphics.lineStyle(3, 0xd0e0e8);
-                graphics.fillCircle(0, 0, 20);
-                graphics.strokeCircle(0, 0, 20);
+                // Насос (круг с треугольником и деталями)
+                graphics.fillStyle(0x9b59b6, 0.85);
                 graphics.lineStyle(4, 0xd0e0e8);
+                graphics.fillCircle(0, 0, 25);
+                graphics.strokeCircle(0, 0, 25);
+                
+                // Стрелка
+                graphics.fillStyle(0xffffff);
+                graphics.lineStyle(3, 0xffffff);
                 graphics.beginPath();
                 graphics.moveTo(-15, -15);
                 graphics.lineTo(15, 0);
                 graphics.lineTo(-15, 15);
                 graphics.closePath();
-                graphics.strokePath();
+                graphics.fillPath();
+                
+                // Крепления
+                graphics.fillRect(-30, -5, 10, 10);
+                graphics.fillRect(20, -5, 10, 10);
                 break;
                 
             case 'valve':
-                // Клапан (квадрат с крестом)
-                graphics.fillStyle(0xe74c3c, 0.8);
-                graphics.lineStyle(3, 0xd0e0e8);
-                graphics.fillRect(-15, -15, 30, 30);
-                graphics.strokeRect(-15, -15, 30, 30);
+                // Клапан (квадрат с крестом и деталями)
+                graphics.fillStyle(0xe74c3c, 0.85);
                 graphics.lineStyle(4, 0xd0e0e8);
-                graphics.lineBetween(0, -15, 0, 15);
-                graphics.lineBetween(-15, 0, 15, 0);
+                graphics.fillRect(-20, -20, 40, 40);
+                graphics.strokeRect(-20, -20, 40, 40);
+                
+                // Крест
+                graphics.lineStyle(5, 0xffffff);
+                graphics.lineBetween(0, -20, 0, 20);
+                graphics.lineBetween(-20, 0, 20, 0);
+                
+                // Ручка
+                graphics.fillStyle(0xffffff);
+                graphics.fillCircle(0, 0, 8);
                 break;
         }
         
@@ -355,57 +431,56 @@ function createBreweryScheme(scene) {
     });
     
     // Подложка для лучшей читаемости
-    scene.add.rectangle(
-        config.width / 2, 
-        config.height / 2, 
-        config.width, 
-        config.height, 
-        0x0a1929
-    ).setAlpha(0.6).setDepth(0);
+    const bgOverlay = scene.add.graphics();
+    bgOverlay.fillStyle(0x0a1929, 0.7);
+    bgOverlay.fillRect(0, 0, config.width, config.height);
+    bgOverlay.setDepth(0);
 }
 
-// Создание элемента оборудования для панели
+// Создание элемента оборудования для панели (более привлекательные)
 function createEquipmentItem(scene, x, y, type, label, color) {
     const container = scene.add.container(x, y - 15);
     const graphics = scene.add.graphics();
     
-    // Размер иконки (меньше для мобильных)
-    const size = isMobile ? 40 : 60;
+    // Размер иконки (больше для лучшей видимости)
+    const size = isMobile ? 50 : 70;
     
-    // Рисуем иконку оборудования
+    // Рисуем иконку оборудования с тенью
+    graphics.fillStyle(0x000000, 0.3);
+    graphics.fillRoundedRect(-size/1.4 + 3, -size/1.8 + 3, size*1.2, size, 10);
+    
+    // Основная форма
+    graphics.fillStyle(parseInt(color.replace('#', '0x')), 0.95);
+    graphics.lineStyle(4, 0xffffff);
+    
+    // Рисуем оборудование
     switch(type) {
         case 'tank':
             // ЦКТ (ферментатор)
-            graphics.fillStyle(parseInt(color.replace('#', '0x')), 0.9);
-            graphics.lineStyle(3, 0xd0e0e8);
-            graphics.fillRoundedRect(-size/1.5, -size/2, size*1.2, size, 10);
-            graphics.strokeRoundedRect(-size/1.5, -size/2, size*1.2, size, 10);
+            graphics.fillRoundedRect(-size/1.4, -size/1.8, size*1.2, size, 10);
+            graphics.strokeRoundedRect(-size/1.4, -size/1.8, size*1.2, size, 10);
             graphics.fillStyle(0x2c3e50);
-            graphics.fillEllipse(0, -size/2, size/1.5, size/6);
+            graphics.fillEllipse(0, -size/1.8, size/1.4, size/6);
             break;
             
         case 'bgv':
             // БГВ (бак с патрубками)
-            graphics.fillStyle(parseInt(color.replace('#', '0x')), 0.9);
-            graphics.lineStyle(3, 0xd0e0e8);
-            graphics.fillCircle(0, 0, size/1.8);
-            graphics.strokeCircle(0, 0, size/1.8);
+            graphics.fillCircle(0, 0, size/1.6);
+            graphics.strokeCircle(0, 0, size/1.6);
             // Патрубки
             graphics.fillStyle(0x2c3e50);
-            graphics.fillRect(-size/1.2, -size/8, size/4, size/4);
-            graphics.fillRect(size/1.2 - size/4, -size/8, size/4, size/4);
+            graphics.fillRect(-size/1.1, -size/8, size/3, size/3);
+            graphics.fillRect(size/1.1 - size/3, -size/8, size/3, size/3);
             break;
             
         case 'filter':
             // Фильтр
-            graphics.fillStyle(parseInt(color.replace('#', '0x')), 0.9);
-            graphics.lineStyle(3, 0xd0e0e8);
-            graphics.fillRoundedRect(-size/1.5, -size/2, size*1.2, size, 5);
-            graphics.strokeRoundedRect(-size/1.5, -size/2, size*1.2, size, 5);
+            graphics.fillRoundedRect(-size/1.4, -size/1.8, size*1.2, size, 6);
+            graphics.strokeRoundedRect(-size/1.4, -size/1.8, size*1.2, size, 6);
             // Фильтрующие элементы
-            graphics.lineStyle(2, 0xd0e0e8);
+            graphics.lineStyle(3, 0xffffff);
             for(let i = -1; i <= 1; i++) {
-                graphics.lineBetween(-size/1.5, i*size/3, size/1.5, i*size/3);
+                graphics.lineBetween(-size/1.4, i*size/3, size/1.4, i*size/3);
             }
             break;
     }
@@ -420,18 +495,35 @@ function createEquipmentItem(scene, x, y, type, label, color) {
     // Запоминаем начальную позицию
     container.input = { dragStartX: x, dragStartY: y - 15 };
     
-    // Стильная подпись (меньше для мобильных)
-    scene.add.text(x, y + (isMobile ? 15 : 20), label, {
+    // Стильная подпись
+    const labelText = scene.add.text(x, y + (isMobile ? 20 : 25), label, {
         fontFamily: 'Arial',
-        fontSize: isMobile ? '12px' : '16px',
-        fill: color,
+        fontSize: isMobile ? '14px' : '18px',
+        fill: '#ffffff',
         fontWeight: 'bold',
         align: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        padding: { x: 6, y: 3 },
-        borderRadius: 4,
-        wordWrap: { width: 120 }
+        backgroundColor: parseInt(color.replace('#', '0x')),
+        padding: { x: 10, y: 5 },
+        borderRadius: 6,
+        wordWrap: { width: 140 }
     }).setOrigin(0.5).setDepth(11);
+    
+    // Эффект при наведении
+    container.on('pointerover', () => {
+        scene.tweens.add({
+            targets: [container, labelText],
+            scale: 1.05,
+            duration: 200
+        });
+    });
+    
+    container.on('pointerout', () => {
+        scene.tweens.add({
+            targets: [container, labelText],
+            scale: 1.0,
+            duration: 200
+        });
+    });
     
     return container;
 }
@@ -441,20 +533,35 @@ function updateTimer() {
     timeLeft--;
     timerText.setText(`⏱ ${timeLeft} СЕК`);
     
+    if (timeLeft <= 10) {
+        timerText.setColor('#ffcc00');
+    }
+    
     if (timeLeft <= 0) {
         timerEvent.remove();
-        this.add.text(
+        const gameOverText = this.add.text(
             config.width / 2, 
             config.height / 2, 
             'ВРЕМЯ ВЫШЛО!', 
             {
-                fontSize: isMobile ? '28px' : '38px', 
+                fontSize: isMobile ? '32px' : '42px', 
                 fill: '#e94560',
                 fontFamily: 'Arial',
                 fontWeight: 'bold',
-                shadow: { offsetY: 2, color: '#000', blur: 4 }
+                stroke: '#000',
+                strokeThickness: 4,
+                shadow: { offsetY: 3, color: '#000', blur: 8 }
             }
         ).setOrigin(0.5).setDepth(11);
+        
+        // Пульсация текста
+        this.tweens.add({
+            targets: gameOverText,
+            scale: 1.1,
+            duration: 500,
+            yoyo: true,
+            repeat: -1
+        });
     }
 }
 
