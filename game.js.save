@@ -1,3 +1,6 @@
+x
+
+
  # Очистите старый файл
 const config = {
     type: Phaser.AUTO,
