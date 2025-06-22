@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Стальное Оборудование Пивзавода</title>
+    <title>Минимальный тест игры</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
     <style>
         body {
@@ -14,19 +14,92 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             overflow: hidden;
-            color: #f0f8ff;
         }
         #game {
+            border: 2px solid #4ecca3;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 80, 120, 0.5);
-            overflow: hidden;
+            box-shadow: 0 0 20px rgba(78, 204, 163, 0.5);
         }
     </style>
 </head>
 <body>
     <div id="game"></div>
-    <script src="game.js"></script>
+
+    <script>
+        // Проверка загрузки Phaser
+        console.log("Phaser version:", Phaser.VERSION);
+        
+        // Минимальная конфигурация игры
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            parent: 'game',
+            backgroundColor: '#0a1929',
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        // Создаем игру
+        const game = new Phaser.Game(config);
+        
+        function preload() {
+            // Простое сообщение в консоль
+            console.log("Игра в процессе загрузки...");
+        }
+        
+        function create() {
+            // Добавляем текст
+            this.add.text(
+                config.width / 2,
+                config.height / 2,
+                'МИНИМАЛЬНЫЙ ТЕСТ УСПЕШЕН!\nИГРА РАБОТАЕТ НА GITHUB PAGES',
+                {
+                    font: "32px Arial",
+                    fill: "#4ecca3",
+                    align: "center",
+                    fontWeight: "bold",
+                    stroke: "#000",
+                    strokeThickness: 4,
+                    shadow: {
+                        offsetX: 2,
+                        offsetY: 2,
+                        color: "#000",
+                        blur: 4,
+                        stroke: true
+                    }
+                }
+            ).setOrigin(0.5);
+            
+            // Добавляем интерактивный элемент
+            const ball = this.add.circle(
+                config.width / 2,
+                config.height / 3,
+                50,
+                0xe94560
+            );
+            
+            // Простая анимация
+            this.tweens.add({
+                targets: ball,
+                y: config.height * 0.66,
+                duration: 1000,
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.inOut"
+            });
+            
+            console.log("Игра успешно запущена!");
+        }
+        
+        function update() {
+            // Пустая функция, но нужна для Phaser
+        }
+    </script>
 </body>
 </html>
