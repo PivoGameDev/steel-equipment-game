@@ -34,6 +34,20 @@ function preload() {
 function create() {
     this.sound.pauseOnBlur = false;
     
+    // === ПАНЕЛЬ ОБОРУДОВАНИЯ - ДОЛЖНА БЫТЬ ПЕРВОЙ ===
+    const panelBg = this.add.rectangle(
+        config.width / 2, 
+        config.height - 60, 
+        config.width, 
+        130, 
+        0x16213e
+    ).setDepth(5).setAlpha(0.92);
+    
+    // Создаем элементы ДО схемы завода
+    const equipment1 = createEquipmentItem(this, config.width * 0.25, config.height - 60, 'tank', 'ЦКТ', '#3498db');
+    const equipment2 = createEquipmentItem(this, config.width * 0.5, config.height - 60, 'bgv', 'БГВ', '#4ecca3');
+    const equipment3 = createEquipmentItem(this, config.width * 0.75, config.height - 60, 'filter', 'Фильтр', '#9b59b6');
+    
     // === УПРОЩЕННАЯ СХЕМА ПИВОВАРНИ ===
     createBreweryScheme(this);
     
@@ -45,7 +59,7 @@ function create() {
     // Текст задания
     taskText = this.add.text(
         config.width / 2, 10,
-        'УСТАНОВИТЕ БГВ НА СХЕМУ ПИВОВАРНИ', 
+        'ПЕРЕТАЩИТЕ БГВ НА ПУСТОЙ СЛОТ', 
         {
             fontFamily: 'Arial',
             fontSize: isMobile ? '18px' : '22px',
@@ -81,11 +95,11 @@ function create() {
     slot = this.add.rectangle(
         config.width * 0.7, 
         config.height * 0.5, 
-        isMobile ? 100 : 120, 
-        isMobile ? 100 : 120,
+        120, 
+        120,
         0x4ecca3
     )
-    .setDepth(20)
+    .setDepth(15) // Высокий слой
     .setAlpha(0.3)
     .setStrokeStyle(3, 0xffffff)
     .setData('correctType', 'bgv');
@@ -103,7 +117,7 @@ function create() {
     this.add.text(
         config.width * 0.7, 
         config.height * 0.5 + 70, 
-        'МЕСТО ДЛЯ БГВ', 
+        'ПУСТОЙ СЛОТ ДЛЯ БГВ', 
         {
             fontFamily: 'Arial',
             fontSize: isMobile ? '16px' : '18px',
@@ -112,26 +126,12 @@ function create() {
             backgroundColor: '#4ecca3',
             padding: { x: 10, y: 5 }
         }
-    ).setOrigin(0.5).setDepth(21);
-
-    // === 3. ПАНЕЛЬ ОБОРУДОВАНИЯ ===
-    const panelBg = this.add.rectangle(
-        config.width / 2, 
-        config.height - 60, 
-        config.width, 
-        isMobile ? 110 : 130, 
-        0x16213e
-    ).setDepth(10).setAlpha(0.92);
-    
-    // Элементы оборудования (ЦКТ, БГВ, Фильтр)
-    createEquipmentItem(this, config.width * 0.25, config.height - 60, 'tank', 'ЦКТ', '#3498db');
-    createEquipmentItem(this, config.width * 0.5, config.height - 60, 'bgv', 'БГВ', '#4ecca3');
-    createEquipmentItem(this, config.width * 0.75, config.height - 60, 'filter', 'Фильтр', '#9b59b6');
+    ).setOrigin(0.5).setDepth(16);
 
     // === ЛОГИКА ПЕРЕТАСКИВАНИЯ ===
     this.input.on('dragstart', (pointer, gameObject) => {
         draggedItem = gameObject;
-        gameObject.setDepth(30); // Очень высокий слой
+        gameObject.setDepth(20); // Очень высокий слой
         this.tweens.add({
             targets: gameObject,
             scale: 1.1,
@@ -153,6 +153,7 @@ function create() {
             duration: 200
         });
         
+        // Проверяем пересечение с слотом
         if (Phaser.Geom.Intersects.RectangleToRectangle(
             draggedItem.getBounds(),
             slot.getBounds()
@@ -179,7 +180,7 @@ function handleSuccess() {
     this.sound.play('success');
     draggedItem.x = slot.x;
     draggedItem.y = slot.y;
-    draggedItem.setDepth(25);
+    draggedItem.setDepth(15);
     
     // Делаем элемент неактивным
     draggedItem.disableInteractive();
@@ -187,14 +188,14 @@ function handleSuccess() {
     // Подсветка успеха
     const successGraphics = this.add.graphics()
         .lineStyle(4, 0x4ecca3)
-        .strokeRect(slot.x - slot.width/2, slot.y - slot.height/2, slot.width, slot.height)
-        .setDepth(26);
+        .strokeRect(slot.x - 60, slot.y - 60, 120, 120)
+        .setDepth(16);
     
     // Сообщение об успехе
     const successText = this.add.text(
         config.width / 2, 
         config.height * 0.7, 
-        'ВЕРНО! БГВ УСПЕШНО УСТАНОВЛЕН', 
+        'УСПЕХ! БГВ УСТАНОВЛЕН', 
         {
             fontSize: isMobile ? '18px' : '22px',
             fill: '#4ecca3',
@@ -203,7 +204,7 @@ function handleSuccess() {
             backgroundColor: 'rgba(0,0,0,0.7)',
             padding: { x: 15, y: 10 }
         }
-    ).setOrigin(0.5).setDepth(26);
+    ).setOrigin(0.5).setDepth(16);
     
     // Победа!
     this.time.delayedCall(3000, () => {
@@ -219,7 +220,7 @@ function handleSuccess() {
                 stroke: '#000',
                 strokeThickness: 4
             }
-        ).setOrigin(0.5).setDepth(26);
+        ).setOrigin(0.5).setDepth(16);
         timerEvent.remove();
     }, null, this);
 }
@@ -231,7 +232,7 @@ function handleError() {
     const errorText = this.add.text(
         config.width / 2, 
         config.height * 0.7, 
-        'НЕВЕРНО! ЭТО НЕ БГВ', 
+        'ОШИБКА! ЭТО НЕ БГВ', 
         {
             fontSize: isMobile ? '18px' : '22px',
             fill: '#e94560',
@@ -240,7 +241,7 @@ function handleError() {
             backgroundColor: 'rgba(0,0,0,0.7)',
             padding: { x: 15, y: 10 }
         }
-    ).setOrigin(0.5).setDepth(21);
+    ).setOrigin(0.5).setDepth(16);
     
     // Анимация ошибки
     this.tweens.add({
@@ -265,80 +266,25 @@ function handleError() {
     });
 }
 
-// Создание упрощенной схемы пивоварни
+// Создание упрощенной схемы пивзавода
 function createBreweryScheme(scene) {
     // Основные емкости
-    const tanks = [
-        { x: config.width * 0.2, y: config.height * 0.3, width: 80, height: 120, color: 0x3498db, radius: 10 },
-        { x: config.width * 0.35, y: config.height * 0.4, width: 100, height: 80, color: 0x3498db, radius: 10 },
-        { x: config.width * 0.5, y: config.height * 0.35, width: 90, height: 100, color: 0x3498db, radius: 10 }
-    ];
+    scene.add.rectangle(150, 200, 100, 150, 0x3498db).setStrokeStyle(2, 0xffffff);
+    scene.add.rectangle(300, 250, 120, 100, 0x3498db).setStrokeStyle(2, 0xffffff);
+    scene.add.rectangle(450, 200, 110, 140, 0x3498db).setStrokeStyle(2, 0xffffff);
     
-    // Трубы (горизонтальные и вертикальные)
-    const pipes = [
-        // Горизонтальные
-        { x: config.width * 0.25, y: config.height * 0.3, width: 100, height: 15, rotation: 0, color: 0xa0b0c0 },
-        { x: config.width * 0.4, y: config.height * 0.4, width: 100, height: 15, rotation: 0, color: 0xa0b0c0 },
-        { x: config.width * 0.55, y: config.height * 0.35, width: 80, height: 15, rotation: 0, color: 0xa0b0c0 },
-        
-        // Вертикальные
-        { x: config.width * 0.3, y: config.height * 0.25, width: 15, height: 100, rotation: 0, color: 0xa0b0c0 },
-        { x: config.width * 0.45, y: config.height * 0.35, width: 15, height: 80, rotation: 0, color: 0xa0b0c0 },
-        
-        // Соединительные элементы
-        { x: config.width * 0.25, y: config.height * 0.3, width: 30, height: 30, color: 0x888888, isCircle: true },
-        { x: config.width * 0.4, y: config.height * 0.4, width: 30, height: 30, color: 0x888888, isCircle: true }
-    ];
+    // Трубы
+    scene.add.rectangle(200, 180, 150, 20, 0xa0b0c0).setStrokeStyle(2, 0xffffff);
+    scene.add.rectangle(350, 230, 150, 20, 0xa0b0c0).setStrokeStyle(2, 0xffffff);
+    scene.add.rectangle(250, 130, 20, 100, 0xa0b0c0).setStrokeStyle(2, 0xffffff);
     
     // Клапаны и насосы
-    const equipment = [
-        { x: config.width * 0.3, y: config.height * 0.45, width: 40, height: 40, color: 0xe74c3c, isCircle: true },
-        { x: config.width * 0.45, y: config.height * 0.5, width: 40, height: 40, color: 0x9b59b6, isCircle: true }
-    ];
+    scene.add.circle(280, 300, 25, 0xe74c3c).setStrokeStyle(2, 0xffffff);
+    scene.add.line(280, 300, 0, -20, 0, 20, 0xffffff).setLineWidth(3);
+    scene.add.line(280, 300, -20, 0, 20, 0, 0xffffff).setLineWidth(3);
     
-    // Рендерим схему
-    tanks.forEach(tank => {
-        scene.add.rectangle(
-            tank.x, tank.y, 
-            tank.width, tank.height, 
-            tank.color
-        )
-        .setDepth(5)
-        .setStrokeStyle(2, 0xd0e0e8);
-    });
-    
-    pipes.forEach(pipe => {
-        if (pipe.isCircle) {
-            scene.add.circle(pipe.x, pipe.y, pipe.width/2, pipe.color)
-                .setDepth(6)
-                .setStrokeStyle(2, 0xffffff);
-        } else {
-            scene.add.rectangle(pipe.x, pipe.y, pipe.width, pipe.height, pipe.color)
-                .setDepth(6)
-                .setStrokeStyle(2, 0xffffff);
-        }
-    });
-    
-    equipment.forEach(item => {
-        if (item.isCircle) {
-            const circle = scene.add.circle(item.x, item.y, item.width/2, item.color)
-                .setDepth(7)
-                .setStrokeStyle(2, 0xffffff);
-                
-            // Добавляем значок внутри
-            if (item.color === 0xe74c3c) { // Клапан
-                scene.add.line(item.x, item.y, 0, -item.width/3, 0, item.width/3, 0xffffff)
-                    .setLineWidth(3)
-                    .setDepth(8);
-                scene.add.line(item.x, item.y, -item.width/3, 0, item.width/3, 0, 0xffffff)
-                    .setLineWidth(3)
-                    .setDepth(8);
-            } else { // Насос
-                scene.add.triangle(item.x, item.y, 0, -15, 15, 0, 0, 15, 0xffffff)
-                    .setDepth(8);
-            }
-        }
-    });
+    scene.add.circle(380, 280, 25, 0x9b59b6).setStrokeStyle(2, 0xffffff);
+    scene.add.triangle(380, 280, 0, -15, 15, 0, 0, 15, 0xffffff);
     
     // Подложка для схемы
     scene.add.rectangle(
@@ -352,47 +298,48 @@ function createBreweryScheme(scene) {
     .setStrokeStyle(2, 0x1c5a8e);
 }
 
-// Создание элемента оборудования для панели
+// Создание элемента оборудования для панели (ГАРАНТИРОВАННО РАБОЧИЙ ВАРИАНТ)
 function createEquipmentItem(scene, x, y, type, label, color) {
-    const size = isMobile ? 50 : 70;
+    const size = 60;
+    const container = scene.add.container(x, y).setDepth(10); // Важно: высокий depth
     
-    // Создаем основной элемент
+    // Создаем графику
     const graphics = scene.add.graphics();
     graphics.fillStyle(parseInt(color.replace('#', '0x')));
     
     switch(type) {
         case 'tank':
-            graphics.fillRoundedRect(-size/1.5, -size/2, size*1.5, size, 10);
+            graphics.fillRoundedRect(-40, -30, 80, 60, 10);
             graphics.lineStyle(3, 0xffffff);
-            graphics.strokeRoundedRect(-size/1.5, -size/2, size*1.5, size, 10);
+            graphics.strokeRoundedRect(-40, -30, 80, 60, 10);
             break;
             
         case 'bgv':
-            graphics.fillCircle(0, 0, size/1.5);
+            graphics.fillCircle(0, 0, 30);
             graphics.lineStyle(3, 0xffffff);
-            graphics.strokeCircle(0, 0, size/1.5);
+            graphics.strokeCircle(0, 0, 30);
             break;
             
         case 'filter':
-            graphics.fillRoundedRect(-size/1.5, -size/2, size*1.5, size, 5);
+            graphics.fillRoundedRect(-40, -30, 80, 60, 5);
             graphics.lineStyle(3, 0xffffff);
-            graphics.strokeRoundedRect(-size/1.5, -size/2, size*1.5, size, 5);
+            graphics.strokeRoundedRect(-40, -30, 80, 60, 5);
             break;
     }
     
-    const container = scene.add.container(x, y, [graphics]);
-    container.setSize(size * 2, size * 2);
-    container.setData('type', type);
-    container.setInteractive(new Phaser.Geom.Rectangle(-size, -size, size*2, size*2), Phaser.Geom.Rectangle.Contains);
+    container.add(graphics);
     
+    // Настраиваем интерактивность
+    container.setSize(80, 60);
+    container.setInteractive(new Phaser.Geom.Rectangle(-40, -30, 80, 60), Phaser.Geom.Rectangle.Contains);
     scene.input.setDraggable(container);
+    container.setData('type', type);
     
     // Запоминаем начальную позицию
     container.input = { dragStartX: x, dragStartY: y };
-    container.setDepth(20); // Высокий слой
     
     // Подпись
-    scene.add.text(x, y + size + 10, label, {
+    scene.add.text(x, y + 50, label, {
         fontFamily: 'Arial',
         fontSize: isMobile ? '16px' : '18px',
         fill: '#ffffff',
@@ -402,7 +349,10 @@ function createEquipmentItem(scene, x, y, type, label, color) {
         borderRadius: 5
     })
     .setOrigin(0.5)
-    .setDepth(21);
+    .setDepth(11);
+    
+    // Отладочная информация
+    console.log(`Created equipment: ${type} at (${x}, ${y})`);
     
     return container;
 }
@@ -431,7 +381,7 @@ function updateTimer() {
                 stroke: '#000',
                 strokeThickness: 4
             }
-        ).setOrigin(0.5).setDepth(22);
+        ).setOrigin(0.5).setDepth(20);
     }
 }
 
