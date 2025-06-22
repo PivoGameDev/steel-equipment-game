@@ -32,30 +32,16 @@ function create() {
     // 1. Фон
     this.add.image(400, 300, 'background');
 
-    // === ТЕСТОВАЯ КНОПКА (удалите после проверки) ===
-    const testButton = this.add.text(50, 30, 'ТЕСТ ЗВУКОВ', {
-        fontFamily: 'Arial',
-        fontSize: '24px',
-        fill: '#FFFF00',
-        backgroundColor: '#333333',
-        padding: { x: 10, y: 5 }
-    })
-    .setInteractive()
-    .on('pointerdown', () => {
-        this.sound.play('success');
-        setTimeout(() => this.sound.play('error'), 1000);
-    });
-
     // 2. Слот (только для танка)
-    const slot = this.add.image(600, 300, 'slot')
+    const slot = this.add.image(210, 210, 'slot')
         .setData('correctType', 'tank');
 
     // 3. Оборудование
-    const tank = this.add.image(200, 300, 'tank')
+    const tank = this.add.image(200, 200, 'tank')
         .setInteractive()
         .setScale(0.7);
 
-    const pump = this.add.image(200, 150, 'pump')
+    const pump = this.add.image(200, 200, 'pump')
         .setInteractive()
         .setScale(0.7);
 
