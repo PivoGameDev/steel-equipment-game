@@ -11,48 +11,51 @@ const config = {
 
 const game = new Phaser.Game(config);
 
-// Загрузка ресурсов
 function preload() {
-    // 1. Изображения
     this.load.image('background', 'assets/images/background.png');
     this.load.image('tank', 'assets/images/tank.png');
     this.load.image('pump', 'assets/images/pump.png');
     this.load.image('slot', 'assets/images/slot.png');
-    
-    // 2. Звуки (проверьте пути!)
     this.load.audio('success', 'assets/sounds/success.mp3');
     this.load.audio('error', 'assets/sounds/error.mp3');
 }
 
-// Создание игры
 function create() {
-    // 0. Важно для мобильных!
     this.sound.pauseOnBlur = false;
-
-    // 1. Фон
     this.add.image(400, 300, 'background');
 
-    // 2. Слот (только для танка)
-    const slot = this.add.image(210, 210, 'slot')
-        .setData('correctType', 'tank');
+    // 1. Текст правил (восстановленный)
+    const ruleText = this.add.text(50, 30, 
+        'ПЕРЕТАЩИТЕ ТАНК НА СХЕМУ\n(насос - неправильный объект)', 
+        {
+            fontFamily: 'Arial',
+            fontSize: '24px',
+            fill: '#ffffff',
+            backgroundColor: '#333333',
+            padding: { x: 15, y: 10 },
+            align: 'center'
+        }
+    );
 
-    // 3. Оборудование
-    const tank = this.add.image(200, 200, 'tank')
-        .setInteractive()
-        .setScale(0.7);
+    // 2. Создаем переменные для текстовых сообщений
+    let successText = null;
+    let errorText = null;
 
-    const pump = this.add.image(200, 200, 'pump')
-        .setInteractive()
-        .setScale(0.7);
+    // 3. Слот и объекты
+    const slot = this.add.image(600, 300, 'slot').setData('correctType', 'tank');
+    const tank = this.add.image(200, 300, 'tank').setInteractive().setScale(0.7);
+    const pump = this.add.image(200, 150, 'pump').setInteractive().setScale(0.7);
 
-    // 4. Включаем перетаскивание
     this.input.setDraggable(tank);
     this.input.setDraggable(pump);
 
-    // 5. Логика перетаскивания (полностью сохранена)
     this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
         gameObject.x = dragX;
         gameObject.y = dragY;
+        
+        // Удаляем старые сообщения при новом перетаскивании
+        if (successText) successText.destroy();
+        if (errorText) errorText.destroy();
     });
 
     this.input.on('dragend', (pointer, gameObject) => {
@@ -61,22 +64,24 @@ function create() {
             slot.getBounds()
         )) {
             if (gameObject.texture.key === slot.getData('correctType')) {
-                // Правильно: звук success + фиксация
+                // Правильно
                 this.sound.play('success');
                 gameObject.x = slot.x;
                 gameObject.y = slot.y;
-                this.add.text(300, 100, 'Успех!', { 
+                successText = this.add.text(300, 100, 'УСПЕХ!', { 
                     fontSize: '32px', 
                     fill: '#0f0',
-                    fontFamily: 'Arial'
+                    fontFamily: 'Arial',
+                    backgroundColor: '#333333'
                 });
             } else {
-                // Ошибка: звук error + возврат
+                // Неправильно
                 this.sound.play('error');
-                this.add.text(250, 100, 'Ошибка!', { 
+                errorText = this.add.text(300, 100, 'ОШИБКА!', { 
                     fontSize: '32px', 
                     fill: '#f00',
-                    fontFamily: 'Arial'
+                    fontFamily: 'Arial',
+                    backgroundColor: '#333333'
                 });
                 this.tweens.add({
                     targets: gameObject,
