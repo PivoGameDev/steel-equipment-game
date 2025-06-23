@@ -1,28 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Минимальный тест перетаскивания</title>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #0a1929;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
-        #game {
-            border: 2px solid #4ecca3;
-            border-radius: 10px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steel Equipment Game</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game"></div>
+    <div id="game-container">
+        <!-- Верхний блок с таймером и сообщениями -->
+        <div id="header">
+            <div id="default-message">Установите оборудование! Время: <span id="timer">120</span>с</div>
+            <div id="result-message" class="hidden"></div>
+        </div>
+
+        <!-- Игровое поле -->
+        <div id="game-field">
+            <!-- Варочный цех -->
+            <div class="workshop">
+                <img src="assets/images/brewhouse-top.png" alt="Варочный цех" class="workshop-top">
+                <div class="slots-container">
+                    <div class="slot-row">
+                        <div class="slot" data-slot-id="1"><img src="assets/images/slot1.png" alt="Слот 1"></div>
+                        <div class="slot" data-slot-id="2"><img src="assets/images/slot2.png" alt="Слот 2"></div>
+                        <div class="slot" data-slot-id="3"><img src="assets/images/slot3.png" alt="Слот 3"></div>
+                        <div class="slot" data-slot-id="4"><img src="assets/images/slot4.png" alt="Слот 4"></div>
+                        <div class="slot" data-slot-id="5"><img src="assets/images/slot5.png" alt="Слот 5"></div>
+                    </div>
+                    <div class="slot-row">
+                        <div class="slot" data-slot-id="6"><img src="assets/images/slot6.png" alt="Слот 6"></div>
+                        <div class="slot" data-slot-id="7"><img src="assets/images/slot7.png" alt="Слот 7"></div>
+                        <div class="slot" data-slot-id="8"><img src="assets/images/slot8.png" alt="Слот 8"></div>
+                        <div class="slot" data-slot-id="9"><img src="assets/images/slot9.png" alt="Слот 9"></div>
+                        <div class="slot" data-slot-id="10"><img src="assets/images/slot10.png" alt="Слот 10"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Бродильный цех -->
+            <div class="workshop">
+                <img src="assets/images/fermentation-top.png" alt="Бродильный цех" class="workshop-top">
+                <div class="slots-container">
+                    <div class="slot-row">
+                        <div class="slot" data-slot-id="11"><img src="assets/images/slot11.png" alt="Слот 11"></div>
+                        <div class="slot" data-slot-id="12"><img src="assets/images/slot12.png" alt="Слот 12"></div>
+                        <div class="slot" data-slot-id="13"><img src="assets/images/slot13.png" alt="Слот 13"></div>
+                        <div class="slot" data-slot-id="14"><img src="assets/images/slot14.png" alt="Слот 14"></div>
+                    </div>
+                    <div class="slot-row">
+                        <div class="slot" data-slot-id="15"><img src="assets/images/slot15.png" alt="Слот 15"></div>
+                        <div class="slot" data-slot-id="16"><img src="assets/images/slot16.png" alt="Слот 16"></div>
+                        <div class="slot" data-slot-id="17"><img src="assets/images/slot17.png" alt="Слот 17"></div>
+                        <div class="slot" data-slot-id="18"><img src="assets/images/slot18.png" alt="Слот 18"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Нижний блок с оборудованием -->
+        <div id="equipment-container">
+            <img src="assets/images/equipment1.png" class="equipment" draggable="true" data-correct-slot="3">
+            <img src="assets/images/equipment2.png" class="equipment" draggable="true" data-correct-slot="12">
+            <!-- Добавьте остальные 16 элементов оборудования аналогично -->
+        </div>
+    </div>
+
     <script src="game.js"></script>
 </body>
 </html>
