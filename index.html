@@ -21,6 +21,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            touch-action: manipulation;
         }
 
         #game-container {
@@ -71,6 +72,7 @@
             background-color: inherit;
             opacity: 0;
             transition: opacity 0.3s;
+            z-index: 10;
         }
 
         #result-message.show {
@@ -90,6 +92,7 @@
             background-image: url('https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?q=80&w=1000');
             background-size: cover;
             background-position: center;
+            min-height: 60vh;
         }
 
         .workshop {
@@ -116,12 +119,13 @@
             display: flex;
             justify-content: center;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
 
         .slot {
             width: 90px;
             height: 90px;
-            margin: 0 8px;
+            margin: 8px;
             background-color: rgba(255, 255, 255, 0.1);
             border: 2px dashed #3498db;
             border-radius: 10px;
@@ -129,15 +133,23 @@
             justify-content: center;
             align-items: center;
             transition: all 0.3s;
+            position: relative;
         }
 
-        .slot:hover {
-            background-color: rgba(52, 152, 219, 0.2);
+        .slot.correct {
+            background-color: rgba(46, 204, 113, 0.3);
+            border: 2px solid #2ecc71;
+        }
+
+        .slot.incorrect {
+            background-color: rgba(231, 76, 60, 0.3);
+            border: 2px solid #e74c3c;
+            animation: shake 0.5s;
         }
 
         .slot img {
-            width: 80%;
-            height: 80%;
+            max-width: 80%;
+            max-height: 80%;
             object-fit: contain;
         }
 
@@ -146,11 +158,13 @@
             padding: 15px;
             display: flex;
             overflow-x: auto;
+            min-height: 120px;
         }
 
         .equipment {
             width: 70px;
             height: 70px;
+            min-width: 70px;
             margin: 0 10px;
             background-color: white;
             border-radius: 10px;
@@ -158,17 +172,22 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: move;
+            cursor: grab;
             transition: transform 0.2s;
+            touch-action: none;
+            position: relative;
+            z-index: 5;
         }
 
-        .equipment:hover {
-            transform: scale(1.05);
+        .equipment.dragging {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
         }
 
         .equipment img {
-            width: 80%;
-            height: 80%;
+            max-width: 80%;
+            max-height: 80%;
             object-fit: contain;
         }
 
@@ -221,6 +240,13 @@
             margin-top: 30px;
             padding: 0 20px;
             line-height: 1.6;
+            color: #ccc;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
         @media (min-width: 768px) {
@@ -232,6 +258,7 @@
             .equipment {
                 width: 90px;
                 height: 90px;
+                min-width: 90px;
             }
             
             #header {
@@ -254,7 +281,8 @@
             <h2>Инструкция к игре</h2>
             <p>Перетащите оборудование на соответствующие слоты в варочном и бродильном цехах.</p>
             <p>У вас есть 120 секунд, чтобы правильно установить все 18 элементов оборудования.</p>
-            <p>Для работы звука на мобильных устройствах нажмите "Начать игру".</p>
+            <p>Для работы звука нажмите "Начать игру".</p>
+            <p>На мобильных устройствах: касайтесь и перетаскивайте элементы оборудования.</p>
         </div>
     </div>
 
@@ -326,9 +354,6 @@
         const equipmentContainer = document.getElementById('equipment-container');
         const slots = document.querySelectorAll('.slot');
 
-        // Звуковые эффекты
-        let successSound, errorSound;
-        
         // Переменные игры
         let timeLeft = 120;
         let gameActive = false;
@@ -336,67 +361,47 @@
         let correctCount = 0;
         const totalEquipment = 18;
         let audioContext;
+        let soundEnabled = false;
+        
+        // Звуковые эффекты
+        const successSound = new Audio('assets/sounds/success.mp3');
+        const errorSound = new Audio('assets/sounds/error.mp3');
         
         // Инициализация звуков
         function initSounds() {
             try {
-                // Создаем AudioContext после взаимодействия пользователя
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // Подготовка звуков
+                successSound.volume = 0.7;
+                errorSound.volume = 0.7;
                 
-                // Создаем звуки программно
-                successSound = createSuccessSound();
-                errorSound = createErrorSound();
+                // Промис для загрузки звуков
+                const loadSounds = Promise.all([
+                    new Promise(res => successSound.onloadeddata = res),
+                    new Promise(res => errorSound.onloadeddata = res)
+                ]);
+                
+                loadSounds.then(() => {
+                    soundEnabled = true;
+                    console.log("Звуки загружены");
+                });
             } catch (e) {
                 console.error("Ошибка инициализации звука:", e);
                 soundWarning.classList.add('show');
             }
         }
         
-        // Создание звука успеха
-        function createSuccessSound() {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // Нота C5
-            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // Нота E5
-            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // Нота G5
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            return oscillator;
-        }
-        
-        // Создание звука ошибки
-        function createErrorSound() {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.type = 'square';
-            oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // Ля малой октавы
-            oscillator.frequency.setValueAtTime(110, audioContext.currentTime + 0.1); // Ля контроктавы
-            oscillator.frequency.setValueAtTime(55, audioContext.currentTime + 0.2); // Ля субконтроктавы
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            return oscillator;
-        }
-        
         // Воспроизведение звука
         function playSound(sound) {
+            if (!soundEnabled) return;
+            
             try {
-                if (sound && audioContext) {
-                    sound.start();
-                    sound.stop(audioContext.currentTime + 0.5);
-                }
+                // Создаем клон звука для многократного воспроизведения
+                const clone = sound.cloneNode();
+                clone.volume = sound.volume;
+                clone.play().catch(e => {
+                    console.log("Автовоспроизведение заблокировано, требуется взаимодействие");
+                    soundWarning.classList.add('show');
+                });
             } catch (e) {
                 console.error("Ошибка воспроизведения звука:", e);
             }
@@ -408,10 +413,12 @@
                 const equipment = document.createElement('div');
                 equipment.className = 'equipment';
                 equipment.draggable = true;
+                equipment.dataset.equipmentId = i;
                 equipment.dataset.correctSlot = i;
                 
                 // Создаем изображение оборудования
                 const img = document.createElement('div');
+                img.className = 'equipment-image';
                 img.style.width = '70%';
                 img.style.height = '70%';
                 img.style.backgroundColor = getRandomColor();
@@ -426,6 +433,9 @@
                 
                 equipment.appendChild(img);
                 equipmentContainer.appendChild(equipment);
+                
+                // Добавляем обработчики событий
+                addEventListenersToEquipment(equipment);
             }
         }
         
@@ -468,15 +478,44 @@
             
             if (isWin) {
                 showResultMessage('Победа! Все оборудование установлено', 'correct');
+                playSound(successSound);
             } else {
                 showResultMessage('Время вышло! Игра окончена', 'error');
+                playSound(errorSound);
             }
         }
         
-        // Обработчики событий
+        // Обработчики событий для оборудования
+        function addEventListenersToEquipment(equipment) {
+            // Для десктопов
+            equipment.addEventListener('dragstart', handleDragStart);
+            
+            // Для мобильных устройств
+            equipment.addEventListener('touchstart', handleTouchStart, { passive: false });
+            equipment.addEventListener('touchmove', handleTouchMove, { passive: false });
+            equipment.addEventListener('touchend', handleTouchEnd);
+        }
+        
+        // Обработчики для слотов
+        function addEventListenersToSlots() {
+            slots.forEach(slot => {
+                // Для десктопов
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('drop', handleDrop);
+                
+                // Для мобильных устройств
+                slot.addEventListener('touchend', handleTouchDrop);
+                slot.addEventListener('touchmove', preventTouchScroll);
+            });
+        }
+        
+        // ===== Обработчики для десктопов =====
+        let draggedEquipment = null;
+        
         function handleDragStart(e) {
             if (!gameActive) return;
-            e.dataTransfer.setData('text/plain', e.target.dataset.correctSlot);
+            draggedEquipment = e.target;
+            e.target.classList.add('dragging');
         }
         
         function handleDragOver(e) {
@@ -485,20 +524,117 @@
         
         function handleDrop(e) {
             e.preventDefault();
-            if (!gameActive) return;
+            if (!gameActive || !draggedEquipment) return;
             
             const slot = e.currentTarget;
             const slotId = parseInt(slot.dataset.slotId);
-            const equipmentId = parseInt(e.dataTransfer.getData('text/plain'));
+            const correctSlotId = parseInt(draggedEquipment.dataset.correctSlot);
             
-            if (slotId === equipmentId) {
+            checkEquipmentPlacement(slot, slotId, correctSlotId, draggedEquipment);
+            draggedEquipment.classList.remove('dragging');
+            draggedEquipment = null;
+        }
+        
+        // ===== Обработчики для мобильных устройств =====
+        let touchStartX, touchStartY;
+        let touchDraggedElement = null;
+        let touchOffsetX, touchOffsetY;
+        
+        function handleTouchStart(e) {
+            if (!gameActive) return;
+            
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            touchDraggedElement = e.currentTarget;
+            
+            // Запоминаем смещение касания относительно элемента
+            const rect = touchDraggedElement.getBoundingClientRect();
+            touchOffsetX = touch.clientX - rect.left;
+            touchOffsetY = touch.clientY - rect.top;
+            
+            // Позиционируем элемент
+            touchDraggedElement.style.position = 'fixed';
+            touchDraggedElement.style.zIndex = '1000';
+            moveElement(touchDraggedElement, touch.clientX, touch.clientY);
+            touchDraggedElement.classList.add('dragging');
+            
+            e.preventDefault();
+        }
+        
+        function handleTouchMove(e) {
+            if (!touchDraggedElement) return;
+            
+            const touch = e.touches[0];
+            moveElement(touchDraggedElement, touch.clientX, touch.clientY);
+            e.preventDefault();
+        }
+        
+        function handleTouchEnd(e) {
+            if (!touchDraggedElement) return;
+            
+            // Возвращаем в исходное положение, если не было переноса на слот
+            setTimeout(() => {
+                if (touchDraggedElement.parentElement.id === 'equipment-container') {
+                    resetElementPosition(touchDraggedElement);
+                }
+                touchDraggedElement.classList.remove('dragging');
+                touchDraggedElement = null;
+            }, 100);
+            
+            e.preventDefault();
+        }
+        
+        function handleTouchDrop(e) {
+            if (!touchDraggedElement || !gameActive) return;
+            
+            const slot = e.currentTarget;
+            const slotId = parseInt(slot.dataset.slotId);
+            const correctSlotId = parseInt(touchDraggedElement.dataset.correctSlot);
+            
+            checkEquipmentPlacement(slot, slotId, correctSlotId, touchDraggedElement);
+            touchDraggedElement.classList.remove('dragging');
+            touchDraggedElement = null;
+            e.preventDefault();
+        }
+        
+        function preventTouchScroll(e) {
+            if (touchDraggedElement) {
+                e.preventDefault();
+            }
+        }
+        
+        function moveElement(element, x, y) {
+            element.style.left = (x - touchOffsetX) + 'px';
+            element.style.top = (y - touchOffsetY) + 'px';
+        }
+        
+        function resetElementPosition(element) {
+            element.style.position = '';
+            element.style.zIndex = '';
+            element.style.left = '';
+            element.style.top = '';
+        }
+        
+        // Общая функция проверки размещения
+        function checkEquipmentPlacement(slot, slotId, correctSlotId, equipment) {
+            if (slotId === correctSlotId) {
                 // Правильное размещение
                 playSound(successSound);
                 showResultMessage('Правильно!', 'correct');
+                slot.classList.add('correct');
                 
-                // Визуальное отображение
-                slot.style.backgroundColor = 'rgba(46, 204, 113, 0.3)';
-                slot.style.border = '2px solid #2ecc71';
+                // Размещаем оборудование в слоте
+                slot.innerHTML = '';
+                const equipmentClone = equipment.cloneNode(true);
+                equipmentClone.style.width = '100%';
+                equipmentClone.style.height = '100%';
+                equipmentClone.draggable = false;
+                slot.appendChild(equipmentClone);
+                
+                // Делаем оригинальное оборудование неактивным
+                equipment.style.visibility = 'hidden';
+                resetElementPosition(equipment);
                 
                 // Проверяем завершение игры
                 correctCount++;
@@ -509,29 +645,12 @@
                 // Неправильное размещение
                 playSound(errorSound);
                 showResultMessage('Неверно!', 'error');
-                
-                // Визуальная индикация ошибки
-                slot.style.backgroundColor = 'rgba(231, 76, 60, 0.3)';
-                slot.style.border = '2px solid #e74c3c';
+                slot.classList.add('incorrect');
                 setTimeout(() => {
-                    slot.style.backgroundColor = '';
-                    slot.style.border = '2px dashed #3498db';
+                    slot.classList.remove('incorrect');
                 }, 1000);
+                resetElementPosition(equipment);
             }
-        }
-        
-        // Инициализация перетаскивания
-        function initDragAndDrop() {
-            const equipmentElements = document.querySelectorAll('.equipment');
-            
-            equipmentElements.forEach(equipment => {
-                equipment.addEventListener('dragstart', handleDragStart);
-            });
-            
-            slots.forEach(slot => {
-                slot.addEventListener('dragover', handleDragOver);
-                slot.addEventListener('drop', handleDrop);
-            });
         }
         
         // Запуск игры
@@ -545,8 +664,8 @@
             // Создаем оборудование
             createEquipmentElements();
             
-            // Инициализируем перетаскивание
-            initDragAndDrop();
+            // Инициализируем обработчики для слотов
+            addEventListenersToSlots();
             
             // Запускаем игру
             gameActive = true;
@@ -555,6 +674,12 @@
         
         // Обработчик кнопки старта
         startButton.addEventListener('click', startGame);
+        
+        // Обработчик для активации звука при любом взаимодействии
+        document.addEventListener('click', () => {
+            soundEnabled = true;
+            soundWarning.classList.remove('show');
+        });
         
         // Инициализация при загрузке
         document.addEventListener('DOMContentLoaded', () => {
