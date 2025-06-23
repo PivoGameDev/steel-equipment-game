@@ -140,3 +140,27 @@ body {
         font-size: 0.9rem;
     }
 }
+/* Улучшения для touch-событий */
+.equipment {
+    touch-action: none; /* Предотвращаем скролл при перетаскивании */
+    transition: transform 0.2s ease;
+}
+@media (max-width: 768px) {
+    /* Увеличим зону клика для слотов */
+    .slot {
+        padding: 15px;
+    }
+    
+    /* Улучшим видимость при перетаскивании */
+    .equipment.dragging {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    
+    /* Для контейнера с оборудованием - горизонтальная прокрутка */
+    #equipment-container {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+    }
+}
