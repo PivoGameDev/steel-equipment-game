@@ -4,84 +4,565 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steel Equipment Game</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #game-container {
+            background-color: rgba(0, 30, 60, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #header {
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        #default-message {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        #timer {
+            font-weight: bold;
+            font-size: 1.3rem;
+            background-color: #e74c3c;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-left: 10px;
+        }
+
+        #result-message {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background-color: inherit;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #result-message.show {
+            opacity: 1;
+        }
+
+        #result-message.correct {
+            color: #2ecc71;
+        }
+
+        #result-message.error {
+            color: #e74c3c;
+        }
+
+        #game-field {
+            padding: 20px;
+            background-image: url('https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?q=80&w=1000');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .workshop {
+            margin-bottom: 20px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .workshop-header {
+            background: linear-gradient(to right, #8e44ad, #3498db);
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .slots-container {
+            padding: 15px;
+        }
+
+        .slot-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .slot {
+            width: 90px;
+            height: 90px;
+            margin: 0 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .slot:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+
+        .slot img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+        }
+
+        #equipment-container {
+            background: linear-gradient(to right, #34495e, #2c3e50);
+            padding: 15px;
+            display: flex;
+            overflow-x: auto;
+        }
+
+        .equipment {
+            width: 70px;
+            height: 70px;
+            margin: 0 10px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: move;
+            transition: transform 0.2s;
+        }
+
+        .equipment:hover {
+            transform: scale(1.05);
+        }
+
+        .equipment img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+        }
+
+        #sound-warning {
+            background-color: #e67e22;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        #sound-warning.show {
+            display: block;
+        }
+
+        #start-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #start-button {
+            background: linear-gradient(to right, #27ae60, #2ecc71);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.5rem;
+            padding: 15px 40px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        #start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        #instructions {
+            max-width: 500px;
+            text-align: center;
+            margin-top: 30px;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+
+        @media (min-width: 768px) {
+            .slot {
+                width: 110px;
+                height: 110px;
+            }
+            
+            .equipment {
+                width: 90px;
+                height: 90px;
+            }
+            
+            #header {
+                padding: 20px 30px;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .slot {
+                width: 130px;
+                height: 130px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div id="start-container">
+        <button id="start-button">Начать игру</button>
+        <div id="instructions">
+            <h2>Инструкция к игре</h2>
+            <p>Перетащите оборудование на соответствующие слоты в варочном и бродильном цехах.</p>
+            <p>У вас есть 120 секунд, чтобы правильно установить все 18 элементов оборудования.</p>
+            <p>Для работы звука на мобильных устройствах нажмите "Начать игру".</p>
+        </div>
+    </div>
+
     <div id="game-container">
-        <!-- Верхний блок с таймером и сообщениями -->
         <div id="header">
             <div id="default-message">Установите оборудование! Время: <span id="timer">120</span>с</div>
-            <div id="result-message" class="hidden"></div>
+            <div id="result-message"></div>
+        </div>
+        
+        <div id="sound-warning">
+            Для работы звука нажмите "Начать игру" или взаимодействуйте с игрой
         </div>
 
-        <!-- Игровое поле -->
         <div id="game-field">
             <!-- Варочный цех -->
             <div class="workshop">
-                <img src="assets/images/brewhouse-top.png" alt="Варочный цех" class="workshop-top">
+                <div class="workshop-header">Варочный цех</div>
                 <div class="slots-container">
                     <div class="slot-row">
-                        <div class="slot" data-slot-id="1"><img src="assets/images/slot1.png" alt="Слот 1"></div>
-                        <div class="slot" data-slot-id="2"><img src="assets/images/slot2.png" alt="Слот 2"></div>
-                        <div class="slot" data-slot-id="3"><img src="assets/images/slot3.png" alt="Слот 3"></div>
-                        <div class="slot" data-slot-id="4"><img src="assets/images/slot4.png" alt="Слот 4"></div>
-                        <div class="slot" data-slot-id="5"><img src="assets/images/slot5.png" alt="Слот 5"></div>
+                        <div class="slot" data-slot-id="1"></div>
+                        <div class="slot" data-slot-id="2"></div>
+                        <div class="slot" data-slot-id="3"></div>
+                        <div class="slot" data-slot-id="4"></div>
+                        <div class="slot" data-slot-id="5"></div>
                     </div>
                     <div class="slot-row">
-                        <div class="slot" data-slot-id="6"><img src="assets/images/slot6.png" alt="Слот 6"></div>
-                        <div class="slot" data-slot-id="7"><img src="assets/images/slot7.png" alt="Слот 7"></div>
-                        <div class="slot" data-slot-id="8"><img src="assets/images/slot8.png" alt="Слот 8"></div>
-                        <div class="slot" data-slot-id="9"><img src="assets/images/slot9.png" alt="Слот 9"></div>
-                        <div class="slot" data-slot-id="10"><img src="assets/images/slot10.png" alt="Слот 10"></div>
+                        <div class="slot" data-slot-id="6"></div>
+                        <div class="slot" data-slot-id="7"></div>
+                        <div class="slot" data-slot-id="8"></div>
+                        <div class="slot" data-slot-id="9"></div>
+                        <div class="slot" data-slot-id="10"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Бродильный цех -->
             <div class="workshop">
-                <img src="assets/images/fermentation-top.png" alt="Бродильный цех" class="workshop-top">
+                <div class="workshop-header">Бродильный цех</div>
                 <div class="slots-container">
                     <div class="slot-row">
-                        <div class="slot" data-slot-id="11"><img src="assets/images/slot11.png" alt="Слот 11"></div>
-                        <div class="slot" data-slot-id="12"><img src="assets/images/slot12.png" alt="Слот 12"></div>
-                        <div class="slot" data-slot-id="13"><img src="assets/images/slot13.png" alt="Слот 13"></div>
-                        <div class="slot" data-slot-id="14"><img src="assets/images/slot14.png" alt="Слот 14"></div>
+                        <div class="slot" data-slot-id="11"></div>
+                        <div class="slot" data-slot-id="12"></div>
+                        <div class="slot" data-slot-id="13"></div>
+                        <div class="slot" data-slot-id="14"></div>
                     </div>
                     <div class="slot-row">
-                        <div class="slot" data-slot-id="15"><img src="assets/images/slot15.png" alt="Слот 15"></div>
-                        <div class="slot" data-slot-id="16"><img src="assets/images/slot16.png" alt="Слот 16"></div>
-                        <div class="slot" data-slot-id="17"><img src="assets/images/slot17.png" alt="Слот 17"></div>
-                        <div class="slot" data-slot-id="18"><img src="assets/images/slot18.png" alt="Слот 18"></div>
+                        <div class="slot" data-slot-id="15"></div>
+                        <div class="slot" data-slot-id="16"></div>
+                        <div class="slot" data-slot-id="17"></div>
+                        <div class="slot" data-slot-id="18"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Нижний блок с оборудованием -->
-<div id="equipment-container">
-    <!-- Оборудование для варочного цеха -->
-    <img src="assets/images/equipment1.png" class="equipment" draggable="true" data-correct-slot="1">
-    <img src="assets/images/equipment2.png" class="equipment" draggable="true" data-correct-slot="2">
-    <img src="assets/images/equipment3.png" class="equipment" draggable="true" data-correct-slot="3">
-    <img src="assets/images/equipment4.png" class="equipment" draggable="true" data-correct-slot="4">
-    <img src="assets/images/equipment5.png" class="equipment" draggable="true" data-correct-slot="5">
-    <img src="assets/images/equipment6.png" class="equipment" draggable="true" data-correct-slot="6">
-    <img src="assets/images/equipment7.png" class="equipment" draggable="true" data-correct-slot="7">
-    <img src="assets/images/equipment8.png" class="equipment" draggable="true" data-correct-slot="8">
-    <img src="assets/images/equipment9.png" class="equipment" draggable="true" data-correct-slot="9">
-    <img src="assets/images/equipment10.png" class="equipment" draggable="true" data-correct-slot="10">
-    
-    <!-- Оборудование для бродильного цеха -->
-    <img src="assets/images/equipment11.png" class="equipment" draggable="true" data-correct-slot="11">
-    <img src="assets/images/equipment12.png" class="equipment" draggable="true" data-correct-slot="12">
-    <img src="assets/images/equipment13.png" class="equipment" draggable="true" data-correct-slot="13">
-    <img src="assets/images/equipment14.png" class="equipment" draggable="true" data-correct-slot="14">
-    <img src="assets/images/equipment15.png" class="equipment" draggable="true" data-correct-slot="15">
-    <img src="assets/images/equipment16.png" class="equipment" draggable="true" data-correct-slot="16">
-    <img src="assets/images/equipment17.png" class="equipment" draggable="true" data-correct-slot="17">
-    <img src="assets/images/equipment18.png" class="equipment" draggable="true" data-correct-slot="18">
-</div>
+        <div id="equipment-container">
+            <!-- Оборудование будет сгенерировано через JavaScript -->
+        </div>
+    </div>
 
-    <script src="game.js"></script>
+    <script>
+        // Элементы интерфейса
+        const startContainer = document.getElementById('start-container');
+        const startButton = document.getElementById('start-button');
+        const soundWarning = document.getElementById('sound-warning');
+        const timerElement = document.getElementById('timer');
+        const defaultMessage = document.getElementById('default-message');
+        const resultMessage = document.getElementById('result-message');
+        const equipmentContainer = document.getElementById('equipment-container');
+        const slots = document.querySelectorAll('.slot');
+
+        // Звуковые эффекты
+        let successSound, errorSound;
+        
+        // Переменные игры
+        let timeLeft = 120;
+        let gameActive = false;
+        let timerInterval;
+        let correctCount = 0;
+        const totalEquipment = 18;
+        let audioContext;
+        
+        // Инициализация звуков
+        function initSounds() {
+            try {
+                // Создаем AudioContext после взаимодействия пользователя
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Создаем звуки программно
+                successSound = createSuccessSound();
+                errorSound = createErrorSound();
+            } catch (e) {
+                console.error("Ошибка инициализации звука:", e);
+                soundWarning.classList.add('show');
+            }
+        }
+        
+        // Создание звука успеха
+        function createSuccessSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // Нота C5
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // Нота E5
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // Нота G5
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            return oscillator;
+        }
+        
+        // Создание звука ошибки
+        function createErrorSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // Ля малой октавы
+            oscillator.frequency.setValueAtTime(110, audioContext.currentTime + 0.1); // Ля контроктавы
+            oscillator.frequency.setValueAtTime(55, audioContext.currentTime + 0.2); // Ля субконтроктавы
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            return oscillator;
+        }
+        
+        // Воспроизведение звука
+        function playSound(sound) {
+            try {
+                if (sound && audioContext) {
+                    sound.start();
+                    sound.stop(audioContext.currentTime + 0.5);
+                }
+            } catch (e) {
+                console.error("Ошибка воспроизведения звука:", e);
+            }
+        }
+        
+        // Создание элементов оборудования
+        function createEquipmentElements() {
+            for (let i = 1; i <= totalEquipment; i++) {
+                const equipment = document.createElement('div');
+                equipment.className = 'equipment';
+                equipment.draggable = true;
+                equipment.dataset.correctSlot = i;
+                
+                // Создаем изображение оборудования
+                const img = document.createElement('div');
+                img.style.width = '70%';
+                img.style.height = '70%';
+                img.style.backgroundColor = getRandomColor();
+                img.style.borderRadius = '8px';
+                img.style.display = 'flex';
+                img.style.justifyContent = 'center';
+                img.style.alignItems = 'center';
+                img.style.color = 'black';
+                img.style.fontWeight = 'bold';
+                img.style.fontSize = '1.5rem';
+                img.textContent = i;
+                
+                equipment.appendChild(img);
+                equipmentContainer.appendChild(equipment);
+            }
+        }
+        
+        // Генерация случайного цвета
+        function getRandomColor() {
+            const colors = [
+                '#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', 
+                '#C7CEEA', '#F8B195', '#F67280', '#C06C84', '#6C5B7B'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        // Показать временное сообщение
+        function showResultMessage(text, className) {
+            resultMessage.textContent = text;
+            resultMessage.className = className;
+            resultMessage.classList.add('show');
+            
+            setTimeout(() => {
+                resultMessage.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Таймер
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    endGame(false);
+                }
+            }, 1000);
+        }
+        
+        // Завершение игры
+        function endGame(isWin) {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            if (isWin) {
+                showResultMessage('Победа! Все оборудование установлено', 'correct');
+            } else {
+                showResultMessage('Время вышло! Игра окончена', 'error');
+            }
+        }
+        
+        // Обработчики событий
+        function handleDragStart(e) {
+            if (!gameActive) return;
+            e.dataTransfer.setData('text/plain', e.target.dataset.correctSlot);
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            if (!gameActive) return;
+            
+            const slot = e.currentTarget;
+            const slotId = parseInt(slot.dataset.slotId);
+            const equipmentId = parseInt(e.dataTransfer.getData('text/plain'));
+            
+            if (slotId === equipmentId) {
+                // Правильное размещение
+                playSound(successSound);
+                showResultMessage('Правильно!', 'correct');
+                
+                // Визуальное отображение
+                slot.style.backgroundColor = 'rgba(46, 204, 113, 0.3)';
+                slot.style.border = '2px solid #2ecc71';
+                
+                // Проверяем завершение игры
+                correctCount++;
+                if (correctCount === totalEquipment) {
+                    endGame(true);
+                }
+            } else {
+                // Неправильное размещение
+                playSound(errorSound);
+                showResultMessage('Неверно!', 'error');
+                
+                // Визуальная индикация ошибки
+                slot.style.backgroundColor = 'rgba(231, 76, 60, 0.3)';
+                slot.style.border = '2px solid #e74c3c';
+                setTimeout(() => {
+                    slot.style.backgroundColor = '';
+                    slot.style.border = '2px dashed #3498db';
+                }, 1000);
+            }
+        }
+        
+        // Инициализация перетаскивания
+        function initDragAndDrop() {
+            const equipmentElements = document.querySelectorAll('.equipment');
+            
+            equipmentElements.forEach(equipment => {
+                equipment.addEventListener('dragstart', handleDragStart);
+            });
+            
+            slots.forEach(slot => {
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('drop', handleDrop);
+            });
+        }
+        
+        // Запуск игры
+        function startGame() {
+            // Скрываем стартовый экран
+            startContainer.style.display = 'none';
+            
+            // Инициализируем звуки
+            initSounds();
+            
+            // Создаем оборудование
+            createEquipmentElements();
+            
+            // Инициализируем перетаскивание
+            initDragAndDrop();
+            
+            // Запускаем игру
+            gameActive = true;
+            startTimer();
+        }
+        
+        // Обработчик кнопки старта
+        startButton.addEventListener('click', startGame);
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            // На мобильных устройствах показываем предупреждение о звуке
+            if ('ontouchstart' in window || navigator.maxTouchPoints) {
+                soundWarning.classList.add('show');
+            }
+        });
+    </script>
 </body>
 </html>
