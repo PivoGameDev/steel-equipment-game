@@ -11,25 +11,40 @@
         <div id="header">
             <div id="timer">120</div>
             <div id="hint">Выберите оборудование</div>
+            <div id="result-message"></div>
         </div>
 
         <div id="game-field">
             <div class="workshop" id="tank-equipment">
                 <h3>Ёмкостное оборудование</h3>
-                <div class="slot" id="slot1"></div>
+                <div class="slot" id="slot1" data-slot-type="tank"></div>
             </div>
             
             <div class="workshop" id="auxiliary-equipment">
                 <h3>Вспомогательное оборудование</h3>
-                <div class="slot" id="slot2"></div>
+                <div class="slot" id="slot2" data-slot-type="auxiliary"></div>
             </div>
         </div>
 
         <div id="equipment-panel">
-            <div class="equipment" id="fermenter" data-target="slot1" data-hint="Ферментер - для брожения сусла"></div>
-            <div class="equipment" id="heat-exchanger" data-target="slot2" data-hint="Теплообменник - для охлаждения сусла"></div>
+            <div class="equipment" id="fermenter" draggable="true" 
+                 data-target="slot1" 
+                 data-hint="Ферментер - для брожения сусла"
+                 data-type="tank">
+                <img src="assets/images/fermenter.png" alt="Ферментер">
+            </div>
+            <div class="equipment" id="heat-exchanger" draggable="true"
+                 data-target="slot2"
+                 data-hint="Теплообменник - для охлаждения сусла"
+                 data-type="auxiliary">
+                <img src="assets/images/heat-exchanger.png" alt="Теплообменник">
+            </div>
         </div>
     </div>
+
+    <!-- Скрытые аудио элементы -->
+    <audio id="success-sound" src="assets/sounds/success.mp3"></audio>
+    <audio id="error-sound" src="assets/sounds/error.mp3"></audio>
 
     <script src="game.js"></script>
 </body>
