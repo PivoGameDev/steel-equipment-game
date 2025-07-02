@@ -9,14 +9,26 @@
 <body>
     <div id="game-container">
         <div id="header">
-            <div id="default-message">Установите оборудование на пивзавод! Время: <span id="timer">120</span>с</div>
-            <div id="hint-area"></div>
-            <div id="result-message"></div>
+            <div id="timer">120</div>
+            <div id="hint">Выберите оборудование</div>
         </div>
 
-        <div id="game-field"></div>
+        <div id="game-field">
+            <div class="workshop" id="tank-equipment">
+                <h3>Ёмкостное оборудование</h3>
+                <div class="slot" id="slot1"></div>
+            </div>
+            
+            <div class="workshop" id="auxiliary-equipment">
+                <h3>Вспомогательное оборудование</h3>
+                <div class="slot" id="slot2"></div>
+            </div>
+        </div>
 
-        <div id="equipment-container"></div>
+        <div id="equipment-panel">
+            <div class="equipment" id="fermenter" data-target="slot1" data-hint="Ферментер - для брожения сусла"></div>
+            <div class="equipment" id="heat-exchanger" data-target="slot2" data-hint="Теплообменник - для охлаждения сусла"></div>
+        </div>
     </div>
 
     <script src="game.js"></script>
