@@ -3,43 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Оборудование пивзавода</title>
+    <title>Сборка пивзавода</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <div id="header">
-            <div id="timer">120</div>
-            <div id="hint">Перетащите оборудование в нужный слот</div>
-        </div>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>Соберите пивзавод</h1>
+            <div class="hint">Перетащите оборудование в нужные слоты</div>
+        </header>
 
-        <div id="game-field">
-            <div class="workshop">
-                <h3>Ёмкостное оборудование</h3>
-                <div class="slot" id="slot1" data-slot="fermenter"></div>
-            </div>
-            <div class="workshop">
-                <h3>Вспомогательное оборудование</h3>
-                <div class="slot" id="slot2" data-slot="heat-exchanger"></div>
-            </div>
-        </div>
+        <main class="game-main">
+            <section class="slots-section">
+                <div class="slot" data-slot-type="fermenter" id="slot1">
+                    <h3>Ферментер</h3>
+                </div>
+                <div class="slot" data-slot-type="heat-exchanger" id="slot2">
+                    <h3>Теплообменник</h3>
+                </div>
+            </section>
 
-        <div id="equipment-panel">
-            <div class="equipment" id="fermenter" draggable="true" data-type="fermenter">
-                <img src="assets/images/fermenter.png" alt="Ферментер">
-            </div>
-            <div class="equipment" id="heat-exchanger" draggable="true" data-type="heat-exchanger">
-                <img src="assets/images/heat-exchanger.png" alt="Теплообменник">
-            </div>
-        </div>
-
-        <div id="additional-panel">
-            <!-- Дополнительный блок -->
-        </div>
+            <section class="equipment-section">
+                <div class="equipment" draggable="true" data-equipment-type="fermenter">
+                    <img src="assets/images/fermenter.png" alt="Ферментер">
+                </div>
+                <div class="equipment" draggable="true" data-equipment-type="heat-exchanger">
+                    <img src="assets/images/heat-exchanger.png" alt="Теплообменник">
+                </div>
+            </section>
+        </main>
     </div>
 
-    <audio id="success-sound" src="assets/sounds/success.mp3"></audio>
-    <audio id="error-sound" src="assets/sounds/error.mp3"></audio>
+    <audio src="assets/sounds/success.mp3" id="success-sound"></audio>
+    <audio src="assets/sounds/error.mp3" id="error-sound"></audio>
 
     <script src="game.js"></script>
 </body>

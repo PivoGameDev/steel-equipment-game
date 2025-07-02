@@ -1,32 +1,160 @@
-/* Добавьте эти стили в конец файла */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
 
-.slot.highlight {
-    animation: pulse 1.5s infinite;
+body {
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #f5f5f5;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.game-header {
+    background-color: #3498db;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.game-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.hint {
+    font-size: 1rem;
+}
+
+.game-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    gap: 20px;
+}
+
+.slots-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+
+.slot {
+    width: 150px;
+    height: 150px;
+    border: 3px dashed #7f8c8d;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.slot h3 {
+    color: #2c3e50;
+    margin-top: 10px;
 }
 
 .slot.active {
-    background: rgba(46, 204, 113, 0.3);
     border-color: #2ecc71;
+    background-color: rgba(46, 204, 113, 0.2);
 }
 
 .slot.error {
     animation: shake 0.5s;
-    background: rgba(231, 76, 60, 0.3);
     border-color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.2);
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 1; }
+.equipment-section {
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background-color: #34495e;
+    padding: 15px;
 }
 
+.equipment {
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    touch-action: none;
+    cursor: pointer;
+}
+
+.equipment img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.equipment.dragging {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Анимации */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-10px); }
     75% { transform: translateX(10px); }
 }
 
-.equipment.dragging {
-    transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .slot {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .equipment {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .game-header h1 {
+        font-size: 1.3rem;
+    }
+    
+    .hint {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .slot {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .equipment {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .game-main {
+        padding: 10px;
+        gap: 15px;
+    }
 }
