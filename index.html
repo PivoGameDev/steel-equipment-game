@@ -28,8 +28,6 @@
             padding: 10px;
             text-align: center;
             flex-shrink: 0;
-            position: relative;
-            z-index: 10;
         }
         #game-field {
             flex: 1;
@@ -46,14 +44,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 0;
         }
         .workshop h3 {
             color: white;
             text-shadow: 1px 1px 2px black;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-size: 14px;
-            text-align: center;
         }
         .slot {
             width: 80px;
@@ -70,10 +66,7 @@
             gap: 15px;
             padding: 10px;
             flex-shrink: 0;
-            overflow-x: auto;
             position: relative;
-            z-index: 10;
-            margin-bottom: env(safe-area-inset-bottom);
         }
         .equipment {
             width: 80px;
@@ -82,17 +75,9 @@
             background-repeat: no-repeat;
             background-position: center;
             flex-shrink: 0;
-            touch-action: none;
         }
         #fermenter { background-image: url('assets/images/fermenter.png'); }
         #heat-exchanger { background-image: url('assets/images/heat-exchanger.png'); }
-        
-        /* Анимации */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
         
         /* Мобильная адаптация */
         @media (max-width: 768px) {
@@ -102,23 +87,6 @@
             }
             #equipment-panel {
                 height: 90px;
-                padding: 8px 15px;
-                gap: 10px;
-            }
-        }
-        
-        /* Для очень маленьких экранов */
-        @media (max-height: 600px) {
-            .slot, .equipment {
-                width: 60px;
-                height: 60px;
-            }
-            #equipment-panel {
-                height: 80px;
-            }
-            .workshop h3 {
-                font-size: 12px;
-                margin-bottom: 5px;
             }
         }
     </style>
@@ -167,25 +135,17 @@
                 sounds: {
                     success: document.getElementById('success-sound'),
                     error: document.getElementById('error-sound')
-                },
-                equipmentPanel: document.getElementById('equipment-panel')
+                }
             };
             
             // Состояние
             let draggedItem = null;
             let timeLeft = 120;
-            let touchOffset = { x: 0, y: 0 };
-            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
             // Инициализация
             function init() {
                 setupEventListeners();
                 startTimer();
-                
-                // Для мобильных добавляем дополнительный отступ
-                if (isMobile) {
-                    document.body.style.paddingBottom = '20px';
-                }
             }
             
             // Настройка обработчиков
@@ -197,8 +157,8 @@
                     item.addEventListener('dragstart', handleDragStart);
                     
                     // Мобильные
-                    item.addEventListener('touchstart', handleTouchStart, { passive: false });
-                    item.addEventListener('touchmove', handleTouchMove, { passive: false });
+                    item.addEventListener('touchstart', handleTouchStart);
+                    item.addEventListener('touchmove', handleTouchMove);
                     item.addEventListener('touchend', handleTouchEnd);
                 });
                 
@@ -221,35 +181,25 @@
             }
             
             function handleTouchStart(e) {
-                const touch = e.touches[0];
                 draggedItem = e.target;
-                touchOffset.x = touch.clientX - e.target.getBoundingClientRect().left;
-                touchOffset.y = touch.clientY - e.target.getBoundingClientRect().top;
-                
-                draggedItem.style.position = 'fixed';
-                draggedItem.style.zIndex = '1000';
-                updatePosition(touch.clientX, touch.clientY);
-                
                 showHint(config.equipment[e.target.id].hint);
+                e.target.style.position = 'fixed';
+                e.target.style.zIndex = '1000';
+                updatePosition(e.target, e.touches[0]);
                 e.preventDefault();
             }
             
             function handleTouchMove(e) {
                 if (!draggedItem) return;
-                const touch = e.touches[0];
-                updatePosition(touch.clientX, touch.clientY);
+                updatePosition(draggedItem, e.touches[0]);
                 e.preventDefault();
             }
             
             function handleTouchEnd() {
                 if (!draggedItem) return;
-                
-                // Возвращаем на панель, если не попали в слот
-                setTimeout(() => {
-                    if (draggedItem && !draggedItem.classList.contains('placed')) {
-                        resetPosition();
-                    }
-                }, 100);
+                draggedItem.style.position = '';
+                draggedItem.style.zIndex = '';
+                draggedItem = null;
             }
             
             function handleDragOver(e) {
@@ -271,25 +221,9 @@
                 e.preventDefault();
             }
             
-            function updatePosition(x, y) {
-                if (!draggedItem) return;
-                draggedItem.style.left = (x - touchOffset.x) + 'px';
-                draggedItem.style.top = (y - touchOffset.y) + 'px';
-            }
-            
-            function resetPosition() {
-                if (!draggedItem) return;
-                
-                // Возвращаем на панель оборудования
-                elements.equipmentPanel.appendChild(draggedItem);
-                
-                draggedItem.style.position = '';
-                draggedItem.style.zIndex = '';
-                draggedItem.style.left = '';
-                draggedItem.style.top = '';
-                draggedItem.classList.remove('dragging');
-                
-                draggedItem = null;
+            function updatePosition(element, touch) {
+                element.style.left = (touch.clientX - element.offsetWidth/2) + 'px';
+                element.style.top = (touch.clientY - element.offsetHeight/2) + 'px';
             }
             
             function checkPlacement(slot, equipment) {
@@ -299,27 +233,23 @@
                     // Правильное размещение
                     slot.style.backgroundImage = getComputedStyle(equipment).backgroundImage;
                     slot.style.backgroundSize = 'contain';
-                    equipment.style.display = 'none';
-                    equipment.classList.add('placed');
+                    equipment.style.visibility = 'hidden';
                     elements.sounds.success.play();
                     showHint('Правильно! ' + config.equipment[equipment.id].hint);
                     
                     // Проверка победы
-                    if (Array.from(elements.equipment).every(e => e.style.display === 'none')) {
+                    if (Array.from(elements.equipment).every(e => e.style.visibility === 'hidden')) {
                         endGame(true);
                     }
                 } else {
                     // Неправильное размещение
                     elements.sounds.error.play();
                     showHint('Неверно! ' + config.equipment[equipment.id].hint);
-                    resetPosition();
                 }
             }
             
             function showHint(text) {
                 elements.hint.textContent = text;
-                elements.hint.style.animation = 'pulse 0.5s';
-                setTimeout(() => elements.hint.style.animation = '', 500);
             }
             
             function endGame(isWin) {
