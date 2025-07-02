@@ -20,20 +20,22 @@
             display: flex;
             flex-direction: column;
             background: #f0f0f0;
+            touch-action: none;
         }
         #header {
             background: #3498db;
             color: white;
-            padding: 10px;
+            padding: 8px;
             text-align: center;
             flex-shrink: 0;
+            font-size: 14px;
         }
         #game-field {
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 10px;
-            gap: 15px;
+            padding: 5px;
+            gap: 10px;
             overflow: hidden;
             background: url('assets/images/background.jpg') center/cover;
         }
@@ -46,49 +48,62 @@
         }
         .workshop h3 {
             color: white;
-            text-shadow: 1px 1px 3px black;
-            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px black;
+            margin-bottom: 5px;
+            font-size: 14px;
         }
         .slot {
-            width: 120px;
-            height: 120px;
-            border: 3px dashed rgba(255,255,255,0.7);
-            border-radius: 10px;
+            width: 80px;
+            height: 80px;
+            border: 2px dashed rgba(255,255,255,0.7);
+            border-radius: 8px;
             background: rgba(0,0,0,0.2);
         }
         #equipment-panel {
-            height: 110px;
+            height: 90px;
             background: #34495e;
             display: flex;
             justify-content: center;
-            gap: 15px;
-            padding: 10px;
+            gap: 10px;
+            padding: 8px;
             flex-shrink: 0;
             overflow-x: auto;
         }
         .equipment {
-            width: 90px;
-            height: 90px;
+            width: 70px;
+            height: 70px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             flex-shrink: 0;
+            touch-action: none;
         }
         #fermenter { background-image: url('assets/images/fermenter.png'); }
         #heat-exchanger { background-image: url('assets/images/heat-exchanger.png'); }
         
-        /* Для мобильной адаптации */
-        @media (max-height: 700px) {
+        /* Анимации */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Мобильная адаптация */
+        @media (min-width: 768px) {
             .slot {
                 width: 100px;
                 height: 100px;
             }
             .equipment {
-                width: 80px;
-                height: 80px;
+                width: 90px;
+                height: 90px;
             }
-            #equipment-panel {
-                height: 100px;
+            #header {
+                padding: 10px;
+                font-size: 16px;
+            }
+            .workshop h3 {
+                font-size: 16px;
             }
         }
     </style>
@@ -111,8 +126,8 @@
     </div>
 
     <div id="equipment-panel">
-        <div class="equipment" id="fermenter"></div>
-        <div class="equipment" id="heat-exchanger"></div>
+        <div class="equipment" id="fermenter" draggable="true"></div>
+        <div class="equipment" id="heat-exchanger" draggable="true"></div>
     </div>
 
     <audio id="success-sound" src="assets/sounds/success.mp3"></audio>
@@ -143,55 +158,74 @@
             // Состояние
             let draggedItem = null;
             let timeLeft = 120;
+            let touchOffset = { x: 0, y: 0 };
             
-            // Инициализация перетаскивания
-            elements.equipment.forEach(item => {
-                // Для десктопа
-                item.draggable = true;
-                item.addEventListener('dragstart', handleDragStart);
-                
-                // Для мобильных
-                item.addEventListener('touchstart', handleTouchStart, { passive: false });
-                item.addEventListener('touchmove', handleTouchMove, { passive: false });
-                item.addEventListener('touchend', handleTouchEnd);
-            });
+            // Инициализация
+            function init() {
+                setupEventListeners();
+                startTimer();
+            }
             
-            // Инициализация слотов
-            elements.slots.forEach(slot => {
-                // Для десктопа
-                slot.addEventListener('dragover', handleDragOver);
-                slot.addEventListener('drop', handleDrop);
+            // Настройка обработчиков
+            function setupEventListeners() {
+                // Для оборудования
+                elements.equipment.forEach(item => {
+                    // Десктоп
+                    item.addEventListener('dragstart', handleDragStart);
+                    
+                    // Мобильные
+                    item.addEventListener('touchstart', handleTouchStart, { passive: false });
+                    item.addEventListener('touchmove', handleTouchMove, { passive: false });
+                    item.addEventListener('touchend', handleTouchEnd);
+                });
                 
-                // Для мобильных
-                slot.addEventListener('touchend', handleSlotTouch);
-            });
+                // Для слотов
+                elements.slots.forEach(slot => {
+                    // Десктоп
+                    slot.addEventListener('dragover', handleDragOver);
+                    slot.addEventListener('drop', handleDrop);
+                    
+                    // Мобильные
+                    slot.addEventListener('touchend', handleSlotTouch);
+                });
+            }
             
             // Обработчики событий
             function handleDragStart(e) {
                 draggedItem = e.target;
-                elements.hint.textContent = config.equipment[e.target.id].hint;
+                showHint(config.equipment[e.target.id].hint);
                 e.dataTransfer.setData('text/plain', e.target.id);
             }
             
             function handleTouchStart(e) {
+                const touch = e.touches[0];
                 draggedItem = e.target;
-                elements.hint.textContent = config.equipment[e.target.id].hint;
-                e.target.style.position = 'absolute';
-                e.target.style.zIndex = '1000';
-                updatePosition(e.target, e.touches[0]);
+                touchOffset.x = touch.clientX - e.target.getBoundingClientRect().left;
+                touchOffset.y = touch.clientY - e.target.getBoundingClientRect().top;
+                
+                draggedItem.style.position = 'fixed';
+                draggedItem.style.zIndex = '1000';
+                updatePosition(touch.clientX, touch.clientY);
+                
+                showHint(config.equipment[e.target.id].hint);
                 e.preventDefault();
             }
             
             function handleTouchMove(e) {
                 if (!draggedItem) return;
-                updatePosition(draggedItem, e.touches[0]);
+                const touch = e.touches[0];
+                updatePosition(touch.clientX, touch.clientY);
                 e.preventDefault();
             }
             
             function handleTouchEnd() {
                 if (!draggedItem) return;
-                draggedItem.style.position = '';
-                draggedItem.style.zIndex = '';
+                
+                // Возвращаем на панель, если не попали в слот
+                if (draggedItem.parentElement === document.getElementById('equipment-panel')) {
+                    resetPosition();
+                }
+                
                 draggedItem = null;
             }
             
@@ -211,13 +245,21 @@
             function handleSlotTouch(e) {
                 if (!draggedItem) return;
                 checkPlacement(e.currentTarget, draggedItem);
-                handleTouchEnd();
                 e.preventDefault();
             }
             
-            function updatePosition(element, touch) {
-                element.style.left = (touch.clientX - element.offsetWidth/2) + 'px';
-                element.style.top = (touch.clientY - element.offsetHeight/2) + 'px';
+            function updatePosition(x, y) {
+                if (!draggedItem) return;
+                draggedItem.style.left = (x - touchOffset.x) + 'px';
+                draggedItem.style.top = (y - touchOffset.y) + 'px';
+            }
+            
+            function resetPosition() {
+                if (!draggedItem) return;
+                draggedItem.style.position = '';
+                draggedItem.style.zIndex = '';
+                draggedItem.style.left = '';
+                draggedItem.style.top = '';
             }
             
             function checkPlacement(slot, equipment) {
@@ -227,24 +269,31 @@
                     // Правильное размещение
                     slot.style.backgroundImage = getComputedStyle(equipment).backgroundImage;
                     slot.style.backgroundSize = 'contain';
-                    equipment.style.visibility = 'hidden';
+                    equipment.style.display = 'none';
                     elements.sounds.success.play();
-                    elements.hint.textContent = 'Правильно! ' + config.equipment[equipment.id].hint;
+                    showHint('Правильно! ' + config.equipment[equipment.id].hint);
                     
                     // Проверка победы
-                    if (Array.from(elements.equipment).every(e => e.style.visibility === 'hidden')) {
+                    if (Array.from(elements.equipment).every(e => e.style.display === 'none')) {
                         endGame(true);
                     }
                 } else {
                     // Неправильное размещение
                     elements.sounds.error.play();
-                    elements.hint.textContent = 'Неверно! ' + config.equipment[equipment.id].hint;
+                    showHint('Неверно! ' + config.equipment[equipment.id].hint);
+                    resetPosition();
                 }
+            }
+            
+            function showHint(text) {
+                elements.hint.textContent = text;
+                elements.hint.style.animation = 'pulse 0.5s';
+                setTimeout(() => elements.hint.style.animation = '', 500);
             }
             
             function endGame(isWin) {
                 clearInterval(timer);
-                elements.hint.textContent = isWin ? 'Победа! Все оборудование установлено!' : 'Время вышло!';
+                showHint(isWin ? 'Победа! Все оборудование установлено!' : 'Время вышло!');
             }
             
             // Таймер
@@ -253,6 +302,9 @@
                 elements.timer.textContent = timeLeft;
                 if (timeLeft <= 0) endGame(false);
             }, 1000);
+            
+            // Запуск игры
+            init();
         });
     </script>
 </body>
