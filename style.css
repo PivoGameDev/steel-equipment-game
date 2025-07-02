@@ -21,7 +21,6 @@ body {
     width: 100%;
 }
 
-/* Шапка игры */
 #header {
     background: #34495e;
     padding: 10px;
@@ -81,7 +80,6 @@ body {
     color: #e74c3c;
 }
 
-/* Игровое поле */
 #game-field {
     flex: 1;
     background-size: cover;
@@ -90,7 +88,6 @@ body {
     overflow: hidden;
 }
 
-/* Слоты для оборудования */
 .slot {
     position: absolute;
     border: 2px dashed rgba(255, 255, 255, 0.5);
@@ -109,7 +106,6 @@ body {
     background: rgba(231, 76, 60, 0.2);
 }
 
-/* Оборудование */
 #equipment-container {
     height: 120px;
     background: #34495e;
@@ -134,14 +130,12 @@ body {
     transform: scale(1.1);
 }
 
-/* Анимации */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
 }
 
-/* Адаптация для мобильных */
 @media (max-width: 768px) {
     #header {
         padding: 8px;
