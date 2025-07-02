@@ -3,179 +3,185 @@ document.addEventListener('DOMContentLoaded', function() {
     const elements = {
         timer: document.getElementById('timer'),
         hint: document.getElementById('hint'),
-        resultMessage: document.getElementById('result-message'),
         equipment: document.querySelectorAll('.equipment'),
         slots: document.querySelectorAll('.slot'),
-        successSound: document.getElementById('success-sound'),
-        errorSound: document.getElementById('error-sound')
+        sounds: {
+            success: document.getElementById('success-sound'),
+            error: document.getElementById('error-sound')
+        }
     };
 
     // Состояние игры
-    const state = {
-        timeLeft: 120,
-        draggedItem: null,
-        timerInterval: null,
-        hintTimeout: null
-    };
+    let draggedItem = null;
+    let timeLeft = 120;
+    let touchOffset = { x: 0, y: 0 };
 
-    // Инициализация игры
-    function initGame() {
+    // Инициализация
+    function init() {
         setupEventListeners();
         startTimer();
+        highlightSlots();
+    }
+
+    // Подсветка слотов
+    function highlightSlots() {
+        elements.slots.forEach(slot => {
+            slot.classList.add('highlight');
+        });
+    }
+
+    // Настройка обработчиков
+    function setupEventListeners() {
+        // Для оборудования (десктоп)
+        elements.equipment.forEach(item => {
+            item.addEventListener('dragstart', handleDragStart);
+        });
+
+        // Для слотов (десктоп)
+        elements.slots.forEach(slot => {
+            slot.addEventListener('dragover', handleDragOver);
+            slot.addEventListener('drop', handleDrop);
+        });
+
+        // Для мобильных устройств
+        setupTouchEvents();
+    }
+
+    // Настройка touch-событий
+    function setupTouchEvents() {
+        elements.equipment.forEach(item => {
+            item.addEventListener('touchstart', handleTouchStart, { passive: false });
+        });
+
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd);
+    }
+
+    // Обработчики событий
+    function handleDragStart(e) {
+        draggedItem = e.target;
+        e.dataTransfer.setData('text/plain', e.target.id);
+        showHint(`Переместите ${getEquipmentName(e.target)}`);
+    }
+
+    function handleTouchStart(e) {
+        const touch = e.touches[0];
+        draggedItem = e.target;
+        touchOffset.x = touch.clientX - draggedItem.getBoundingClientRect().left;
+        touchOffset.y = touch.clientY - draggedItem.getBoundingClientRect().top;
+        
+        draggedItem.style.position = 'fixed';
+        draggedItem.style.zIndex = '1000';
+        updatePosition(touch.clientX, touch.clientY);
+        
+        showHint(`Переместите ${getEquipmentName(e.target)}`);
+        e.preventDefault();
+    }
+
+    function handleTouchMove(e) {
+        if (!draggedItem) return;
+        const touch = e.touches[0];
+        updatePosition(touch.clientX, touch.clientY);
+        e.preventDefault();
+    }
+
+    function handleTouchEnd(e) {
+        if (!draggedItem) return;
+        
+        const touch = e.changedTouches[0];
+        const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+        const slot = elementAtPoint?.closest('.slot');
+        
+        if (slot) {
+            checkPlacement(slot, draggedItem);
+        }
+        
+        resetPosition();
+        e.preventDefault();
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        if (!draggedItem) return;
+        
+        const equipmentId = e.dataTransfer.getData('text/plain');
+        const equipment = document.getElementById(equipmentId);
+        checkPlacement(e.currentTarget, equipment);
+    }
+
+    // Обновление позиции при перетаскивании
+    function updatePosition(x, y) {
+        draggedItem.style.left = (x - touchOffset.x) + 'px';
+        draggedItem.style.top = (y - touchOffset.y) + 'px';
+    }
+
+    // Сброс позиции
+    function resetPosition() {
+        if (!draggedItem) return;
+        
+        draggedItem.style.position = '';
+        draggedItem.style.zIndex = '';
+        draggedItem.style.left = '';
+        draggedItem.style.top = '';
+        draggedItem = null;
+    }
+
+    // Проверка размещения
+    function checkPlacement(slot, equipment) {
+        const isCorrect = slot.dataset.slot === equipment.dataset.type;
+        
+        if (isCorrect) {
+            // Правильное размещение
+            slot.innerHTML = '';
+            const img = equipment.querySelector('img').cloneNode();
+            slot.appendChild(img);
+            equipment.style.visibility = 'hidden';
+            elements.sounds.success.play();
+            showHint('Правильно! ' + getEquipmentName(equipment));
+            
+            // Проверка победы
+            if (Array.from(elements.equipment).every(e => e.style.visibility === 'hidden')) {
+                endGame(true);
+            }
+        } else {
+            // Неправильное размещение
+            elements.sounds.error.play();
+            showHint('Неверно! Попробуйте ещё раз');
+        }
+    }
+
+    // Показать подсказку
+    function showHint(text) {
+        elements.hint.textContent = text;
+    }
+
+    // Получить название оборудования
+    function getEquipmentName(element) {
+        return element.id === 'fermenter' ? 'ферментер' : 'теплообменник';
     }
 
     // Таймер
     function startTimer() {
-        state.timerInterval = setInterval(() => {
-            state.timeLeft--;
-            elements.timer.textContent = state.timeLeft;
+        const timer = setInterval(() => {
+            timeLeft--;
+            elements.timer.textContent = timeLeft;
             
-            if (state.timeLeft <= 0) {
+            if (timeLeft <= 0) {
+                clearInterval(timer);
                 endGame(false);
             }
         }, 1000);
     }
 
-    // Обработчики событий
-    function setupEventListeners() {
-        // Для оборудования
-        elements.equipment.forEach(el => {
-            // Десктоп
-            el.addEventListener('dragstart', handleDragStart);
-            
-            // Мобильные
-            el.addEventListener('touchstart', handleTouchStart, { passive: false });
-            el.addEventListener('touchend', handleTouchEnd);
-        });
-
-        // Для слотов
-        elements.slots.forEach(slot => {
-            // Десктоп
-            slot.addEventListener('dragover', handleDragOver);
-            slot.addEventListener('drop', handleDrop);
-            
-            // Мобильные
-            slot.addEventListener('touchend', handleTouchDrop);
-        });
-    }
-
-    // Обработка начала перетаскивания
-    function handleDragStart(e) {
-        state.draggedItem = e.target;
-        showHint(e.target.dataset.hint);
-        e.dataTransfer.setData('text/plain', e.target.id);
-    }
-
-    function handleTouchStart(e) {
-        state.draggedItem = e.target;
-        showHint(e.target.dataset.hint);
-        e.preventDefault(); // Предотвращаем скролл
-    }
-
-    // Показ подсказки
-    function showHint(text) {
-        clearTimeout(state.hintTimeout);
-        elements.hint.textContent = text;
-        
-        // Для мобильных - подсказка остается пока держим палец
-        if (!('ontouchstart' in window)) {
-            state.hintTimeout = setTimeout(() => {
-                elements.hint.textContent = "Перетащите оборудование в нужный слот";
-            }, 2000);
-        }
-    }
-
-    // Обработка завершения перетаскивания
-    function handleTouchEnd() {
-        if (!state.draggedItem) return;
-        elements.hint.textContent = "Перетащите оборудование в нужный слот";
-    }
-
-    // Разрешение сброса
-    function handleDragOver(e) {
-        e.preventDefault();
-    }
-
-    // Сброс оборудования
-    function handleDrop(e) {
-        e.preventDefault();
-        if (!state.draggedItem) return;
-        
-        const slot = e.currentTarget;
-        checkPlacement(slot, state.draggedItem);
-        state.draggedItem = null;
-    }
-
-    function handleTouchDrop(e) {
-        e.preventDefault();
-        if (!state.draggedItem) return;
-        
-        const slot = e.currentTarget;
-        checkPlacement(slot, state.draggedItem);
-        state.draggedItem = null;
-    }
-
-    // Проверка правильности установки
-    function checkPlacement(slot, equipment) {
-        const isCorrect = slot.id === equipment.dataset.target;
-        
-        if (isCorrect) {
-            // Правильная установка
-            placeEquipment(slot, equipment);
-            playSound('success');
-            showResult('Правильно!', true);
-            elements.hint.textContent = equipment.dataset.hint;
-        } else {
-            // Неправильная установка
-            playSound('error');
-            showResult('Неверно!', false);
-        }
-    }
-
-    // Размещение оборудования
-    function placeEquipment(slot, equipment) {
-        slot.innerHTML = '';
-        const img = equipment.querySelector('img').cloneNode();
-        slot.appendChild(img);
-        slot.classList.add('correct');
-        equipment.style.visibility = 'hidden';
-        
-        checkWin();
-    }
-
-    // Проверка победы
-    function checkWin() {
-        const allCorrect = Array.from(elements.slots).every(slot => 
-            slot.classList.contains('correct'));
-        
-        if (allCorrect) {
-            endGame(true);
-        }
-    }
-
-    // Воспроизведение звука
-    function playSound(type) {
-        const sound = elements[`${type}Sound`];
-        sound.currentTime = 0;
-        sound.play();
-    }
-
-    // Показ результата
-    function showResult(message, isSuccess) {
-        elements.resultMessage.textContent = message;
-        elements.resultMessage.className = isSuccess ? 'correct show' : 'error show';
-        
-        setTimeout(() => {
-            elements.resultMessage.className = '';
-        }, 3000);
-    }
-
     // Завершение игры
     function endGame(isWin) {
-        clearInterval(state.timerInterval);
-        showResult(isWin ? 'Победа! Все оборудование установлено!' : 'Время вышло!', isWin);
+        showHint(isWin ? 'Победа! Все оборудование установлено!' : 'Время вышло!');
     }
 
     // Запуск игры
-    initGame();
+    init();
 });

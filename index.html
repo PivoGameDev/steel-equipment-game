@@ -1,25 +1,46 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2113.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #ffffff; -webkit-text-stroke: #ffffff}
-    span.s1 {font-kerning: none}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Оборудование пивзавода</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;head&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;title&gt;Заводская головоломка&lt;/title&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
-<p class="p1"><span class="s1">&lt;body&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;h1&gt;Игра скоро здесь появится!&lt;/h1&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+    <div id="game-container">
+        <div id="header">
+            <div id="timer">120</div>
+            <div id="hint">Перетащите оборудование в нужный слот</div>
+        </div>
+
+        <div id="game-field">
+            <div class="workshop">
+                <h3>Ёмкостное оборудование</h3>
+                <div class="slot" id="slot1" data-slot="fermenter"></div>
+            </div>
+            <div class="workshop">
+                <h3>Вспомогательное оборудование</h3>
+                <div class="slot" id="slot2" data-slot="heat-exchanger"></div>
+            </div>
+        </div>
+
+        <div id="equipment-panel">
+            <div class="equipment" id="fermenter" draggable="true" data-type="fermenter">
+                <img src="assets/images/fermenter.png" alt="Ферментер">
+            </div>
+            <div class="equipment" id="heat-exchanger" draggable="true" data-type="heat-exchanger">
+                <img src="assets/images/heat-exchanger.png" alt="Теплообменник">
+            </div>
+        </div>
+
+        <div id="additional-panel">
+            <!-- Дополнительный блок -->
+        </div>
+    </div>
+
+    <audio id="success-sound" src="assets/sounds/success.mp3"></audio>
+    <audio id="error-sound" src="assets/sounds/error.mp3"></audio>
+
+    <script src="game.js"></script>
 </body>
 </html>
