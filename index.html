@@ -10,25 +10,31 @@
             padding: 0;
             box-sizing: border-box;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         body {
             font-family: Arial, sans-serif;
             height: 100vh;
+            width: 100vw;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
+            background: #f0f0f0;
         }
         #header {
             background: #3498db;
             color: white;
-            padding: 15px;
+            padding: 10px;
             text-align: center;
+            flex-shrink: 0;
         }
         #game-field {
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 20px;
-            gap: 30px;
+            padding: 10px;
+            gap: 15px;
+            overflow: hidden;
             background: url('assets/images/background.jpg') center/cover;
         }
         .workshop {
@@ -36,32 +42,55 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+        }
+        .workshop h3 {
+            color: white;
+            text-shadow: 1px 1px 3px black;
+            margin-bottom: 10px;
         }
         .slot {
-            width: 150px;
-            height: 150px;
-            border: 3px dashed #7f8c8d;
+            width: 120px;
+            height: 120px;
+            border: 3px dashed rgba(255,255,255,0.7);
             border-radius: 10px;
-            margin-top: 15px;
+            background: rgba(0,0,0,0.2);
         }
         #equipment-panel {
-            height: 120px;
+            height: 110px;
             background: #34495e;
             display: flex;
             justify-content: center;
-            gap: 20px;
-            padding: 15px;
+            gap: 15px;
+            padding: 10px;
+            flex-shrink: 0;
+            overflow-x: auto;
         }
         .equipment {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            cursor: pointer;
+            flex-shrink: 0;
         }
         #fermenter { background-image: url('assets/images/fermenter.png'); }
         #heat-exchanger { background-image: url('assets/images/heat-exchanger.png'); }
+        
+        /* Для мобильной адаптации */
+        @media (max-height: 700px) {
+            .slot {
+                width: 100px;
+                height: 100px;
+            }
+            .equipment {
+                width: 80px;
+                height: 80px;
+            }
+            #equipment-panel {
+                height: 100px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -82,8 +111,8 @@
     </div>
 
     <div id="equipment-panel">
-        <div class="equipment" id="fermenter" draggable="true"></div>
-        <div class="equipment" id="heat-exchanger" draggable="true"></div>
+        <div class="equipment" id="fermenter"></div>
+        <div class="equipment" id="heat-exchanger"></div>
     </div>
 
     <audio id="success-sound" src="assets/sounds/success.mp3"></audio>
@@ -91,19 +120,15 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Настройка оборудования
-            const equipment = {
-                fermenter: {
-                    target: 'slot1',
-                    hint: 'Ферментер - для брожения сусла'
-                },
-                'heat-exchanger': {
-                    target: 'slot2',
-                    hint: 'Теплообменник - для охлаждения сусла'
+            // Конфигурация
+            const config = {
+                equipment: {
+                    fermenter: { target: 'slot1', hint: 'Ферментер - для брожения сусла' },
+                    'heat-exchanger': { target: 'slot2', hint: 'Теплообменник - для охлаждения сусла' }
                 }
             };
-
-            // Элементы интерфейса
+            
+            // Элементы
             const elements = {
                 timer: document.getElementById('timer'),
                 hint: document.getElementById('hint'),
@@ -114,74 +139,119 @@
                     error: document.getElementById('error-sound')
                 }
             };
-
-            // Перетаскивание оборудования
-            elements.equipment.forEach(item => {
-                item.addEventListener('dragstart', function(e) {
-                    e.dataTransfer.setData('text/plain', this.id);
-                    elements.hint.textContent = equipment[this.id].hint;
-                });
-
-                item.addEventListener('touchstart', function(e) {
-                    this.classList.add('dragging');
-                    elements.hint.textContent = equipment[this.id].hint;
-                    e.preventDefault();
-                }, {passive: false});
-            });
-
-            // Обработка слотов
-            elements.slots.forEach(slot => {
-                slot.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                });
-
-                slot.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    const id = e.dataTransfer.getData('text/plain');
-                    const item = document.getElementById(id);
-                    
-                    if (this.id === equipment[id].target) {
-                        // Правильное размещение
-                        this.style.backgroundImage = `url('${item.style.backgroundImage}')`;
-                        this.style.backgroundSize = 'contain';
-                        item.style.visibility = 'hidden';
-                        elements.sounds.success.play();
-                        elements.hint.textContent = 'Правильно! ' + equipment[id].hint;
-                    } else {
-                        // Неправильное размещение
-                        elements.sounds.error.play();
-                        elements.hint.textContent = 'Неверно! Попробуйте ещё раз';
-                    }
-                });
-
-                slot.addEventListener('touchend', function(e) {
-                    const draggingItem = document.querySelector('.dragging');
-                    if (!draggingItem) return;
-                    
-                    if (this.id === equipment[draggingItem.id].target) {
-                        this.style.backgroundImage = draggingItem.style.backgroundImage;
-                        this.style.backgroundSize = 'contain';
-                        draggingItem.style.visibility = 'hidden';
-                        elements.sounds.success.play();
-                        elements.hint.textContent = 'Правильно! ' + equipment[draggingItem.id].hint;
-                    } else {
-                        elements.sounds.error.play();
-                        elements.hint.textContent = 'Неверно! Попробуйте ещё раз';
-                    }
-                    
-                    draggingItem.classList.remove('dragging');
-                });
-            });
-
-            // Таймер
+            
+            // Состояние
+            let draggedItem = null;
             let timeLeft = 120;
+            
+            // Инициализация перетаскивания
+            elements.equipment.forEach(item => {
+                // Для десктопа
+                item.draggable = true;
+                item.addEventListener('dragstart', handleDragStart);
+                
+                // Для мобильных
+                item.addEventListener('touchstart', handleTouchStart, { passive: false });
+                item.addEventListener('touchmove', handleTouchMove, { passive: false });
+                item.addEventListener('touchend', handleTouchEnd);
+            });
+            
+            // Инициализация слотов
+            elements.slots.forEach(slot => {
+                // Для десктопа
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('drop', handleDrop);
+                
+                // Для мобильных
+                slot.addEventListener('touchend', handleSlotTouch);
+            });
+            
+            // Обработчики событий
+            function handleDragStart(e) {
+                draggedItem = e.target;
+                elements.hint.textContent = config.equipment[e.target.id].hint;
+                e.dataTransfer.setData('text/plain', e.target.id);
+            }
+            
+            function handleTouchStart(e) {
+                draggedItem = e.target;
+                elements.hint.textContent = config.equipment[e.target.id].hint;
+                e.target.style.position = 'absolute';
+                e.target.style.zIndex = '1000';
+                updatePosition(e.target, e.touches[0]);
+                e.preventDefault();
+            }
+            
+            function handleTouchMove(e) {
+                if (!draggedItem) return;
+                updatePosition(draggedItem, e.touches[0]);
+                e.preventDefault();
+            }
+            
+            function handleTouchEnd() {
+                if (!draggedItem) return;
+                draggedItem.style.position = '';
+                draggedItem.style.zIndex = '';
+                draggedItem = null;
+            }
+            
+            function handleDragOver(e) {
+                e.preventDefault();
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                if (!draggedItem) return;
+                
+                const equipmentId = e.dataTransfer.getData('text/plain');
+                const equipment = document.getElementById(equipmentId);
+                checkPlacement(e.currentTarget, equipment);
+            }
+            
+            function handleSlotTouch(e) {
+                if (!draggedItem) return;
+                checkPlacement(e.currentTarget, draggedItem);
+                handleTouchEnd();
+                e.preventDefault();
+            }
+            
+            function updatePosition(element, touch) {
+                element.style.left = (touch.clientX - element.offsetWidth/2) + 'px';
+                element.style.top = (touch.clientY - element.offsetHeight/2) + 'px';
+            }
+            
+            function checkPlacement(slot, equipment) {
+                const isCorrect = slot.id === config.equipment[equipment.id].target;
+                
+                if (isCorrect) {
+                    // Правильное размещение
+                    slot.style.backgroundImage = getComputedStyle(equipment).backgroundImage;
+                    slot.style.backgroundSize = 'contain';
+                    equipment.style.visibility = 'hidden';
+                    elements.sounds.success.play();
+                    elements.hint.textContent = 'Правильно! ' + config.equipment[equipment.id].hint;
+                    
+                    // Проверка победы
+                    if (Array.from(elements.equipment).every(e => e.style.visibility === 'hidden')) {
+                        endGame(true);
+                    }
+                } else {
+                    // Неправильное размещение
+                    elements.sounds.error.play();
+                    elements.hint.textContent = 'Неверно! ' + config.equipment[equipment.id].hint;
+                }
+            }
+            
+            function endGame(isWin) {
+                clearInterval(timer);
+                elements.hint.textContent = isWin ? 'Победа! Все оборудование установлено!' : 'Время вышло!';
+            }
+            
+            // Таймер
             const timer = setInterval(() => {
                 timeLeft--;
                 elements.timer.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    elements.hint.textContent = 'Время вышло!';
-                }
+                if (timeLeft <= 0) endGame(false);
             }, 1000);
         });
     </script>
