@@ -21,6 +21,7 @@
             flex-direction: column;
             background: #f0f0f0;
             padding-bottom: env(safe-area-inset-bottom);
+            touch-action: none;
         }
         #header {
             background: #3498db;
@@ -28,6 +29,8 @@
             padding: 10px;
             text-align: center;
             flex-shrink: 0;
+            position: relative;
+            z-index: 10;
         }
         #game-field {
             flex: 1;
@@ -50,6 +53,7 @@
             text-shadow: 1px 1px 2px black;
             margin-bottom: 10px;
             font-size: 14px;
+            text-align: center;
         }
         .slot {
             width: 80px;
@@ -57,6 +61,8 @@
             border: 2px dashed rgba(255,255,255,0.7);
             border-radius: 8px;
             background: rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 5;
         }
         #equipment-panel {
             height: 100px;
@@ -67,6 +73,7 @@
             padding: 10px;
             flex-shrink: 0;
             position: relative;
+            z-index: 10;
         }
         .equipment {
             width: 80px;
@@ -75,6 +82,9 @@
             background-repeat: no-repeat;
             background-position: center;
             flex-shrink: 0;
+            touch-action: none;
+            position: relative;
+            z-index: 5;
         }
         #fermenter { background-image: url('assets/images/fermenter.png'); }
         #heat-exchanger { background-image: url('assets/images/heat-exchanger.png'); }
@@ -88,6 +98,31 @@
             #equipment-panel {
                 height: 90px;
             }
+        }
+        
+        /* Для очень маленьких экранов */
+        @media (max-height: 600px) {
+            .slot, .equipment {
+                width: 60px;
+                height: 60px;
+            }
+            #equipment-panel {
+                height: 80px;
+            }
+            .workshop h3 {
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+        }
+        
+        /* Анимации */
+        .pulse {
+            animation: pulse 0.5s;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
@@ -135,12 +170,16 @@
                 sounds: {
                     success: document.getElementById('success-sound'),
                     error: document.getElementById('error-sound')
-                }
+                },
+                equipmentPanel: document.getElementById('equipment-panel')
             };
             
             // Состояние
             let draggedItem = null;
             let timeLeft = 120;
+            let touchStartPoint = { x: 0, y: 0 };
+            let isMobile = 'ontouchstart' in window;
+            let timerInterval;
             
             // Инициализация
             function init() {
@@ -153,13 +192,10 @@
                 // Для оборудования
                 elements.equipment.forEach(item => {
                     // Десктоп
-                    item.draggable = true;
                     item.addEventListener('dragstart', handleDragStart);
                     
                     // Мобильные
                     item.addEventListener('touchstart', handleTouchStart);
-                    item.addEventListener('touchmove', handleTouchMove);
-                    item.addEventListener('touchend', handleTouchEnd);
                 });
                 
                 // Для слотов
@@ -167,10 +203,13 @@
                     // Десктоп
                     slot.addEventListener('dragover', handleDragOver);
                     slot.addEventListener('drop', handleDrop);
-                    
-                    // Мобильные
-                    slot.addEventListener('touchend', handleSlotTouch);
                 });
+                
+                // Общие обработчики для мобильных
+                if (isMobile) {
+                    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+                    document.addEventListener('touchend', handleTouchEnd);
+                }
             }
             
             // Обработчики событий
@@ -181,24 +220,50 @@
             }
             
             function handleTouchStart(e) {
+                const touch = e.touches[0];
                 draggedItem = e.target;
+                touchStartPoint = {
+                    x: touch.clientX - draggedItem.getBoundingClientRect().left,
+                    y: touch.clientY - draggedItem.getBoundingClientRect().top
+                };
+                
+                draggedItem.classList.add('pulse');
                 showHint(config.equipment[e.target.id].hint);
-                e.target.style.position = 'fixed';
-                e.target.style.zIndex = '1000';
-                updatePosition(e.target, e.touches[0]);
                 e.preventDefault();
             }
             
             function handleTouchMove(e) {
                 if (!draggedItem) return;
-                updatePosition(draggedItem, e.touches[0]);
+                
+                const touch = e.touches[0];
+                draggedItem.style.position = 'fixed';
+                draggedItem.style.zIndex = '1000';
+                draggedItem.style.left = (touch.clientX - touchStartPoint.x) + 'px';
+                draggedItem.style.top = (touch.clientY - touchStartPoint.y) + 'px';
+                
                 e.preventDefault();
             }
             
-            function handleTouchEnd() {
+            function handleTouchEnd(e) {
                 if (!draggedItem) return;
+                
+                // Определяем, над каким слотом отпустили
+                const touch = e.changedTouches[0];
+                const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+                const slot = elementAtPoint?.closest('.slot');
+                
+                if (slot) {
+                    checkPlacement(slot, draggedItem);
+                } else {
+                    // Возвращаем на панель
+                    resetPosition();
+                }
+                
+                draggedItem.classList.remove('pulse');
                 draggedItem.style.position = '';
                 draggedItem.style.zIndex = '';
+                draggedItem.style.left = '';
+                draggedItem.style.top = '';
                 draggedItem = null;
             }
             
@@ -215,17 +280,6 @@
                 checkPlacement(e.currentTarget, equipment);
             }
             
-            function handleSlotTouch(e) {
-                if (!draggedItem) return;
-                checkPlacement(e.currentTarget, draggedItem);
-                e.preventDefault();
-            }
-            
-            function updatePosition(element, touch) {
-                element.style.left = (touch.clientX - element.offsetWidth/2) + 'px';
-                element.style.top = (touch.clientY - element.offsetHeight/2) + 'px';
-            }
-            
             function checkPlacement(slot, equipment) {
                 const isCorrect = slot.id === config.equipment[equipment.id].target;
                 
@@ -233,36 +287,51 @@
                     // Правильное размещение
                     slot.style.backgroundImage = getComputedStyle(equipment).backgroundImage;
                     slot.style.backgroundSize = 'contain';
-                    equipment.style.visibility = 'hidden';
+                    slot.style.backgroundRepeat = 'no-repeat';
+                    slot.style.backgroundPosition = 'center';
+                    equipment.style.display = 'none';
                     elements.sounds.success.play();
                     showHint('Правильно! ' + config.equipment[equipment.id].hint);
                     
                     // Проверка победы
-                    if (Array.from(elements.equipment).every(e => e.style.visibility === 'hidden')) {
+                    if (Array.from(elements.equipment).every(e => e.style.display === 'none')) {
                         endGame(true);
                     }
                 } else {
                     // Неправильное размещение
                     elements.sounds.error.play();
                     showHint('Неверно! ' + config.equipment[equipment.id].hint);
+                    resetPosition();
                 }
+            }
+            
+            function resetPosition() {
+                if (!draggedItem) return;
+                draggedItem.style.position = '';
+                draggedItem.style.zIndex = '';
+                draggedItem.style.left = '';
+                draggedItem.style.top = '';
             }
             
             function showHint(text) {
                 elements.hint.textContent = text;
+                elements.hint.classList.add('pulse');
+                setTimeout(() => elements.hint.classList.remove('pulse'), 500);
             }
             
             function endGame(isWin) {
-                clearInterval(timer);
+                clearInterval(timerInterval);
                 showHint(isWin ? 'Победа! Все оборудование установлено!' : 'Время вышло!');
             }
             
             // Таймер
-            const timer = setInterval(() => {
-                timeLeft--;
-                elements.timer.textContent = timeLeft;
-                if (timeLeft <= 0) endGame(false);
-            }, 1000);
+            function startTimer() {
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    elements.timer.textContent = timeLeft;
+                    if (timeLeft <= 0) endGame(false);
+                }, 1000);
+            }
             
             // Запуск игры
             init();
