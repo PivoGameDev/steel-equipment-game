@@ -4,48 +4,186 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Оборудование пивзавода</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #header {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        #game-field {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 30px;
+            background: url('assets/images/background.jpg') center/cover;
+        }
+        .workshop {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .slot {
+            width: 150px;
+            height: 150px;
+            border: 3px dashed #7f8c8d;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        #equipment-panel {
+            height: 120px;
+            background: #34495e;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px;
+        }
+        .equipment {
+            width: 100px;
+            height: 100px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+        }
+        #fermenter { background-image: url('assets/images/fermenter.png'); }
+        #heat-exchanger { background-image: url('assets/images/heat-exchanger.png'); }
+    </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="header">
-            <div id="timer">120</div>
-            <div id="hint">Выберите оборудование</div>
-            <div id="result-message"></div>
-        </div>
+    <div id="header">
+        <div id="timer">120</div>
+        <div id="hint">Выберите оборудование</div>
+    </div>
 
-        <div id="game-field">
-            <div class="workshop" id="tank-equipment">
-                <h3>Ёмкостное оборудование</h3>
-                <div class="slot" id="slot1" data-slot-type="tank"></div>
-            </div>
-            
-            <div class="workshop" id="auxiliary-equipment">
-                <h3>Вспомогательное оборудование</h3>
-                <div class="slot" id="slot2" data-slot-type="auxiliary"></div>
-            </div>
+    <div id="game-field">
+        <div class="workshop">
+            <h3>Ёмкостное оборудование</h3>
+            <div class="slot" id="slot1"></div>
         </div>
-
-        <div id="equipment-panel">
-            <div class="equipment" id="fermenter" draggable="true" 
-                 data-target="slot1" 
-                 data-hint="Ферментер - для брожения сусла"
-                 data-type="tank">
-                <img src="assets/images/fermenter.png" alt="Ферментер">
-            </div>
-            <div class="equipment" id="heat-exchanger" draggable="true"
-                 data-target="slot2"
-                 data-hint="Теплообменник - для охлаждения сусла"
-                 data-type="auxiliary">
-                <img src="assets/images/heat-exchanger.png" alt="Теплообменник">
-            </div>
+        <div class="workshop">
+            <h3>Вспомогательное оборудование</h3>
+            <div class="slot" id="slot2"></div>
         </div>
     </div>
 
-    <!-- Скрытые аудио элементы -->
+    <div id="equipment-panel">
+        <div class="equipment" id="fermenter" draggable="true"></div>
+        <div class="equipment" id="heat-exchanger" draggable="true"></div>
+    </div>
+
     <audio id="success-sound" src="assets/sounds/success.mp3"></audio>
     <audio id="error-sound" src="assets/sounds/error.mp3"></audio>
 
-    <script src="game.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Настройка оборудования
+            const equipment = {
+                fermenter: {
+                    target: 'slot1',
+                    hint: 'Ферментер - для брожения сусла'
+                },
+                'heat-exchanger': {
+                    target: 'slot2',
+                    hint: 'Теплообменник - для охлаждения сусла'
+                }
+            };
+
+            // Элементы интерфейса
+            const elements = {
+                timer: document.getElementById('timer'),
+                hint: document.getElementById('hint'),
+                equipment: document.querySelectorAll('.equipment'),
+                slots: document.querySelectorAll('.slot'),
+                sounds: {
+                    success: document.getElementById('success-sound'),
+                    error: document.getElementById('error-sound')
+                }
+            };
+
+            // Перетаскивание оборудования
+            elements.equipment.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.id);
+                    elements.hint.textContent = equipment[this.id].hint;
+                });
+
+                item.addEventListener('touchstart', function(e) {
+                    this.classList.add('dragging');
+                    elements.hint.textContent = equipment[this.id].hint;
+                    e.preventDefault();
+                }, {passive: false});
+            });
+
+            // Обработка слотов
+            elements.slots.forEach(slot => {
+                slot.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                });
+
+                slot.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    const id = e.dataTransfer.getData('text/plain');
+                    const item = document.getElementById(id);
+                    
+                    if (this.id === equipment[id].target) {
+                        // Правильное размещение
+                        this.style.backgroundImage = `url('${item.style.backgroundImage}')`;
+                        this.style.backgroundSize = 'contain';
+                        item.style.visibility = 'hidden';
+                        elements.sounds.success.play();
+                        elements.hint.textContent = 'Правильно! ' + equipment[id].hint;
+                    } else {
+                        // Неправильное размещение
+                        elements.sounds.error.play();
+                        elements.hint.textContent = 'Неверно! Попробуйте ещё раз';
+                    }
+                });
+
+                slot.addEventListener('touchend', function(e) {
+                    const draggingItem = document.querySelector('.dragging');
+                    if (!draggingItem) return;
+                    
+                    if (this.id === equipment[draggingItem.id].target) {
+                        this.style.backgroundImage = draggingItem.style.backgroundImage;
+                        this.style.backgroundSize = 'contain';
+                        draggingItem.style.visibility = 'hidden';
+                        elements.sounds.success.play();
+                        elements.hint.textContent = 'Правильно! ' + equipment[draggingItem.id].hint;
+                    } else {
+                        elements.sounds.error.play();
+                        elements.hint.textContent = 'Неверно! Попробуйте ещё раз';
+                    }
+                    
+                    draggingItem.classList.remove('dragging');
+                });
+            });
+
+            // Таймер
+            let timeLeft = 120;
+            const timer = setInterval(() => {
+                timeLeft--;
+                elements.timer.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    elements.hint.textContent = 'Время вышло!';
+                }
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
