@@ -2,40 +2,53 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Сборка пивзавода</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Собери завод</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
-        <header class="game-header">
-            <h1>Соберите пивзавод</h1>
-            <div class="hint">Перетащите оборудование в нужные слоты</div>
-        </header>
-
-        <main class="game-main">
-            <section class="slots-section">
-                <div class="slot" data-slot-type="fermenter" id="slot1">
-                    <h3>Ферментер</h3>
-                </div>
-                <div class="slot" data-slot-type="heat-exchanger" id="slot2">
-                    <h3>Теплообменник</h3>
-                </div>
-            </section>
-
-            <section class="equipment-section">
-                <div class="equipment" draggable="true" data-equipment-type="fermenter">
-                    <img src="assets/images/fermenter.png" alt="Ферментер">
-                </div>
-                <div class="equipment" draggable="true" data-equipment-type="heat-exchanger">
-                    <img src="assets/images/heat-exchanger.png" alt="Теплообменник">
-                </div>
-            </section>
-        </main>
+    <!-- Стартовый экран -->
+    <div id="start-screen" class="screen">
+        <h1>Игра "Собери завод"</h1>
+        <p>Установите оборудование в правильные слоты и запустите производство!</p>
+        <button id="start-btn">Играть</button>
     </div>
 
-    <audio src="assets/sounds/success.mp3" id="success-sound"></audio>
-    <audio src="assets/sounds/error.mp3" id="error-sound"></audio>
+    <!-- Игровой экран -->
+    <div id="game-screen" class="screen hidden">
+        <div class="header">
+            <p class="instruction">Здесь будет текст с инструкцией по игре! По задумке вам нужно собрать завод и поставить недостающее оборудование. Это развлекательная и образовательная игра научит вас быть профессионалом в этом деле</p>
+            <p class="timer">02:00</p>
+            <p class="feedback-message"></p>
+        </div>
+        
+        <div class="playground">
+            <div class="slot" id="slot1" data-correct="fermenter"></div>
+            <div class="slot" id="slot2" data-correct="heat-exchanger"></div>
+        </div>
+        
+        <div class="equipment-panel">
+            <img src="assets/images/fermenter.png" class="equipment" draggable="true" id="fermenter">
+            <img src="assets/images/heat-exchanger.png" class="equipment" draggable="true" id="heat-exchanger">
+        </div>
+        
+        <button id="launch-btn" disabled>Запустить завод</button>
+    </div>
+
+    <!-- Экран победы -->
+    <div id="win-screen" class="screen hidden">
+        <h1 class="win-text">Поздравляем!</h1>
+        <p>Вы справились за <span id="time-spent">00:00</span> секунд!</p>
+        <button class="restart-btn">Начать заново</button>
+        <div class="confetti"></div>
+    </div>
+
+    <!-- Экран проигрыша -->
+    <div id="lose-screen" class="screen hidden">
+        <h1>Время вышло!</h1>
+        <p>Завод не был запущен вовремя.</p>
+        <button class="restart-btn">Начать заново</button>
+    </div>
 
     <script src="game.js"></script>
 </body>
