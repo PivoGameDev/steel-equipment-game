@@ -2,9 +2,18 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Собери завод</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Предзагрузка звуков для мобильных */
+        body::after {
+            content: "";
+            display: none;
+            background: url(assets/sounds/success.mp3);
+            background: url(assets/sounds/error.mp3);
+        }
+    </style>
 </head>
 <body>
     <div id="start-screen" class="screen">
@@ -15,7 +24,7 @@
 
     <div id="game-screen" class="screen hidden">
         <div class="header">
-            <p class="instruction">Здесь будет текст с инструкцией по игре! По задумке вам нужно собрать завод и поставить недостающее оборудование.</p>
+            <p class="instruction">Поставьте ферментер в первый слот и теплообменник во второй</p>
             <p class="timer">02:00</p>
             <p class="feedback-message"></p>
         </div>
@@ -26,11 +35,11 @@
         </div>
         
         <div class="equipment-panel">
-            <div class="equipment-btn" data-equipment="fermenter" draggable="true">
+            <div class="equipment-btn" data-equipment="fermenter" draggable="false">
                 <img src="assets/images/fermenter.png" class="equipment" id="fermenter">
                 <p>Ферментер</p>
             </div>
-            <div class="equipment-btn" data-equipment="heat-exchanger" draggable="true">
+            <div class="equipment-btn" data-equipment="heat-exchanger" draggable="false">
                 <img src="assets/images/heat-exchanger.png" class="equipment" id="heat-exchanger">
                 <p>Теплообменник</p>
             </div>
@@ -51,6 +60,9 @@
         <p>Завод не был запущен вовремя.</p>
         <button class="restart-btn">Начать заново</button>
     </div>
+
+    <audio id="success-sound" src="assets/sounds/success.mp3" preload="auto"></audio>
+    <audio id="error-sound" src="assets/sounds/error.mp3" preload="auto"></audio>
 
     <script src="game.js"></script>
 </body>

@@ -1,8 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Определение типа устройства
-    const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-    
-    // Элементы интерфейса
+    // Инициализация элементов
     const startScreen = document.getElementById('start-screen');
     const gameScreen = document.getElementById('game-screen');
     const winScreen = document.getElementById('win-screen');
@@ -13,8 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const timerDisplay = document.querySelector('.timer');
     const feedbackMessage = document.querySelector('.feedback-message');
     const timeSpentDisplay = document.getElementById('time-spent');
+    const successSound = document.getElementById('success-sound');
+    const errorSound = document.getElementById('error-sound');
     
-    // Игровые элементы
     const slots = document.querySelectorAll('.slot');
     const equipmentBtns = document.querySelectorAll('.equipment-btn');
     
@@ -25,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let equipmentPlaced = 0;
     let startTime;
     let selectedEquipment = null;
+    const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
     // Инициализация игры
     function initGame() {
@@ -52,6 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         clearInterval(timer);
         timer = setInterval(updateTimer, 1000);
+        
+        // Предзагрузка звуков для мобильных
+        if (isMobile) {
+            successSound.load();
+            errorSound.load();
+        }
     }
 
     function formatTime(seconds) {
@@ -82,9 +87,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const timeSpent = Math.floor((Date.now() - startTime) / 1000);
             timeSpentDisplay.textContent = formatTime(timeSpent);
             winScreen.classList.remove('hidden');
+            successSound.play();
             createConfetti();
         } else {
             loseScreen.classList.remove('hidden');
+            errorSound.play();
         }
     }
 
@@ -160,54 +167,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Система для мобильных (тапы)
-    if (isMobile) {
-        equipmentBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                if (btn.style.display === 'none') return;
-                
-                selectedEquipment = btn.dataset.equipment;
-                equipmentBtns.forEach(b => {
-                    b.style.opacity = b === btn ? '1' : '0.5';
-                });
-                
-                feedbackMessage.textContent = `Выбрано: ${btn.querySelector('p').textContent}`;
-                feedbackMessage.className = 'feedback-message';
+    // Управление для всех устройств
+    equipmentBtns.forEach(btn => {
+        btn.addEventListener(isMobile ? 'touchstart' : 'click', (e) => {
+            e.preventDefault();
+            if (btn.style.display === 'none') return;
+            
+            selectedEquipment = btn.dataset.equipment;
+            equipmentBtns.forEach(b => {
+                b.style.opacity = b === btn ? '1' : '0.5';
             });
+            
+            const equipmentName = btn.querySelector('p').textContent;
+            feedbackMessage.textContent = `Выбрано: ${equipmentName}`;
+            feedbackMessage.className = 'feedback-message';
         });
+    });
 
-        slots.forEach(slot => {
-            slot.addEventListener('click', () => {
-                if (!selectedEquipment || slot.dataset.filled === 'true') return;
-                placeEquipment(slot, selectedEquipment);
-                
-                selectedEquipment = null;
-                equipmentBtns.forEach(b => {
-                    b.style.opacity = '1';
-                });
+    slots.forEach(slot => {
+        slot.addEventListener(isMobile ? 'touchend' : 'click', (e) => {
+            e.preventDefault();
+            if (!selectedEquipment || slot.dataset.filled === 'true') return;
+            
+            placeEquipment(slot, selectedEquipment);
+            
+            selectedEquipment = null;
+            equipmentBtns.forEach(b => {
+                b.style.opacity = '1';
             });
         });
-    } 
-    // Система для ПК (drag-and-drop)
-    else {
-        equipmentBtns.forEach(btn => {
-            btn.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('text/plain', e.target.dataset.equipment);
-            });
-        });
-
-        slots.forEach(slot => {
-            slot.addEventListener('dragover', (e) => {
-                e.preventDefault();
-            });
-
-            slot.addEventListener('drop', (e) => {
-                e.preventDefault();
-                const equipmentId = e.dataTransfer.getData('text/plain');
-                placeEquipment(slot, equipmentId);
-            });
-        });
-    }
+    });
 
     // Кнопка запуска завода
     launchBtn.addEventListener('click', () => {
