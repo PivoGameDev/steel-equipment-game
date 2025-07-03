@@ -26,6 +26,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
+    padding: 20px;
 }
 
 .hidden {
@@ -37,7 +38,6 @@ body {
     background-color: #1a73e8;
     color: white;
     border-radius: 15px;
-    padding: 20px;
 }
 
 #start-btn {
@@ -60,7 +60,6 @@ body {
 #game-screen {
     background-color: white;
     border-radius: 15px;
-    padding: 10px;
 }
 
 .header {
@@ -160,15 +159,30 @@ body {
     padding: 10px 0;
 }
 
+.equipment-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
 .equipment {
     width: 200px;
     height: 200px;
-    cursor: grab;
-    transition: opacity 0.3s;
+    pointer-events: none;
 }
 
-.equipment.dragging {
-    opacity: 0.5;
+.equipment-placed {
+    width: 200px;
+    height: 200px;
+}
+
+.equipment-btn p {
+    margin-top: 5px;
+    font-size: 14px;
 }
 
 #launch-btn {
@@ -185,6 +199,43 @@ body {
 #launch-btn:disabled {
     background-color: #9e9e9e;
     cursor: not-allowed;
+}
+
+/* Мобильные стили */
+@media (hover: none) {
+    .equipment-btn {
+        background: #e0e0e0;
+        padding: 12px;
+    }
+    
+    .equipment-btn:active {
+        background: #bdbdbd;
+        transform: scale(0.95);
+    }
+    
+    .equipment-btn p {
+        display: block;
+    }
+}
+
+/* Десктопные стили */
+@media (hover: hover) {
+    .equipment-btn {
+        background: transparent;
+    }
+    
+    .equipment-btn p {
+        display: none;
+    }
+    
+    .equipment {
+        cursor: grab;
+    }
+    
+    .equipment-btn:active .equipment {
+        cursor: grabbing;
+        opacity: 0.7;
+    }
 }
 
 /* Экран победы */
@@ -231,7 +282,7 @@ body {
 
 /* Адаптивность */
 @media (max-width: 768px) {
-    .equipment, .slot {
+    .equipment, .equipment-placed, .slot {
         width: 150px;
         height: 150px;
     }
@@ -241,6 +292,21 @@ body {
     }
     
     .instruction {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .equipment, .equipment-placed, .slot {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .slot:nth-child(2) {
+        right: 140px;
+    }
+    
+    .equipment-btn p {
         font-size: 12px;
     }
 }

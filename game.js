@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Определение типа устройства
+    const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    
     // Элементы интерфейса
     const startScreen = document.getElementById('start-screen');
     const gameScreen = document.getElementById('game-screen');
@@ -13,58 +16,50 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Игровые элементы
     const slots = document.querySelectorAll('.slot');
-    const equipmentElements = document.querySelectorAll('.equipment');
-    
-    // Аудио
-    const successSound = new Audio('assets/sounds/success.mp3');
-    const errorSound = new Audio('assets/sounds/error.mp3');
+    const equipmentBtns = document.querySelectorAll('.equipment-btn');
     
     // Игровые переменные
-    let timeLeft = 120; // 2 минуты в секундах
+    let timeLeft = 120;
     let timer;
     let gameStarted = false;
     let equipmentPlaced = 0;
     let startTime;
-    
+    let selectedEquipment = null;
+
     // Инициализация игры
     function initGame() {
-        // Сброс состояния
         timeLeft = 120;
         equipmentPlaced = 0;
         gameStarted = true;
         startTime = Date.now();
+        selectedEquipment = null;
         
-        // Сброс интерфейса
         timerDisplay.textContent = formatTime(timeLeft);
         timerDisplay.classList.remove('low-time');
         feedbackMessage.textContent = '';
         feedbackMessage.className = 'feedback-message';
         launchBtn.disabled = true;
         
-        // Очистка слотов
         slots.forEach(slot => {
             slot.innerHTML = '';
             slot.dataset.filled = 'false';
         });
         
-        // Возврат оборудования на панель
-        equipmentElements.forEach(equipment => {
-            equipment.style.display = 'block';
+        equipmentBtns.forEach(btn => {
+            btn.style.display = 'flex';
+            btn.style.opacity = '1';
         });
         
-        // Запуск таймера
         clearInterval(timer);
         timer = setInterval(updateTimer, 1000);
     }
-    
-    // Форматирование времени
+
     function formatTime(seconds) {
         const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
         const secs = (seconds % 60).toString().padStart(2, '0');
         return `${mins}:${secs}`;
     }
-    
-    // Обновление таймера
+
     function updateTimer() {
         timeLeft--;
         timerDisplay.textContent = formatTime(timeLeft);
@@ -77,8 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
             endGame(false);
         }
     }
-    
-    // Конец игры
+
     function endGame(isWin) {
         clearInterval(timer);
         gameStarted = false;
@@ -88,15 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const timeSpent = Math.floor((Date.now() - startTime) / 1000);
             timeSpentDisplay.textContent = formatTime(timeSpent);
             winScreen.classList.remove('hidden');
-            successSound.play();
             createConfetti();
         } else {
             loseScreen.classList.remove('hidden');
-            errorSound.play();
         }
     }
-    
-    // Создание конфетти
+
     function createConfetti() {
         const confettiContainer = document.querySelector('.confetti');
         confettiContainer.innerHTML = '';
@@ -115,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
             confettiContainer.appendChild(confetti);
         }
         
-        // Добавляем CSS анимацию
         const style = document.createElement('style');
         style.innerHTML = `
             @keyframes fall {
@@ -126,19 +116,41 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.head.appendChild(style);
     }
-    
+
     function getRandomColor() {
         const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
         return colors[Math.floor(Math.random() * colors.length)];
     }
-    
+
+    function placeEquipment(slot, equipmentId) {
+        if (slot.dataset.filled === 'true') return;
+        
+        const equipmentImg = document.createElement('img');
+        equipmentImg.src = `assets/images/${equipmentId}.png`;
+        equipmentImg.className = 'equipment-placed';
+        
+        slot.innerHTML = '';
+        slot.appendChild(equipmentImg);
+        slot.dataset.filled = 'true';
+        slot.dataset.equipment = equipmentId;
+        
+        document.querySelector(`.equipment-btn[data-equipment="${equipmentId}"]`).style.display = 'none';
+        
+        equipmentPlaced++;
+        if (equipmentPlaced === 2) {
+            launchBtn.disabled = false;
+            feedbackMessage.textContent = 'Все оборудование размещено!';
+            feedbackMessage.classList.add('correct');
+        }
+    }
+
     // Обработчики событий
     startBtn.addEventListener('click', () => {
         startScreen.classList.add('hidden');
         gameScreen.classList.remove('hidden');
         initGame();
     });
-    
+
     restartBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             winScreen.classList.add('hidden');
@@ -147,69 +159,58 @@ document.addEventListener('DOMContentLoaded', () => {
             initGame();
         });
     });
-    
-    // Перетаскивание оборудования
-    equipmentElements.forEach(equipment => {
-        equipment.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text/plain', e.target.id);
-            e.target.classList.add('dragging');
+
+    // Система для мобильных (тапы)
+    if (isMobile) {
+        equipmentBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (btn.style.display === 'none') return;
+                
+                selectedEquipment = btn.dataset.equipment;
+                equipmentBtns.forEach(b => {
+                    b.style.opacity = b === btn ? '1' : '0.5';
+                });
+                
+                feedbackMessage.textContent = `Выбрано: ${btn.querySelector('p').textContent}`;
+                feedbackMessage.className = 'feedback-message';
+            });
         });
-        
-        equipment.addEventListener('dragend', (e) => {
-            e.target.classList.remove('dragging');
+
+        slots.forEach(slot => {
+            slot.addEventListener('click', () => {
+                if (!selectedEquipment || slot.dataset.filled === 'true') return;
+                placeEquipment(slot, selectedEquipment);
+                
+                selectedEquipment = null;
+                equipmentBtns.forEach(b => {
+                    b.style.opacity = '1';
+                });
+            });
         });
-    });
-    
-    slots.forEach(slot => {
-        slot.addEventListener('dragover', (e) => {
-            e.preventDefault();
+    } 
+    // Система для ПК (drag-and-drop)
+    else {
+        equipmentBtns.forEach(btn => {
+            btn.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', e.target.dataset.equipment);
+            });
         });
-        
-        slot.addEventListener('drop', (e) => {
-            e.preventDefault();
-            if (slot.dataset.filled === 'true') return;
-            
-            const equipmentId = e.dataTransfer.getData('text/plain');
-            const equipment = document.getElementById(equipmentId);
-            
-            // Создаем копию для слота
-            const equipmentCopy = equipment.cloneNode();
-            equipmentCopy.style.display = 'block';
-            equipmentCopy.style.width = '200px';
-            equipmentCopy.style.height = '200px';
-            equipmentCopy.style.cursor = 'default';
-            slot.appendChild(equipmentCopy);
-            
-            // Помечаем слот как заполненный
-            slot.dataset.filled = 'true';
-            slot.dataset.equipment = equipmentId;
-            
-            // Проверяем, правильно ли размещено оборудование
-            const isCorrect = equipmentId === slot.dataset.correct;
-            
-            // Визуальный feedback
-            if (isCorrect) {
-                slot.classList.add('highlight-correct');
-            } else {
-                slot.classList.add('highlight-incorrect');
-            }
-            
-            // Убираем оригинальное оборудование с панели
-            equipment.style.display = 'none';
-            
-            // Увеличиваем счетчик размещенного оборудования
-            equipmentPlaced++;
-            
-            // Проверяем, все ли оборудование размещено
-            if (equipmentPlaced === 2) {
-                launchBtn.disabled = false;
-            }
+
+        slots.forEach(slot => {
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const equipmentId = e.dataTransfer.getData('text/plain');
+                placeEquipment(slot, equipmentId);
+            });
         });
-    });
-    
+    }
+
     // Кнопка запуска завода
     launchBtn.addEventListener('click', () => {
-        // Проверяем правильность размещения
         const slot1Correct = document.getElementById('slot1').dataset.equipment === 'fermenter';
         const slot2Correct = document.getElementById('slot2').dataset.equipment === 'heat-exchanger';
         
