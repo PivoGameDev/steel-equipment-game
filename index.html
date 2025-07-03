@@ -24,7 +24,7 @@
 
     <!-- Экран выбора уровня -->
     <div id="level-select-screen" class="screen hidden">
-        <h1>Выберите уровень сложности</h1>
+        <h1 class="level-select-title">Выберите уровень сложности</h1>
         <div class="level-cards">
             <div class="level-card" data-level="1">
                 <h2>Новичок</h2>
@@ -44,6 +44,12 @@
                 <p>60 секунд</p>
                 <div class="lock-icon"></div>
             </div>
+            <div class="level-card" data-level="4">
+                <h2>Мастер</h2>
+                <p>5 оборудования</p>
+                <p>45 секунд</p>
+                <div class="lock-icon"></div>
+            </div>
         </div>
         <button id="back-to-menu">Назад</button>
     </div>
@@ -54,6 +60,11 @@
             <p class="level-name">Уровень: Новичок</p>
             <p class="timer">02:00</p>
             <p class="feedback-message"></p>
+        </div>
+        
+        <!-- Блок с описанием уровня -->
+        <div class="level-description">
+            <p id="level-desc-text">Описание уровня загружается...</p>
         </div>
         
         <div class="playground"></div>

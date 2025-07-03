@@ -1,41 +1,59 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Конфигурация уровней
+    // Конфигурация уровней с описаниями
     const levels = {
         1: {
             name: "Новичок",
             time: 120,
             slots: [
-                { id: "slot1", correct: "fermenter" },
-                { id: "slot2", correct: "heat-exchanger" }
+                { id: "slot1", correct: "fermenter", number: 1 },
+                { id: "slot2", correct: "heat-exchanger", number: 2 }
             ],
             equipment: ["fermenter", "heat-exchanger"],
             threshold3: 30,
-            threshold2: 60
+            threshold2: 60,
+            description: "На заводе оврал! Рома не перезванивает по поводу КП а заказчиком нужно сейчас подключить завод. Переставьте оборудование в нужной последовательности. На сырном заводе"
         },
         2: {
             name: "Специалист",
             time: 90,
             slots: [
-                { id: "slot1", correct: "fermenter" },
-                { id: "slot2", correct: "heat-exchanger" },
-                { id: "slot3", correct: "centrifuge" }
+                { id: "slot1", correct: "fermenter", number: 1 },
+                { id: "slot2", correct: "heat-exchanger", number: 2 },
+                { id: "slot3", correct: "centrifuge", number: 3 }
             ],
             equipment: ["fermenter", "heat-exchanger", "centrifuge"],
             threshold3: 25,
-            threshold2: 50
+            threshold2: 50,
+            description: "На предприятии молока ЧП, охранник поддтерся ночью свежими эскизами подключения. помогите стажеру разобраться и правильно подключить завод"
         },
         3: {
             name: "Эксперт",
             time: 60,
             slots: [
-                { id: "slot1", correct: "boiler" },
-                { id: "slot2", correct: "centrifuge" },
-                { id: "slot3", correct: "fermenter" },
-                { id: "slot4", correct: "heat-exchanger" }
+                { id: "slot1", correct: "boiler", number: 1 },
+                { id: "slot2", correct: "centrifuge", number: 2 },
+                { id: "slot3", correct: "fermenter", number: 3 },
+                { id: "slot4", correct: "heat-exchanger", number: 4 }
             ],
             equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler"],
             threshold3: 20,
-            threshold2: 40
+            threshold2: 40,
+            description: "Все пошло по пизде. нужно переподключить"
+        },
+        4: {
+            name: "Мастер",
+            time: 45,
+            slots: [
+                { id: "slot1", correct: "boiler", number: 1 },
+                { id: "slot2", correct: "heat-exchanger", number: 2 },
+                { id: "slot3", correct: "fermenter", number: 3 },
+                { id: "slot4", correct: "centrifuge", number: 4 },
+                { id: "slot5", correct: "cooler", number: 5 }
+            ],
+            equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler", "cooler"],
+            threshold3: 30,
+            threshold2: 45,
+            description: "Я ебал как тут все поставить... сказал главный инжинер квасного завода увидев это"
         }
     };
 
@@ -44,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fermenter: "Ферментер",
         "heat-exchanger": "Теплообменник",
         centrifuge: "Центрифуга",
-        boiler: "Котёл"
+        boiler: "Котёл",
+        cooler: "Охладитель"
     };
 
     // Элементы интерфейса
@@ -64,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const timeSpentDisplay = document.getElementById('time-spent');
     const starsEarnedDisplay = document.getElementById('stars-earned');
     const levelNameDisplay = document.querySelector('.level-name');
+    const levelDescText = document.getElementById('level-desc-text');
     const successSound = document.getElementById('success-sound');
     const errorSound = document.getElementById('error-sound');
 
@@ -169,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Разблокировка следующего уровня
-            if (currentLevel < 3 && !gameProgress.unlockedLevels.includes(currentLevel + 1)) {
+            if (currentLevel < 4 && !gameProgress.unlockedLevels.includes(currentLevel + 1)) {
                 gameProgress.unlockedLevels.push(currentLevel + 1);
             }
             
@@ -238,6 +258,13 @@ document.addEventListener('DOMContentLoaded', () => {
         equipmentImg.alt = equipNames[equipmentId];
         
         slot.innerHTML = '';
+        
+        // Добавляем номер слота
+        const slotNumber = document.createElement('div');
+        slotNumber.className = 'slot-number';
+        slotNumber.textContent = slot.dataset.number;
+        slot.appendChild(slotNumber);
+        
         slot.appendChild(equipmentImg);
         slot.dataset.filled = 'true';
         slot.dataset.equipment = equipmentId;
@@ -264,12 +291,23 @@ document.addEventListener('DOMContentLoaded', () => {
         // Установка названия уровня
         levelNameDisplay.textContent = `Уровень: ${level.name}`;
         
+        // Установка описания уровня
+        levelDescText.textContent = level.description;
+        
         // Создание слотов
         level.slots.forEach(slotConfig => {
             const slot = document.createElement('div');
             slot.className = 'slot';
             slot.id = slotConfig.id;
             slot.dataset.correct = slotConfig.correct;
+            slot.dataset.number = slotConfig.number;
+            
+            // Добавляем номер слота
+            const slotNumber = document.createElement('div');
+            slotNumber.className = 'slot-number';
+            slotNumber.textContent = slotConfig.number;
+            slot.appendChild(slotNumber);
+            
             document.querySelector('.playground').appendChild(slot);
         });
         
@@ -397,7 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Кнопка следующего уровня
     nextLevelBtn.addEventListener('click', () => {
-        if (currentLevel < 3) {
+        if (currentLevel < 4) {
             winScreen.classList.add('hidden');
             gameScreen.classList.remove('hidden');
             initLevel(currentLevel + 1);

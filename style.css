@@ -69,43 +69,48 @@ body {
     background: linear-gradient(135deg, #6b73ff 0%, #000dff 100%);
     color: white;
     z-index: 90;
+    justify-content: flex-start;
+    padding-top: 10px;
+}
+
+.level-select-title {
+    font-size: 24px;
+    margin-bottom: 15px;
 }
 
 .level-cards {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
-    margin: 30px 0;
+    gap: 15px;
+    margin: 15px 0;
     width: 100%;
+    overflow-y: auto;
+    max-height: 70%;
 }
 
 .level-card {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 15px;
-    padding: 20px;
-    width: 250px;
+    padding: 15px;
+    width: 45%;
+    min-width: 140px;
     cursor: pointer;
     transition: all 0.3s;
     position: relative;
     overflow: hidden;
 }
 
-.level-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-}
-
 .level-card h2 {
     color: #3b82f6;
-    margin-bottom: 10px;
-    font-size: 22px;
+    margin-bottom: 8px;
+    font-size: 18px;
 }
 
 .level-card p {
-    margin: 8px 0;
+    margin: 5px 0;
     color: #4b5563;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .lock-icon {
@@ -114,7 +119,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.7) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="48px" height="48px"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>') center no-repeat;
+    background: rgba(0,0,0,0.7) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="36px" height="36px"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>') center no-repeat;
     border-radius: 15px;
 }
 
@@ -123,8 +128,8 @@ body {
 }
 
 #back-to-menu {
-    margin-top: 20px;
-    padding: 12px 25px;
+    margin-top: 15px;
+    padding: 10px 20px;
     background: white;
     color: #3b82f6;
     border: none;
@@ -138,11 +143,13 @@ body {
 #game-screen {
     background-color: white;
     z-index: 80;
+    justify-content: flex-start;
+    padding-top: 10px;
 }
 
 .header {
     width: 100%;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .level-name {
@@ -185,12 +192,30 @@ body {
     color: #ef4444;
 }
 
+/* Блок описания уровня */
+.level-description {
+    width: 95%;
+    background-color: #e0f2fe;
+    border-radius: 10px;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 14px;
+    text-align: left;
+    max-height: 20%;
+    overflow-y: auto;
+}
+
+#level-desc-text {
+    color: #0c4a6e;
+    line-height: 1.4;
+}
+
 .playground {
     flex-grow: 1;
     width: 100%;
     background-color: #f3f4f6;
     position: relative;
-    margin: 15px 0;
+    margin: 10px 0;
     border-radius: 10px;
     overflow: hidden;
     display: flex;
@@ -204,10 +229,10 @@ body {
 .slot {
     width: 22vw;
     height: 22vw;
-    max-width: 200px;
-    max-height: 200px;
-    min-width: 120px;
-    min-height: 120px;
+    max-width: 180px;
+    max-height: 180px;
+    min-width: 100px;
+    min-height: 100px;
     background-color: #e5e7eb;
     border: 2px dashed #9ca3af;
     display: flex;
@@ -217,6 +242,23 @@ body {
     transition: all 0.3s;
     position: relative;
     margin: 5px;
+}
+
+/* Номер слота */
+.slot-number {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: #3b82f6;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 .slot.highlight-correct {
@@ -244,29 +286,31 @@ body {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 10px;
     padding: 10px 0;
+    max-height: 20%;
+    overflow-y: auto;
 }
 
 .equipment-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 12px;
+    padding: 10px;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s;
     background-color: #e5e7eb;
-    min-width: 120px;
+    min-width: 100px;
 }
 
 .equipment {
-    width: 18vw;
-    height: 18vw;
-    max-width: 150px;
-    max-height: 150px;
-    min-width: 80px;
-    min-height: 80px;
+    width: 16vw;
+    height: 16vw;
+    max-width: 120px;
+    max-height: 120px;
+    min-width: 70px;
+    min-height: 70px;
     pointer-events: none;
     object-fit: contain;
 }
@@ -278,8 +322,8 @@ body {
 }
 
 .equipment-btn p {
-    margin-top: 8px;
-    font-size: 14px;
+    margin-top: 6px;
+    font-size: 12px;
     font-weight: 600;
     color: #1f2937;
 }
@@ -292,7 +336,7 @@ body {
     border-radius: 50px;
     font-size: 16px;
     cursor: pointer;
-    margin-top: 15px;
+    margin: 10px 0;
     transition: all 0.3s;
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
 }
@@ -384,23 +428,45 @@ body {
         margin: 5vh 5vw;
     }
     
+    .level-select-title {
+        font-size: 20px;
+    }
+    
     .level-card {
         width: 100%;
         max-width: 300px;
+        padding: 12px;
+    }
+    
+    .level-card h2 {
+        font-size: 16px;
+    }
+    
+    .level-card p {
+        font-size: 12px;
+    }
+    
+    .level-description {
+        font-size: 13px;
+        padding: 10px;
     }
     
     .equipment-btn {
-        min-width: 100px;
+        min-width: 80px;
     }
 }
 
 @media (max-width: 480px) {
     .header {
-        margin-bottom: 10px;
+        margin-bottom: 5px;
     }
     
-    .level-name, .timer {
-        font-size: 18px;
+    .level-name {
+        font-size: 16px;
+    }
+    
+    .timer {
+        font-size: 20px;
     }
     
     .feedback-message {
@@ -408,11 +474,16 @@ body {
     }
     
     .equipment-btn p {
-        font-size: 12px;
+        font-size: 11px;
     }
     
     #launch-btn, .next-level-btn, .restart-btn, #back-to-menu {
-        padding: 10px 20px;
+        padding: 8px 16px;
         font-size: 14px;
+    }
+    
+    .slot {
+        min-width: 90px;
+        min-height: 90px;
     }
 }
