@@ -193,6 +193,12 @@ body {
     margin: 15px 0;
     border-radius: 10px;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 10px;
 }
 
 .slot {
@@ -204,62 +210,13 @@ body {
     min-height: 120px;
     background-color: #e5e7eb;
     border: 2px dashed #9ca3af;
-    position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 10px;
     transition: all 0.3s;
-}
-
-.slot[data-position="right"] {
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.slot[data-position="left"] {
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.slot[data-position="top"] {
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.slot[data-position="bottom"] {
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.slot[data-position="center"] {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.slot[data-position="top-left"] {
-    top: 20px;
-    left: 20px;
-}
-
-.slot[data-position="top-right"] {
-    top: 20px;
-    right: 20px;
-}
-
-.slot[data-position="bottom-left"] {
-    bottom: 20px;
-    left: 20px;
-}
-
-.slot[data-position="bottom-right"] {
-    bottom: 20px;
-    right: 20px;
+    position: relative;
+    margin: 5px;
 }
 
 .slot.highlight-correct {

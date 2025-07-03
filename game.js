@@ -5,20 +5,20 @@ document.addEventListener('DOMContentLoaded', () => {
             name: "Новичок",
             time: 120,
             slots: [
-                { id: "slot1", correct: "fermenter", position: "right" },
-                { id: "slot2", correct: "heat-exchanger", position: "left" }
+                { id: "slot1", correct: "fermenter" },
+                { id: "slot2", correct: "heat-exchanger" }
             ],
             equipment: ["fermenter", "heat-exchanger"],
-            threshold3: 30,  // Секунды для 3 звезд
-            threshold2: 60   // Секунды для 2 звезд
+            threshold3: 30,
+            threshold2: 60
         },
         2: {
             name: "Специалист",
             time: 90,
             slots: [
-                { id: "slot1", correct: "fermenter", position: "top" },
-                { id: "slot2", correct: "heat-exchanger", position: "bottom" },
-                { id: "slot3", correct: "centrifuge", position: "center" }
+                { id: "slot1", correct: "fermenter" },
+                { id: "slot2", correct: "heat-exchanger" },
+                { id: "slot3", correct: "centrifuge" }
             ],
             equipment: ["fermenter", "heat-exchanger", "centrifuge"],
             threshold3: 25,
@@ -28,10 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
             name: "Эксперт",
             time: 60,
             slots: [
-                { id: "slot1", correct: "boiler", position: "top-left" },
-                { id: "slot2", correct: "centrifuge", position: "top-right" },
-                { id: "slot3", correct: "fermenter", position: "bottom-left" },
-                { id: "slot4", correct: "heat-exchanger", position: "bottom-right" }
+                { id: "slot1", correct: "boiler" },
+                { id: "slot2", correct: "centrifuge" },
+                { id: "slot3", correct: "fermenter" },
+                { id: "slot4", correct: "heat-exchanger" }
             ],
             equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler"],
             threshold3: 20,
@@ -270,7 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
             slot.className = 'slot';
             slot.id = slotConfig.id;
             slot.dataset.correct = slotConfig.correct;
-            slot.dataset.position = slotConfig.position;
             document.querySelector('.playground').appendChild(slot);
         });
         
