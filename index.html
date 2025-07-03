@@ -6,7 +6,6 @@
     <title>Собери завод</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Предзагрузка звуков для мобильных */
         body::after {
             content: "";
             display: none;
@@ -16,49 +15,69 @@
     </style>
 </head>
 <body>
+    <!-- Стартовый экран -->
     <div id="start-screen" class="screen">
         <h1>Игра "Собери завод"</h1>
         <p>Установите оборудование в правильные слоты и запустите производство!</p>
         <button id="start-btn">Играть</button>
     </div>
 
+    <!-- Экран выбора уровня -->
+    <div id="level-select-screen" class="screen hidden">
+        <h1>Выберите уровень сложности</h1>
+        <div class="level-cards">
+            <div class="level-card" data-level="1">
+                <h2>Новичок</h2>
+                <p>2 оборудования</p>
+                <p>120 секунд</p>
+                <div class="lock-icon hidden"></div>
+            </div>
+            <div class="level-card" data-level="2">
+                <h2>Специалист</h2>
+                <p>3 оборудования</p>
+                <p>90 секунд</p>
+                <div class="lock-icon"></div>
+            </div>
+            <div class="level-card" data-level="3">
+                <h2>Эксперт</h2>
+                <p>4 оборудования</p>
+                <p>60 секунд</p>
+                <div class="lock-icon"></div>
+            </div>
+        </div>
+        <button id="back-to-menu">Назад</button>
+    </div>
+
+    <!-- Игровой экран -->
     <div id="game-screen" class="screen hidden">
         <div class="header">
-            <p class="instruction">Поставьте ферментер в первый слот и теплообменник во второй</p>
+            <p class="level-name">Уровень: Новичок</p>
             <p class="timer">02:00</p>
             <p class="feedback-message"></p>
         </div>
         
-        <div class="playground">
-            <div class="slot" id="slot1" data-correct="fermenter"></div>
-            <div class="slot" id="slot2" data-correct="heat-exchanger"></div>
-        </div>
+        <div class="playground"></div>
         
-        <div class="equipment-panel">
-            <div class="equipment-btn" data-equipment="fermenter" draggable="false">
-                <img src="assets/images/fermenter.png" class="equipment" id="fermenter">
-                <p>Ферментер</p>
-            </div>
-            <div class="equipment-btn" data-equipment="heat-exchanger" draggable="false">
-                <img src="assets/images/heat-exchanger.png" class="equipment" id="heat-exchanger">
-                <p>Теплообменник</p>
-            </div>
-        </div>
+        <div class="equipment-panel"></div>
         
         <button id="launch-btn" disabled>Запустить завод</button>
     </div>
 
+    <!-- Экран победы -->
     <div id="win-screen" class="screen hidden">
         <h1 class="win-text">Поздравляем!</h1>
         <p>Вы справились за <span id="time-spent">00:00</span>!</p>
-        <button class="restart-btn">Начать заново</button>
+        <p>Заработано звёзд: <span id="stars-earned">★★★</span></p>
+        <button class="next-level-btn">Следующий уровень</button>
+        <button class="restart-btn">Заново</button>
         <div class="confetti"></div>
     </div>
 
+    <!-- Экран проигрыша -->
     <div id="lose-screen" class="screen hidden">
         <h1>Время вышло!</h1>
         <p>Завод не был запущен вовремя.</p>
-        <button class="restart-btn">Начать заново</button>
+        <button class="restart-btn">Попробовать снова</button>
     </div>
 
     <audio id="success-sound" src="assets/sounds/success.mp3" preload="auto"></audio>

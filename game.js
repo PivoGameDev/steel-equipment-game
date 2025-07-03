@@ -1,33 +1,108 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Инициализация элементов
+    // Конфигурация уровней
+    const levels = {
+        1: {
+            name: "Новичок",
+            time: 120,
+            slots: [
+                { id: "slot1", correct: "fermenter", position: "right" },
+                { id: "slot2", correct: "heat-exchanger", position: "left" }
+            ],
+            equipment: ["fermenter", "heat-exchanger"],
+            threshold3: 30,  // Секунды для 3 звезд
+            threshold2: 60   // Секунды для 2 звезд
+        },
+        2: {
+            name: "Специалист",
+            time: 90,
+            slots: [
+                { id: "slot1", correct: "fermenter", position: "top" },
+                { id: "slot2", correct: "heat-exchanger", position: "bottom" },
+                { id: "slot3", correct: "centrifuge", position: "center" }
+            ],
+            equipment: ["fermenter", "heat-exchanger", "centrifuge"],
+            threshold3: 25,
+            threshold2: 50
+        },
+        3: {
+            name: "Эксперт",
+            time: 60,
+            slots: [
+                { id: "slot1", correct: "boiler", position: "top-left" },
+                { id: "slot2", correct: "centrifuge", position: "top-right" },
+                { id: "slot3", correct: "fermenter", position: "bottom-left" },
+                { id: "slot4", correct: "heat-exchanger", position: "bottom-right" }
+            ],
+            equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler"],
+            threshold3: 20,
+            threshold2: 40
+        }
+    };
+
+    // Названия оборудования
+    const equipNames = {
+        fermenter: "Ферментер",
+        "heat-exchanger": "Теплообменник",
+        centrifuge: "Центрифуга",
+        boiler: "Котёл"
+    };
+
+    // Элементы интерфейса
     const startScreen = document.getElementById('start-screen');
+    const levelSelectScreen = document.getElementById('level-select-screen');
     const gameScreen = document.getElementById('game-screen');
     const winScreen = document.getElementById('win-screen');
     const loseScreen = document.getElementById('lose-screen');
     const startBtn = document.getElementById('start-btn');
+    const backToMenuBtn = document.getElementById('back-to-menu');
+    const levelCards = document.querySelectorAll('.level-card');
     const launchBtn = document.getElementById('launch-btn');
     const restartBtns = document.querySelectorAll('.restart-btn');
+    const nextLevelBtn = document.querySelector('.next-level-btn');
     const timerDisplay = document.querySelector('.timer');
     const feedbackMessage = document.querySelector('.feedback-message');
     const timeSpentDisplay = document.getElementById('time-spent');
+    const starsEarnedDisplay = document.getElementById('stars-earned');
+    const levelNameDisplay = document.querySelector('.level-name');
     const successSound = document.getElementById('success-sound');
     const errorSound = document.getElementById('error-sound');
-    
-    const slots = document.querySelectorAll('.slot');
-    const equipmentBtns = document.querySelectorAll('.equipment-btn');
-    
+
     // Игровые переменные
-    let timeLeft = 120;
+    let currentLevel = 1;
+    let timeLeft = 0;
     let timer;
     let gameStarted = false;
     let equipmentPlaced = 0;
     let startTime;
     let selectedEquipment = null;
     const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    
+    // Прогресс игры
+    const gameProgress = {
+        unlockedLevels: [1],
+        bestTimes: {},
+        bestStars: {}
+    };
+
+    // Загрузка сохранений
+    function loadProgress() {
+        const saved = localStorage.getItem('breweryGameProgress');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            gameProgress.unlockedLevels = parsed.unlockedLevels || [1];
+            gameProgress.bestTimes = parsed.bestTimes || {};
+            gameProgress.bestStars = parsed.bestStars || {};
+        }
+    }
+
+    // Сохранение прогресса
+    function saveProgress() {
+        localStorage.setItem('breweryGameProgress', JSON.stringify(gameProgress));
+    }
 
     // Инициализация игры
-    function initGame() {
-        timeLeft = 120;
+    function initGame(levelTime) {
+        timeLeft = levelTime;
         equipmentPlaced = 0;
         gameStarted = true;
         startTime = Date.now();
@@ -39,16 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
         feedbackMessage.className = 'feedback-message';
         launchBtn.disabled = true;
         
-        slots.forEach(slot => {
-            slot.innerHTML = '';
-            slot.dataset.filled = 'false';
-        });
-        
-        equipmentBtns.forEach(btn => {
-            btn.style.display = 'flex';
-            btn.style.opacity = '1';
-        });
-        
         clearInterval(timer);
         timer = setInterval(updateTimer, 1000);
         
@@ -59,12 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Форматирование времени
     function formatTime(seconds) {
         const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
         const secs = (seconds % 60).toString().padStart(2, '0');
         return `${mins}:${secs}`;
     }
 
+    // Обновление таймера
     function updateTimer() {
         timeLeft--;
         timerDisplay.textContent = formatTime(timeLeft);
@@ -78,14 +145,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Конец игры
     function endGame(isWin) {
         clearInterval(timer);
         gameStarted = false;
         gameScreen.classList.add('hidden');
         
+        const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+        timeSpentDisplay.textContent = formatTime(timeSpent);
+        
         if (isWin) {
-            const timeSpent = Math.floor((Date.now() - startTime) / 1000);
-            timeSpentDisplay.textContent = formatTime(timeSpent);
+            // Расчет звезд
+            const stars = calculateStars(timeSpent);
+            starsEarnedDisplay.textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+            
+            // Обновление прогресса
+            if (!gameProgress.bestTimes[currentLevel] || timeSpent < gameProgress.bestTimes[currentLevel]) {
+                gameProgress.bestTimes[currentLevel] = timeSpent;
+            }
+            
+            if (!gameProgress.bestStars[currentLevel] || stars > gameProgress.bestStars[currentLevel]) {
+                gameProgress.bestStars[currentLevel] = stars;
+            }
+            
+            // Разблокировка следующего уровня
+            if (currentLevel < 3 && !gameProgress.unlockedLevels.includes(currentLevel + 1)) {
+                gameProgress.unlockedLevels.push(currentLevel + 1);
+            }
+            
+            saveProgress();
+            updateLevelSelectScreen();
+            
             winScreen.classList.remove('hidden');
             successSound.play();
             createConfetti();
@@ -95,6 +185,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Расчет звезд
+    function calculateStars(timeSpent) {
+        const level = levels[currentLevel];
+        if (timeSpent <= level.threshold3) return 3;
+        if (timeSpent <= level.threshold2) return 2;
+        return 1;
+    }
+
+    // Создание конфетти
     function createConfetti() {
         const confettiContainer = document.querySelector('.confetti');
         confettiContainer.innerHTML = '';
@@ -129,12 +228,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return colors[Math.floor(Math.random() * colors.length)];
     }
 
+    // Размещение оборудования
     function placeEquipment(slot, equipmentId) {
         if (slot.dataset.filled === 'true') return;
         
         const equipmentImg = document.createElement('img');
         equipmentImg.src = `assets/images/${equipmentId}.png`;
         equipmentImg.className = 'equipment-placed';
+        equipmentImg.alt = equipNames[equipmentId];
         
         slot.innerHTML = '';
         slot.appendChild(equipmentImg);
@@ -144,66 +245,137 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector(`.equipment-btn[data-equipment="${equipmentId}"]`).style.display = 'none';
         
         equipmentPlaced++;
-        if (equipmentPlaced === 2) {
+        if (equipmentPlaced === levels[currentLevel].equipment.length) {
             launchBtn.disabled = false;
             feedbackMessage.textContent = 'Все оборудование размещено!';
             feedbackMessage.classList.add('correct');
         }
     }
 
+    // Инициализация уровня
+    function initLevel(levelId) {
+        currentLevel = levelId;
+        const level = levels[levelId];
+        
+        // Очистка игрового поля
+        document.querySelector('.playground').innerHTML = '';
+        document.querySelector('.equipment-panel').innerHTML = '';
+        
+        // Установка названия уровня
+        levelNameDisplay.textContent = `Уровень: ${level.name}`;
+        
+        // Создание слотов
+        level.slots.forEach(slotConfig => {
+            const slot = document.createElement('div');
+            slot.className = 'slot';
+            slot.id = slotConfig.id;
+            slot.dataset.correct = slotConfig.correct;
+            slot.dataset.position = slotConfig.position;
+            document.querySelector('.playground').appendChild(slot);
+        });
+        
+        // Создание оборудования
+        level.equipment.forEach(equipId => {
+            const btn = document.createElement('div');
+            btn.className = 'equipment-btn';
+            btn.dataset.equipment = equipId;
+            
+            const img = document.createElement('img');
+            img.src = `assets/images/${equipId}.png`;
+            img.className = 'equipment';
+            img.id = equipId;
+            img.alt = equipNames[equipId];
+            
+            const label = document.createElement('p');
+            label.textContent = equipNames[equipId];
+            
+            btn.appendChild(img);
+            btn.appendChild(label);
+            document.querySelector('.equipment-panel').appendChild(btn);
+        });
+        
+        // Запуск игры
+        initGame(level.time);
+    }
+
+    // Обновление экрана выбора уровня
+    function updateLevelSelectScreen() {
+        levelCards.forEach(card => {
+            const level = parseInt(card.dataset.level);
+            const lockIcon = card.querySelector('.lock-icon');
+            
+            if (gameProgress.unlockedLevels.includes(level)) {
+                lockIcon.classList.add('hidden');
+            } else {
+                lockIcon.classList.remove('hidden');
+            }
+        });
+    }
+
     // Обработчики событий
     startBtn.addEventListener('click', () => {
         startScreen.classList.add('hidden');
-        gameScreen.classList.remove('hidden');
-        initGame();
+        levelSelectScreen.classList.remove('hidden');
+        loadProgress();
+        updateLevelSelectScreen();
     });
 
-    restartBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            winScreen.classList.add('hidden');
-            loseScreen.classList.add('hidden');
-            gameScreen.classList.remove('hidden');
-            initGame();
+    backToMenuBtn.addEventListener('click', () => {
+        levelSelectScreen.classList.add('hidden');
+        startScreen.classList.remove('hidden');
+    });
+
+    levelCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const level = parseInt(card.dataset.level);
+            if (gameProgress.unlockedLevels.includes(level)) {
+                levelSelectScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                initLevel(level);
+            }
         });
     });
 
-    // Управление для всех устройств
-    equipmentBtns.forEach(btn => {
-        btn.addEventListener(isMobile ? 'touchstart' : 'click', (e) => {
-            e.preventDefault();
-            if (btn.style.display === 'none') return;
-            
-            selectedEquipment = btn.dataset.equipment;
-            equipmentBtns.forEach(b => {
-                b.style.opacity = b === btn ? '1' : '0.5';
+    // Управление оборудованием
+    document.addEventListener(isMobile ? 'touchstart' : 'mousedown', (e) => {
+        const equipmentBtn = e.target.closest('.equipment-btn');
+        if (equipmentBtn && equipmentBtn.style.display !== 'none') {
+            selectedEquipment = equipmentBtn.dataset.equipment;
+            document.querySelectorAll('.equipment-btn').forEach(btn => {
+                btn.style.opacity = btn === equipmentBtn ? '1' : '0.5';
             });
             
-            const equipmentName = btn.querySelector('p').textContent;
+            const equipmentName = equipmentBtn.querySelector('p').textContent;
             feedbackMessage.textContent = `Выбрано: ${equipmentName}`;
             feedbackMessage.className = 'feedback-message';
-        });
+        }
     });
 
-    slots.forEach(slot => {
-        slot.addEventListener(isMobile ? 'touchend' : 'click', (e) => {
-            e.preventDefault();
-            if (!selectedEquipment || slot.dataset.filled === 'true') return;
-            
+    document.addEventListener(isMobile ? 'touchend' : 'click', (e) => {
+        const slot = e.target.closest('.slot');
+        if (slot && selectedEquipment && slot.dataset.filled !== 'true') {
             placeEquipment(slot, selectedEquipment);
             
             selectedEquipment = null;
-            equipmentBtns.forEach(b => {
-                b.style.opacity = '1';
+            document.querySelectorAll('.equipment-btn').forEach(btn => {
+                btn.style.opacity = '1';
             });
-        });
+        }
     });
 
     // Кнопка запуска завода
     launchBtn.addEventListener('click', () => {
-        const slot1Correct = document.getElementById('slot1').dataset.equipment === 'fermenter';
-        const slot2Correct = document.getElementById('slot2').dataset.equipment === 'heat-exchanger';
+        const level = levels[currentLevel];
+        let allCorrect = true;
         
-        if (slot1Correct && slot2Correct) {
+        level.slots.forEach(slotConfig => {
+            const slot = document.getElementById(slotConfig.id);
+            if (slot.dataset.equipment !== slotConfig.correct) {
+                allCorrect = false;
+            }
+        });
+        
+        if (allCorrect) {
             feedbackMessage.textContent = 'Правильно! Завод запущен!';
             feedbackMessage.classList.add('correct');
             setTimeout(() => endGame(true), 1500);
@@ -213,4 +385,33 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => endGame(false), 1500);
         }
     });
+
+    // Кнопки рестарта
+    restartBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            winScreen.classList.add('hidden');
+            loseScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            initLevel(currentLevel);
+        });
+    });
+
+    // Кнопка следующего уровня
+    nextLevelBtn.addEventListener('click', () => {
+        if (currentLevel < 3) {
+            winScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            initLevel(currentLevel + 1);
+        } else {
+            winScreen.classList.add('hidden');
+            levelSelectScreen.classList.remove('hidden');
+        }
+    });
+
+    // Предотвращение стандартного поведения для мобильных
+    document.addEventListener('touchmove', (e) => {
+        if (e.target.classList.contains('equipment-btn')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 });
