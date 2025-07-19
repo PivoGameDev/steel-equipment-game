@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Конфигурация уровней с описаниями
     const levels = {
         1: {
-            name: "Новичок",
+            name: "Запуск пивзавода 1 шаг",
             time: 120,
             slots: [
                 { id: "slot1", correct: "fermenter", number: 1 },
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
             equipment: ["fermenter", "heat-exchanger"],
             threshold3: 30,
             threshold2: 60,
-            description: "На заводе оврал! Рома не перезванивает по поводу КП а заказчиком нужно сейчас подключить завод. Переставьте оборудование в нужной последовательности. На сырном заводе"
+            description: "На заводе оврал! Рома не перезванивает по поводу КП а заказчиком нужно сейчас подключить завод Пива. Переставьте оборудование в нужной последовательности."
         },
         2: {
             name: "Специалист",
@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Названия оборудования
     const equipNames = {
-        fermenter: "Ферментер",
-        "heat-exchanger": "Теплообменник",
+        fermenter: "Заторный-аппарат",
+        "heat-exchanger": "Дробилка-солода",
         centrifuge: "Центрифуга",
         boiler: "Котёл",
         cooler: "Охладитель"
