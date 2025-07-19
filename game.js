@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
             equipment: ["fermenter", "heat-exchanger"],
             threshold3: 30,
             threshold2: 60,
-            description: "На заводе оврал! Рома не перезванивает по поводу КП а заказчиком нужно сейчас подключить завод. Переставьте оборудование в нужной последовательности. На сырном заводе"
+            description: "На заводе аврал! Рома не перезванивает по поводу КП, а заказчик требует срочно подключить оборудование. Переставьте оборудование в правильной последовательности."
         },
         2: {
             name: "Специалист",
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             equipment: ["fermenter", "heat-exchanger", "centrifuge"],
             threshold3: 25,
             threshold2: 50,
-            description: "На предприятии молока ЧП, охранник поддтерся ночью свежими эскизами подключения. помогите стажеру разобраться и правильно подключить завод"
+            description: "На предприятии ЧП - охранник перепутал схемы подключения. Помогите стажеру правильно подключить оборудование завода."
         },
         3: {
             name: "Эксперт",
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
             equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler"],
             threshold3: 20,
             threshold2: 40,
-            description: "Все пошло по пизде. нужно переподключить"
+            description: "Все пошло не по плану! Нужно срочно переподключить оборудование в правильном порядке."
         },
         4: {
             name: "Мастер",
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler", "cooler"],
             threshold3: 30,
             threshold2: 45,
-            description: "Я ебал как тут все поставить... сказал главный инжинер квасного завода увидев это"
+            description: "Я не понимаю как это подключить! - сказал главный инженер. Помогите правильно собрать сложную систему."
         }
     };
 
@@ -108,10 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadProgress() {
         const saved = localStorage.getItem('breweryGameProgress');
         if (saved) {
-            const parsed = JSON.parse(saved);
-            gameProgress.unlockedLevels = parsed.unlockedLevels || [1];
-            gameProgress.bestTimes = parsed.bestTimes || {};
-            gameProgress.bestStars = parsed.bestStars || {};
+            try {
+                const parsed = JSON.parse(saved);
+                gameProgress.unlockedLevels = parsed.unlockedLevels || [1];
+                gameProgress.bestTimes = parsed.bestTimes || {};
+                gameProgress.bestStars = parsed.bestStars || {};
+            } catch (e) {
+                console.error('Error loading progress:', e);
+            }
         }
     }
 
@@ -137,11 +141,21 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(timer);
         timer = setInterval(updateTimer, 1000);
         
-        // Предзагрузка звуков для мобильных
-        if (isMobile) {
-            successSound.load();
-            errorSound.load();
-        }
+        // Предзагрузка звуков
+        successSound.load().catch(e => console.log('Sound preload error:', e));
+        errorSound.load().catch(e => console.log('Sound preload error:', e));
+        
+        // Предзагрузка изображений
+        preloadEquipmentImages();
+    }
+
+    // Предзагрузка изображений оборудования
+    function preloadEquipmentImages() {
+        const level = levels[currentLevel];
+        level.equipment.forEach(equipId => {
+            const img = new Image();
+            img.src = `assets/images/${equipId}.png`;
+        });
     }
 
     // Форматирование времени
@@ -197,11 +211,19 @@ document.addEventListener('DOMContentLoaded', () => {
             updateLevelSelectScreen();
             
             winScreen.classList.remove('hidden');
-            successSound.play();
+            try {
+                successSound.play();
+            } catch (e) {
+                console.log('Sound play error:', e);
+            }
             createConfetti();
         } else {
             loseScreen.classList.remove('hidden');
-            errorSound.play();
+            try {
+                errorSound.play();
+            } catch (e) {
+                console.log('Sound play error:', e);
+            }
         }
     }
 
@@ -301,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
             slot.id = slotConfig.id;
             slot.dataset.correct = slotConfig.correct;
             slot.dataset.number = slotConfig.number;
+            slot.dataset.filled = 'false';
             
             // Добавляем номер слота
             const slotNumber = document.createElement('div');
@@ -320,7 +343,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = document.createElement('img');
             img.src = `assets/images/${equipId}.png`;
             img.className = 'equipment';
-            img.id = equipId;
             img.alt = equipNames[equipId];
             
             const label = document.createElement('p');
@@ -374,9 +396,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Управление оборудованием
-    document.addEventListener(isMobile ? 'touchstart' : 'mousedown', (e) => {
-        const equipmentBtn = e.target.closest('.equipment-btn');
-        if (equipmentBtn && equipmentBtn.style.display !== 'none') {
+    function handleEquipmentSelection(equipmentBtn) {
+        if (equipmentBtn.style.display !== 'none') {
             selectedEquipment = equipmentBtn.dataset.equipment;
             document.querySelectorAll('.equipment-btn').forEach(btn => {
                 btn.style.opacity = btn === equipmentBtn ? '1' : '0.5';
@@ -386,11 +407,10 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackMessage.textContent = `Выбрано: ${equipmentName}`;
             feedbackMessage.className = 'feedback-message';
         }
-    });
+    }
 
-    document.addEventListener(isMobile ? 'touchend' : 'click', (e) => {
-        const slot = e.target.closest('.slot');
-        if (slot && selectedEquipment && slot.dataset.filled !== 'true') {
+    function handleSlotPlacement(slot) {
+        if (slot && selectedEquipment && slot.dataset.filled === 'false') {
             placeEquipment(slot, selectedEquipment);
             
             selectedEquipment = null;
@@ -398,7 +418,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.style.opacity = '1';
             });
         }
-    });
+    }
+
+    // Обработка событий для мобильных и десктопов
+    if (isMobile) {
+        // Для мобильных устройств
+        document.addEventListener('touchstart', (e) => {
+            const equipmentBtn = e.target.closest('.equipment-btn');
+            if (equipmentBtn) {
+                e.preventDefault();
+                handleEquipmentSelection(equipmentBtn);
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchend', (e) => {
+            const slot = e.target.closest('.slot');
+            handleSlotPlacement(slot);
+        });
+    } else {
+        // Для десктопов
+        document.addEventListener('mousedown', (e) => {
+            const equipmentBtn = e.target.closest('.equipment-btn');
+            if (equipmentBtn) {
+                handleEquipmentSelection(equipmentBtn);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const slot = e.target.closest('.slot');
+            handleSlotPlacement(slot);
+        });
+    }
 
     // Кнопка запуска завода
     launchBtn.addEventListener('click', () => {
@@ -451,4 +501,12 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
         }
     }, { passive: false });
+    
+    // Предзагрузка ресурсов при загрузке страницы
+    window.addEventListener('load', () => {
+        const sounds = [successSound, errorSound];
+        sounds.forEach(sound => {
+            sound.load().catch(e => console.log('Initial sound preload error:', e));
+        });
+    });
 });

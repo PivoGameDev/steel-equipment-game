@@ -11,27 +11,28 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
     background-color: #f5f7fa;
     user-select: none;
+    padding: 10px;
 }
 
 .screen {
-    width: 80vw;
-    height: 80vh;
-    margin: 5%;
+    width: 95%;
+    max-width: 900px;
+    height: 90vh;
+    max-height: 700px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     position: absolute;
-    top: 0;
-    left: 0;
-    padding: 20px;
+    padding: 15px;
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     overflow: hidden;
+    background: white;
 }
 
 .hidden {
@@ -70,12 +71,12 @@ body {
     color: white;
     z-index: 90;
     justify-content: flex-start;
-    padding-top: 10px;
+    padding-top: 15px;
 }
 
 .level-select-title {
     font-size: 24px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .level-cards {
@@ -86,7 +87,8 @@ body {
     margin: 15px 0;
     width: 100%;
     overflow-y: auto;
-    max-height: 70%;
+    max-height: 65%;
+    padding: 5px;
 }
 
 .level-card {
@@ -129,7 +131,7 @@ body {
 
 #back-to-menu {
     margin-top: 15px;
-    padding: 10px 20px;
+    padding: 10px 25px;
     background: white;
     color: #3b82f6;
     border: none;
@@ -152,12 +154,15 @@ body {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
+    flex-wrap: wrap;
 }
 
 .header-left, .header-right {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    min-width: 45%;
+    margin-bottom: 5px;
 }
 
 .level-name {
@@ -189,9 +194,10 @@ body {
 .feedback-message {
     height: 24px;
     font-weight: bold;
-    margin: 8px 0;
+    margin: 5px 0;
     font-size: 16px;
     text-align: right;
+    width: 100%;
 }
 
 .feedback-message.correct {
@@ -209,23 +215,25 @@ body {
     border-radius: 10px;
     padding: 12px;
     margin: 10px 0;
-    font-size: 14px;
+    font-size: 15px;
     text-align: left;
-    max-height: 20%;
+    max-height: 20vh;
     overflow-y: auto;
+    line-height: 1.4;
 }
 
 #level-desc-text {
     color: #0c4a6e;
-    line-height: 1.4;
 }
 
 .game-container {
     display: flex;
     width: 100%;
-    height: 60%;
+    height: 55vh;
+    max-height: 400px;
     gap: 15px;
     margin: 10px 0;
+    flex-direction: column;
 }
 
 .playground-container {
@@ -236,6 +244,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 45%;
 }
 
 .playground {
@@ -245,8 +254,8 @@ body {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
-    padding: 10px;
+    gap: 10px;
+    padding: 8px;
     overflow-y: auto;
 }
 
@@ -259,18 +268,21 @@ body {
     justify-content: center;
     align-items: flex-start;
     overflow-y: auto;
+    min-height: 40%;
 }
 
 .equipment-panel {
     width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 10px;
+    justify-content: center;
 }
 
 .slot {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     background-color: #e5e7eb;
     border: 2px dashed #9ca3af;
     display: flex;
@@ -297,6 +309,7 @@ body {
     align-items: center;
     font-weight: bold;
     font-size: 14px;
+    z-index: 5;
 }
 
 .slot.highlight-correct {
@@ -328,12 +341,13 @@ body {
     cursor: pointer;
     transition: all 0.2s;
     background-color: #e5e7eb;
-    width: 100%;
+    width: 100px;
+    min-height: 110px;
 }
 
 .equipment {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     pointer-events: none;
     object-fit: contain;
 }
@@ -342,13 +356,16 @@ body {
     width: 90%;
     height: 90%;
     object-fit: contain;
+    z-index: 2;
 }
 
 .equipment-btn p {
-    margin-top: 6px;
+    margin-top: 8px;
     font-size: 12px;
     font-weight: 600;
     color: #1f2937;
+    text-align: center;
+    line-height: 1.2;
 }
 
 #launch-btn {
@@ -397,6 +414,7 @@ body {
     font-size: 24px;
     letter-spacing: 5px;
     color: #fbbf24;
+    margin: 5px 0;
 }
 
 .next-level-btn {
@@ -445,46 +463,93 @@ body {
     justify-content: center;
 }
 
-/* Адаптивность */
+/* Адаптивность для мобильных */
 @media (max-width: 768px) {
     .screen {
-        width: 90vw;
-        height: 90vh;
-        margin: 5vh 5vw;
+        width: 100%;
+        height: 95vh;
+        max-height: none;
+        padding: 10px;
     }
     
     .game-container {
+        height: 65vh;
         flex-direction: column;
-        height: 70%;
     }
     
     .playground-container {
-        flex: 3;
+        min-height: 45%;
     }
     
     .equipment-panel-container {
-        flex: 2;
+        min-height: 35%;
     }
     
-    .equipment-panel {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .equipment-btn {
-        width: 45%;
-        min-width: 100px;
-    }
-    
-    .level-select-title {
-        font-size: 20px;
+    .level-cards {
+        flex-direction: column;
+        align-items: center;
+        max-height: 60%;
     }
     
     .level-card {
         width: 100%;
         max-width: 300px;
-        padding: 12px;
+        margin-bottom: 10px;
+    }
+    
+    .level-description {
+        font-size: 14px;
+        padding: 10px;
+        max-height: 15vh;
+    }
+    
+    .slot, .equipment-btn {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .equipment {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-header {
+        flex-direction: column;
+    }
+    
+    .header-left, .header-right {
+        align-items: center;
+        width: 100%;
+    }
+    
+    .level-name, .timer {
+        text-align: center;
+        width: 100%;
+    }
+    
+    .feedback-message {
+        text-align: center;
+    }
+    
+    .slot, .equipment-btn {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .equipment {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .equipment-btn p {
+        font-size: 11px;
+    }
+    
+    #launch-btn, .next-level-btn, .restart-btn, #back-to-menu {
+        padding: 10px 20px;
+        font-size: 15px;
     }
     
     .level-card h2 {
@@ -495,49 +560,19 @@ body {
         font-size: 12px;
     }
     
-    .level-description {
-        font-size: 13px;
-        padding: 10px;
+    .timer {
+        font-size: 22px;
     }
 }
 
-@media (max-width: 480px) {
-    .game-header {
-        flex-direction: column;
-    }
-    
-    .header-right {
-        align-items: flex-start;
-        margin-top: 5px;
-    }
-    
-    .feedback-message {
-        text-align: left;
-    }
-    
-    .level-name {
-        font-size: 16px;
-    }
-    
-    .timer {
-        font-size: 20px;
-    }
-    
-    .feedback-message {
-        font-size: 14px;
-    }
-    
-    .equipment-btn p {
-        font-size: 11px;
-    }
-    
-    #launch-btn, .next-level-btn, .restart-btn, #back-to-menu {
-        padding: 8px 16px;
-        font-size: 14px;
-    }
-    
-    .slot {
-        width: 100px;
-        height: 100px;
-    }
+/* Анимация для сообщений */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
+}
+
+.feedback-message {
+    animation: fadeInOut 3s ease forwards;
 }
