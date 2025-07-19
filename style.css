@@ -48,8 +48,18 @@ body {
     padding: 20px;
 }
 
+.game-title {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+}
+
+#start-screen h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
 #start-btn {
-    margin-top: 30px;
+    margin-top: 20px;
     padding: 15px 40px;
     font-size: 18px;
     background-color: #4ade80;
@@ -150,14 +160,14 @@ body {
     background-color: white;
     z-index: 80;
     justify-content: flex-start;
-    padding: 15px;
+    padding: 10px 15px;
 }
 
 .game-header {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     flex-wrap: wrap;
 }
 
@@ -174,15 +184,14 @@ body {
     font-size: 18px;
     font-weight: bold;
     color: #3b82f6;
-    margin-bottom: 5px;
     text-align: left;
+    margin-bottom: 3px;
 }
 
 .timer {
     font-size: 24px;
     font-weight: bold;
     color: #10b981;
-    margin-bottom: 5px;
 }
 
 .timer.low-time {
@@ -219,12 +228,12 @@ body {
     width: calc(100% - 20px);
     background-color: #e0f2fe;
     border-radius: 10px;
-    padding: 12px;
-    margin: 10px 0;
+    padding: 10px;
+    margin: 5px 0 10px 0;
     font-size: 15px;
     text-align: left;
-    max-height: 25vh;
-    min-height: 120px;
+    max-height: 20vh;
+    min-height: 100px;
     overflow-y: auto;
     line-height: 1.4;
     margin-left: 10px;
@@ -239,9 +248,9 @@ body {
     display: flex;
     width: 100%;
     height: 55vh;
-    max-height: 400px;
+    max-height: 380px;
     gap: 15px;
-    margin: 10px 0;
+    margin: 5px 0;
     flex-direction: column;
     padding: 0 5px;
 }
@@ -289,8 +298,8 @@ body {
 }
 
 .slot {
-    width: 180px;
-    height: 180px;
+    width: 160px;
+    height: 160px;
     background-color: #e5e7eb;
     border: 2px dashed #9ca3af;
     display: flex;
@@ -360,14 +369,14 @@ body {
     cursor: pointer;
     transition: all 0.2s;
     background-color: #e5e7eb;
-    width: 180px;
-    height: 180px;
+    width: 160px;
+    height: 160px;
     flex-shrink: 0;
 }
 
 .equipment {
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 130px;
     pointer-events: none;
     object-fit: contain;
 }
@@ -384,11 +393,12 @@ body {
     justify-content: center;
     gap: 15px;
     width: 100%;
-    padding: 0 10px;
+    padding: 5px 10px 10px;
+    flex-wrap: wrap;
 }
 
 #hint-btn {
-    padding: 12px 30px;
+    padding: 12px 20px;
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     color: white;
     border: none;
@@ -397,7 +407,9 @@ body {
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-    min-width: 150px;
+    min-width: 140px;
+    flex: 1;
+    max-width: 200px;
 }
 
 #hint-btn:disabled {
@@ -413,7 +425,7 @@ body {
 }
 
 #launch-btn {
-    padding: 12px 30px;
+    padding: 12px 20px;
     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     color: white;
     border: none;
@@ -422,7 +434,9 @@ body {
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-    min-width: 200px;
+    min-width: 160px;
+    flex: 1;
+    max-width: 200px;
 }
 
 #launch-btn:disabled {
@@ -521,6 +535,7 @@ body {
     
     .game-container {
         height: 60vh;
+        max-height: 350px;
         flex-direction: column;
     }
     
@@ -547,18 +562,26 @@ body {
     .level-description {
         font-size: 14px;
         padding: 10px;
-        min-height: 120px;
-        max-height: 120px;
+        min-height: 90px;
+        max-height: 90px;
     }
     
     .slot, .equipment-btn {
-        width: 160px;
-        height: 160px;
+        width: 140px;
+        height: 140px;
     }
     
     .equipment {
-        width: 130px;
-        height: 130px;
+        width: 110px;
+        height: 110px;
+    }
+    
+    .game-header {
+        margin-bottom: 0;
+    }
+    
+    .header-left, .header-right {
+        margin-bottom: 3px;
     }
 }
 
@@ -571,6 +594,14 @@ body {
         padding: 8px;
         width: 100%;
         height: 98vh;
+    }
+    
+    .game-title {
+        font-size: 2rem;
+    }
+    
+    #start-screen h1 {
+        font-size: 1.8rem;
     }
     
     .game-header {
@@ -598,31 +629,29 @@ body {
     }
     
     .slot, .equipment-btn {
-        width: 140px;
-        height: 140px;
+        width: 120px;
+        height: 120px;
     }
     
     .equipment {
-        width: 110px;
-        height: 110px;
+        width: 90px;
+        height: 90px;
     }
     
-    #hint-btn, #launch-btn, .next-level-btn, .restart-btn, #back-to-menu {
+    #hint-btn, #launch-btn {
         padding: 10px 15px;
         font-size: 14px;
-        min-width: auto;
+        min-width: 120px;
+        max-width: 100%;
+        flex: 1 0 80%;
+        margin: 5px 0;
     }
 
     .game-controls {
-        flex-wrap: wrap;
-    }
-    
-    #hint-btn {
-        min-width: 120px;
-    }
-    
-    #launch-btn {
-        min-width: 160px;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 0;
     }
     
     .level-card h2 {
@@ -636,6 +665,8 @@ body {
     .level-description {
         margin-left: 5px;
         margin-right: 5px;
+        min-height: 80px;
+        max-height: 80px;
     }
     
     .playground-container, 
