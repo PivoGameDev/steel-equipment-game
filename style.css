@@ -28,7 +28,7 @@ body {
     align-items: center;
     text-align: center;
     position: absolute;
-    padding: 15px;
+    padding: 12px 15px 5px;
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     overflow: hidden;
@@ -160,14 +160,14 @@ body {
     background-color: white;
     z-index: 80;
     justify-content: flex-start;
-    padding: 10px 15px;
+    padding: 8px 12px 0;
 }
 
 .game-header {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     flex-wrap: wrap;
 }
 
@@ -176,20 +176,19 @@ body {
     flex-direction: column;
     align-items: flex-start;
     min-width: 45%;
-    margin-bottom: 5px;
     padding: 0 5px;
 }
 
 .level-name {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     color: #3b82f6;
     text-align: left;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 
 .timer {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
     color: #10b981;
 }
@@ -206,10 +205,10 @@ body {
 }
 
 .feedback-message {
-    height: 24px;
+    height: 22px;
     font-weight: bold;
-    margin: 5px 0;
-    font-size: 16px;
+    margin: 2px 0;
+    font-size: 15px;
     text-align: right;
     width: 100%;
     padding: 0 5px;
@@ -225,19 +224,17 @@ body {
 
 /* Блок описания уровня */
 .level-description {
-    width: calc(100% - 20px);
+    width: calc(100% - 10px);
     background-color: #e0f2fe;
     border-radius: 10px;
     padding: 10px;
-    margin: 5px 0 10px 0;
-    font-size: 15px;
+    margin: 3px 0 8px;
+    font-size: 14px;
     text-align: left;
-    max-height: 20vh;
-    min-height: 100px;
+    max-height: 22vh;
+    min-height: 110px;
     overflow-y: auto;
     line-height: 1.4;
-    margin-left: 10px;
-    margin-right: 10px;
 }
 
 #level-desc-text {
@@ -247,10 +244,10 @@ body {
 .game-container {
     display: flex;
     width: 100%;
-    height: 55vh;
+    height: 58vh;
     max-height: 380px;
-    gap: 15px;
-    margin: 5px 0;
+    gap: 12px;
+    margin: 0 0 5px;
     flex-direction: column;
     padding: 0 5px;
 }
@@ -264,7 +261,6 @@ body {
     justify-content: flex-start;
     align-items: center;
     min-height: 45%;
-    margin: 0 5px;
     white-space: nowrap;
 }
 
@@ -287,7 +283,6 @@ body {
     align-items: center;
     overflow-x: auto;
     min-height: 40%;
-    margin: 0 5px;
     white-space: nowrap;
 }
 
@@ -298,8 +293,8 @@ body {
 }
 
 .slot {
-    width: 160px;
-    height: 160px;
+    width: 175px;
+    height: 175px;
     background-color: #e5e7eb;
     border: 2px dashed #9ca3af;
     display: flex;
@@ -369,14 +364,14 @@ body {
     cursor: pointer;
     transition: all 0.2s;
     background-color: #e5e7eb;
-    width: 160px;
-    height: 160px;
+    width: 175px;
+    height: 175px;
     flex-shrink: 0;
 }
 
 .equipment {
-    width: 130px;
-    height: 130px;
+    width: 145px;
+    height: 145px;
     pointer-events: none;
     object-fit: contain;
 }
@@ -393,7 +388,7 @@ body {
     justify-content: center;
     gap: 15px;
     width: 100%;
-    padding: 5px 10px 10px;
+    padding: 0 10px 5px;
     flex-wrap: wrap;
 }
 
@@ -530,13 +525,14 @@ body {
     .screen {
         height: 95vh;
         max-height: none;
-        padding: 10px;
+        padding: 8px 10px 0;
     }
     
     .game-container {
         height: 60vh;
         max-height: 350px;
         flex-direction: column;
+        gap: 8px;
     }
     
     .playground-container {
@@ -562,18 +558,18 @@ body {
     .level-description {
         font-size: 14px;
         padding: 10px;
-        min-height: 90px;
-        max-height: 90px;
+        min-height: 110px;
+        max-height: 110px;
     }
     
     .slot, .equipment-btn {
-        width: 140px;
-        height: 140px;
+        width: 150px;
+        height: 150px;
     }
     
     .equipment {
-        width: 110px;
-        height: 110px;
+        width: 120px;
+        height: 120px;
     }
     
     .game-header {
@@ -581,7 +577,7 @@ body {
     }
     
     .header-left, .header-right {
-        margin-bottom: 3px;
+        margin-bottom: 0;
     }
 }
 
@@ -591,51 +587,54 @@ body {
     }
     
     .screen {
-        padding: 8px;
+        padding: 6px 8px 0;
         width: 100%;
         height: 98vh;
     }
     
     .game-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
     
     #start-screen h1 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
     }
     
     .game-header {
         flex-direction: column;
+        margin-bottom: 0;
     }
     
     .header-left, .header-right {
         align-items: center;
         width: 100%;
+        margin-bottom: 3px;
     }
     
     .level-name, .timer {
         text-align: center;
         width: 100%;
-        font-size: 16px;
+        font-size: 15px;
     }
     
     .timer {
-        font-size: 22px;
+        font-size: 20px;
     }
     
     .feedback-message {
         text-align: center;
         font-size: 14px;
+        height: 20px;
     }
     
     .slot, .equipment-btn {
-        width: 120px;
-        height: 120px;
+        width: 135px;
+        height: 135px;
     }
     
     .equipment {
-        width: 90px;
-        height: 90px;
+        width: 105px;
+        height: 105px;
     }
     
     #hint-btn, #launch-btn {
@@ -644,14 +643,14 @@ body {
         min-width: 120px;
         max-width: 100%;
         flex: 1 0 80%;
-        margin: 5px 0;
+        margin: 3px 0;
     }
 
     .game-controls {
         flex-direction: column;
         align-items: center;
-        gap: 8px;
-        padding: 0;
+        gap: 5px;
+        padding: 0 5px 5px;
     }
     
     .level-card h2 {
@@ -663,16 +662,16 @@ body {
     }
     
     .level-description {
-        margin-left: 5px;
-        margin-right: 5px;
-        min-height: 80px;
-        max-height: 80px;
+        margin: 2px 0 5px;
+        min-height: 100px;
+        max-height: 100px;
+        padding: 8px;
+        font-size: 13px;
     }
     
     .playground-container, 
     .equipment-panel-container {
-        margin-left: 2px;
-        margin-right: 2px;
+        padding: 8px;
     }
 }
 
