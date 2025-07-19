@@ -534,5 +534,9 @@ document.addEventListener('DOMContentLoaded', () => {
         sounds.forEach(sound => {
             sound.load().catch(e => console.log('Ошибка предзагрузки звука:', e));
         });
+        
+        // Предзагрузка логотипа
+        const logo = new Image();
+        logo.src = 'assets/images/logo.png';
     });
 });
