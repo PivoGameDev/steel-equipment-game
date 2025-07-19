@@ -30,56 +30,57 @@
                 <h2>Новичок</h2>
                 <p>2 оборудования</p>
                 <p>120 секунд</p>
-                <div class="stars-container"></div>
                 <div class="lock-icon hidden"></div>
             </div>
             <div class="level-card" data-level="2">
                 <h2>Специалист</h2>
                 <p>3 оборудования</p>
                 <p>90 секунд</p>
-                <div class="stars-container"></div>
                 <div class="lock-icon"></div>
             </div>
             <div class="level-card" data-level="3">
                 <h2>Эксперт</h2>
                 <p>4 оборудования</p>
                 <p>60 секунд</p>
-                <div class="stars-container"></div>
                 <div class="lock-icon"></div>
             </div>
             <div class="level-card" data-level="4">
                 <h2>Мастер</h2>
                 <p>5 оборудования</p>
                 <p>45 секунд</p>
-                <div class="stars-container"></div>
                 <div class="lock-icon"></div>
             </div>
         </div>
         <button id="back-to-menu">Назад</button>
-        <div class="sandbox-btn" id="sandboxBtn">Режим песочницы</div>
     </div>
 
     <!-- Игровой экран -->
     <div id="game-screen" class="screen hidden">
-        <div class="header">
-            <p class="level-name">Уровень: Новичок</p>
-            <p class="timer">02:00</p>
-            <p class="feedback-message"></p>
+        <div class="game-header">
+            <div class="header-left">
+                <p class="level-name">Уровень: Новичок</p>
+                <p class="timer">02:00</p>
+            </div>
+            <div class="header-right">
+                <p class="feedback-message"></p>
+            </div>
         </div>
         
-        <!-- Блок с описанием уровня -->
         <div class="level-description">
             <p id="level-desc-text">Описание уровня загружается...</p>
         </div>
         
-        <div class="playground" id="playground"></div>
-        
-        <div class="equipment-panel" id="equipmentPanel"></div>
-        
-        <div class="game-controls">
-            <button id="hint-btn" class="hint-btn">Подсказка (-10s)</button>
-            <button id="launch-btn" disabled>Запустить завод</button>
+        <div class="game-container">
+            <div class="playground-container">
+                <div class="playground"></div>
+            </div>
+            
+            <div class="equipment-panel-container">
+                <div class="equipment-panel"></div>
+            </div>
         </div>
+        
+        <button id="launch-btn" disabled>Запустить завод</button>
     </div>
 
     <!-- Экран победы -->
