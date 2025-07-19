@@ -191,6 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Конец игры
     function endGame(isWin) {
+        if (!gameStarted) return;
+        
         clearInterval(timer);
         gameStarted = false;
         gameScreen.classList.add('hidden');

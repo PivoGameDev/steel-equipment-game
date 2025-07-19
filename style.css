@@ -714,6 +714,18 @@ body {
     }
 }
 
+@media (min-width: 769px) {
+    .slot, .equipment-btn {
+        width: 170px;
+        height: 170px;
+    }
+    
+    .equipment {
+        width: 140px;
+        height: 140px;
+    }
+}
+
 @media (max-width: 480px) {
     body {
         padding: 5px;

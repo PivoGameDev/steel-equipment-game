@@ -22,113 +22,6 @@
         </div>
         <div class="game-titles">
             <h1 class="game-title">ИГРА</h1>
-            <h1>Собери пивной завод</h1>
-        </div>
-        <p class="welcome-text">Установите оборудование в правильные слоты и запустите производство!</p>
-        <button id="start-btn">Играть</button>
-    </div>
-
-    <!-- Экран выбора уровня -->
-    <div id="level-select-screen" class="screen hidden">
-        <h1 class="level-select-title">Выберите уровень сложности</h1>
-        <div class="level-cards">
-            <div class="level-card" data-level="1">
-                <h2>Новичок</h2>
-                <p>2 оборудования</p>
-                <p>120 секунд</p>
-                <div class="lock-icon hidden"></div>
-            </div>
-            <div class="level-card" data-level="2">
-                <h2>Специалист</h2>
-                <p>3 оборудования</p>
-                <p>90 секунд</p>
-                <div class="lock-icon"></div>
-            </div>
-            <div class="level-card" data-level="3">
-                <h2>Эксперт</h2>
-                <p>4 оборудования</p>
-                <p>60 секунд</p>
-                <div class="lock-icon"></div>
-            </div>
-            <div class="level-card" data-level="4">
-                <h2>Мастер</h2>
-                <p>5 оборудования</p>
-                <p>45 секунд</p>
-                <div class="lock-icon"></div>
-            </div>
-        </div>
-        <button id="back-to-menu">Назад</button>
-    </div>
-
-    <!-- Игровой экран -->
-    <div id="game-screen" class="screen hidden">
-        <div class="game-header">
-            <div class="header-left">
-                <p class="level-name">Уровень: Новичок</p>
-                <p class="timer">02:00</p>
-            </div>
-            <div class="header-right">
-                <p class="feedback-message"></p>
-            </div>
-        </div>
-        
-        <div class="level-description">
-            <p id="level-desc-text">Описание уровня загружается...</p>
-        </div>
-        
-        <div class="game-container">
-            <div class="playground-container">
-                <div class="playground"></div>
-            </div>
-            
-            <div class="equipment-panel-container">
-                <div class="equipment-panel"></div>
-            </div>
-        </div>
-        
-        <div class="game-controls">
-            <button id="hint-btn" class="hint-btn hidden">Подсказка</button>
-            <button id="launch-btn" disabled>Запустить завод</button>
-        </div>
-    </div>
-
-    <!-- Экран победы -->
-    <div id="win-screen" class="screen hidden">
-        <h1 class="win-text">Поздравляем!</h1>
-        <p>Вы справились за <span id="time-spent">00:00</span>!</p>
-        <p>Заработано звёзд: <span id="stars-earned">★★★</span></p>
-        <button class="next-level-btn">Следующий уровень</button>
-        <button class="restart-btn">Заново</button>
-        <div class="confetti"></div>
-    </div>
-
-    <!-- Экран проигрыша -->
-    <div id="lose-screen" class="screen hidden">
-        <h1>Время вышло!</h1>
-        <p>Заво<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Собери пивной завод</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body::after {
-            content: "";
-            display: none;
-            background: url(assets/sounds/success.mp3);
-            background: url(assets/sounds/error.mp3);
-        }
-    </style>
-</head>
-<body>
-    <!-- Стартовый экран -->
-    <div id="start-screen" class="screen">
-        <div class="logo-container">
-            <img src="assets/images/logo.png" alt="Логотип пивного завода" class="game-logo">
-        </div>
-        <div class="game-titles">
-            <h1 class="game-title">ИГРА</h1>
             <h1 class="game-name">Собери пивной завод</h1>
         </div>
         <p class="welcome-text">Установите оборудование в правильные слоты и запустите производство!</p>
@@ -226,15 +119,6 @@
             <span class="close-modal">&times;</span>
             <p id="hint-text"></p>
         </div>
-    </div>
-
-    <audio id="success-sound" src="assets/sounds/success.mp3" preload="auto"></audio>
-    <audio id="error-sound" src="assets/sounds/error.mp3" preload="auto"></audio>
-
-    <script src="game.js"></script>
-</body>
-</html>д не был запущен вовремя.</p>
-        <button class="restart-btn">Попробовать снова</button>
     </div>
 
     <audio id="success-sound" src="assets/sounds/success.mp3" preload="auto"></audio>
