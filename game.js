@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToMenuBtn = document.getElementById('back-to-menu');
     const levelCards = document.querySelectorAll('.level-card');
     const launchBtn = document.getElementById('launch-btn');
+    const hintBtn = document.getElementById('hint-btn');
     const restartBtns = document.querySelectorAll('.restart-btn');
     const nextLevelBtn = document.querySelector('.next-level-btn');
     const timerDisplay = document.querySelector('.timer');
@@ -86,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let equipmentPlaced = 0;
     let startTime;
     let selectedEquipment = null;
+    let hintUsed = false;
     const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
     
     // Прогресс игры
@@ -122,12 +124,22 @@ document.addEventListener('DOMContentLoaded', () => {
         gameStarted = true;
         startTime = Date.now();
         selectedEquipment = null;
+        hintUsed = false;
         
         timerDisplay.textContent = formatTime(timeLeft);
         timerDisplay.classList.remove('low-time');
         feedbackMessage.textContent = '';
         feedbackMessage.className = 'feedback-message';
         launchBtn.disabled = true;
+        
+        // Управление видимостью кнопки подсказки
+        if (currentLevel >= 3) {
+            hintBtn.classList.remove('hidden');
+            hintBtn.disabled = false;
+            hintBtn.style.opacity = '1';
+        } else {
+            hintBtn.classList.add('hidden');
+        }
         
         clearInterval(timer);
         timer = setInterval(updateTimer, 1000);
@@ -325,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('.playground').appendChild(slot);
         });
         
-        // Создание оборудования (без подписей)
+        // Создание оборудования
         level.equipment.forEach(equipId => {
             const btn = document.createElement('div');
             btn.className = 'equipment-btn';
@@ -435,6 +447,34 @@ document.addEventListener('DOMContentLoaded', () => {
             handleSlotPlacement(slot);
         });
     }
+
+    // Кнопка подсказки
+    hintBtn.addEventListener('click', () => {
+        if (hintUsed) return;
+        
+        const level = levels[currentLevel];
+        // Найдем первый слот, который еще не заполнен и который должен быть заполнен правильно
+        let targetSlot = null;
+        for (const slotConfig of level.slots) {
+            const slot = document.getElementById(slotConfig.id);
+            if (slot.dataset.filled === 'false') {
+                targetSlot = slot;
+                break;
+            }
+        }
+        
+        if (targetSlot) {
+            // Подсветим слот
+            targetSlot.classList.add('hint-highlight');
+            setTimeout(() => {
+                targetSlot.classList.remove('hint-highlight');
+            }, 2000);
+            
+            hintUsed = true;
+            hintBtn.disabled = true;
+            hintBtn.style.opacity = '0.6';
+        }
+    });
 
     // Кнопка запуска завода
     launchBtn.addEventListener('click', () => {
