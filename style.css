@@ -65,6 +65,7 @@ body {
 
 .game-titles {
     margin-bottom: 15px;
+    width: 100%;
 }
 
 .game-title {
@@ -72,12 +73,29 @@ body {
     margin-bottom: 5px;
     letter-spacing: 2px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    animation: title-appear 1s ease-out;
 }
 
-#start-screen h1 {
+.game-name {
     font-size: 2.5rem;
     margin-bottom: 5px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    background: linear-gradient(to right, #ffd700, #ff8c00, #ff4500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    animation: name-appear 1.2s ease-out;
+}
+
+@keyframes title-appear {
+    0% { transform: translateY(-20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes name-appear {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
 }
 
 .welcome-text {
@@ -171,6 +189,14 @@ body {
     display: none;
 }
 
+.level-stars {
+    margin-top: 8px;
+    font-size: 20px;
+    color: #fbbf24;
+    letter-spacing: 2px;
+    height: 24px;
+}
+
 #back-to-menu {
     margin-top: 15px;
     padding: 10px 25px;
@@ -260,8 +286,8 @@ body {
     margin: 3px 0 8px;
     font-size: 14px;
     text-align: left;
-    max-height: 25vh;
-    min-height: 130px;
+    max-height: 20vh;
+    min-height: 100px;
     overflow-y: auto;
     line-height: 1.4;
 }
@@ -273,8 +299,8 @@ body {
 .game-container {
     display: flex;
     width: 100%;
-    height: 62vh;
-    max-height: 400px;
+    height: 65vh;
+    max-height: 420px;
     gap: 12px;
     margin: 0 0 5px;
     flex-direction: column;
@@ -289,7 +315,7 @@ body {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    min-height: 45%;
+    min-height: 48%;
     white-space: nowrap;
 }
 
@@ -311,7 +337,7 @@ body {
     justify-content: flex-start;
     align-items: center;
     overflow-x: auto;
-    min-height: 40%;
+    min-height: 42%;
     white-space: nowrap;
 }
 
@@ -550,6 +576,64 @@ body {
     padding: 20px;
 }
 
+/* Модальное окно для подсказок */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    animation: modal-appear 0.4s ease-out;
+}
+
+@keyframes modal-appear {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+}
+
+.close-modal:hover {
+    color: #333;
+}
+
+#hint-text {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #333;
+    padding: 20px 10px;
+    text-align: center;
+}
+
 /* Адаптивность для мобильных */
 @media (max-width: 768px) {
     .screen {
@@ -568,7 +652,7 @@ body {
         font-size: 2.5rem;
     }
     
-    #start-screen h1 {
+    .game-name {
         font-size: 2rem;
     }
     
@@ -578,8 +662,8 @@ body {
     }
     
     .game-container {
-        height: 62vh;
-        max-height: 380px;
+        height: 65vh;
+        max-height: 400px;
         flex-direction: column;
         gap: 8px;
     }
@@ -589,7 +673,7 @@ body {
     }
     
     .equipment-panel-container {
-        min-height: 30%;
+        min-height: 40%;
     }
     
     .level-cards {
@@ -607,8 +691,8 @@ body {
     .level-description {
         font-size: 14px;
         padding: 10px;
-        min-height: 130px;
-        max-height: 130px;
+        min-height: 100px;
+        max-height: 100px;
     }
     
     .slot, .equipment-btn {
@@ -651,7 +735,7 @@ body {
         font-size: 2.2rem;
     }
     
-    #start-screen h1 {
+    .game-name {
         font-size: 1.8rem;
     }
     
@@ -728,8 +812,8 @@ body {
     
     .level-description {
         margin: 2px 0 5px;
-        min-height: 120px;
-        max-height: 120px;
+        min-height: 100px;
+        max-height: 100px;
         padding: 8px;
         font-size: 13px;
     }

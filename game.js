@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Конфигурация уровней с описаниями
+    // Конфигурация уровней с описаниями и подсказками
     const levels = {
         1: {
             name: "Новичок",
@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
             equipment: ["fermenter", "heat-exchanger"],
             threshold3: 30,
             threshold2: 60,
-            description: "На заводе аврал! Рома не перезванивает по поводу КП, а заказчик требует срочно подключить оборудование. Переставьте оборудование в правильной последовательности. На первом этапе установите ферментер, а затем теплообменник."
+            description: "На заводе аврал! Рома не перезванивает по поводу КП, а заказчик требует срочно подключить оборудование. Переставьте оборудование в правильной последовательности. На первом этапе установите ферментер, а затем теплообменник.",
+            hint: "Начните с ферментера - это основа процесса брожения."
         },
         2: {
             name: "Специалист",
@@ -24,7 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
             equipment: ["fermenter", "heat-exchanger", "centrifuge"],
             threshold3: 25,
             threshold2: 50,
-            description: "На предприятии ЧП - охранник перепутал схемы подключения. Помогите стажеру правильно подключить оборудование завода. Сначала установите ферментер, затем теплообменник, и в конце центрифугу для оптимальной работы системы."
+            description: "На предприятии ЧП - охранник перепутал схемы подключения. Помогите стажеру правильно подключить оборудование завода. Сначала установите ферментер, затем теплообменник, и в конце центрифугу для оптимальной работы системы.",
+            hint: "Теплообменник всегда следует после ферментера."
         },
         3: {
             name: "Эксперт",
@@ -38,7 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
             equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler"],
             threshold3: 20,
             threshold2: 40,
-            description: "Все пошло не по плану! Нужно срочно переподключить оборудование в правильном порядке. Начните с котла, затем установите центрифугу, после этого ферментер и завершите теплообменником. Такая последовательность обеспечит бесперебойную работу."
+            description: "Все пошло не по плану! Нужно срочно переподключить оборудование в правильном порядке. Начните с котла, затем установите центрифугу, после этого ферментер и завершите теплообменником. Такая последовательность обеспечит бесперебойную работу.",
+            hint: "текст4текст4текст4"
         },
         4: {
             name: "Мастер",
@@ -53,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
             equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler", "cooler"],
             threshold3: 30,
             threshold2: 45,
-            description: "Я не понимаю как это подключить! - сказал главный инженер. Помогите правильно собрать сложную систему. Начните с котла, затем теплообменник, ферментер, центрифугу и завершите охладителем. Эта последовательность критически важна для безопасности и эффективности производства."
+            description: "Я не понимаю как это подключить! - сказал главный инженер. Помогите правильно собрать сложную систему. Начните с котла, затем теплообменник, ферментер, центрифугу и завершите охладителем. Эта последовательность критически важна для безопасности и эффективности производства.",
+            hint: "текст5текст5текст5"
         }
     };
 
@@ -78,6 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const levelDescText = document.getElementById('level-desc-text');
     const successSound = document.getElementById('success-sound');
     const errorSound = document.getElementById('error-sound');
+    const hintModal = document.getElementById('hint-modal');
+    const hintText = document.getElementById('hint-text');
+    const closeModal = document.querySelector('.close-modal');
 
     // Игровые переменные
     let currentLevel = 1;
@@ -361,11 +368,21 @@ document.addEventListener('DOMContentLoaded', () => {
         levelCards.forEach(card => {
             const level = parseInt(card.dataset.level);
             const lockIcon = card.querySelector('.lock-icon');
+            const starsContainer = card.querySelector('.level-stars');
             
             if (gameProgress.unlockedLevels.includes(level)) {
                 lockIcon.classList.add('hidden');
+                
+                // Показываем звезды для пройденных уровней
+                if (gameProgress.bestStars[level]) {
+                    starsContainer.innerHTML = '★'.repeat(gameProgress.bestStars[level]) + 
+                                              '☆'.repeat(3 - gameProgress.bestStars[level]);
+                } else {
+                    starsContainer.innerHTML = '';
+                }
             } else {
                 lockIcon.classList.remove('hidden');
+                starsContainer.innerHTML = '';
             }
         });
     }
@@ -453,26 +470,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (hintUsed) return;
         
         const level = levels[currentLevel];
-        // Найдем первый слот, который еще не заполнен и который должен быть заполнен правильно
-        let targetSlot = null;
-        for (const slotConfig of level.slots) {
-            const slot = document.getElementById(slotConfig.id);
-            if (slot.dataset.filled === 'false') {
-                targetSlot = slot;
-                break;
-            }
-        }
-        
-        if (targetSlot) {
-            // Подсветим слот
-            targetSlot.classList.add('hint-highlight');
-            setTimeout(() => {
-                targetSlot.classList.remove('hint-highlight');
-            }, 2000);
-            
-            hintUsed = true;
-            hintBtn.disabled = true;
-            hintBtn.style.opacity = '0.6';
+        hintText.textContent = level.hint;
+        hintModal.classList.remove('hidden');
+        hintUsed = true;
+        hintBtn.disabled = true;
+        hintBtn.style.opacity = '0.6';
+    });
+
+    // Закрытие модального окна
+    closeModal.addEventListener('click', () => {
+        hintModal.classList.add('hidden');
+    });
+
+    // Закрытие модального окна по клику вне его
+    window.addEventListener('click', (e) => {
+        if (e.target === hintModal) {
+            hintModal.classList.add('hidden');
         }
     });
 
