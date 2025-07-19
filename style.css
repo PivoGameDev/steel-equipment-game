@@ -19,9 +19,9 @@ body {
 }
 
 .screen {
-    width: 95%;
+    width: 100%;
     max-width: 900px;
-    height: 90vh;
+    height: 95vh;
     max-height: 700px;
     display: flex;
     flex-direction: column;
@@ -45,6 +45,7 @@ body {
     color: white;
     z-index: 100;
     justify-content: center;
+    padding: 20px;
 }
 
 #start-btn {
@@ -77,6 +78,7 @@ body {
 .level-select-title {
     font-size: 24px;
     margin-bottom: 20px;
+    padding: 0 10px;
 }
 
 .level-cards {
@@ -101,6 +103,7 @@ body {
     transition: all 0.3s;
     position: relative;
     overflow: hidden;
+    margin: 5px;
 }
 
 .level-card h2 {
@@ -139,6 +142,7 @@ body {
     font-size: 16px;
     cursor: pointer;
     transition: all 0.3s;
+    margin-bottom: 10px;
 }
 
 /* Игровой экран */
@@ -163,6 +167,7 @@ body {
     align-items: flex-start;
     min-width: 45%;
     margin-bottom: 5px;
+    padding: 0 5px;
 }
 
 .level-name {
@@ -198,6 +203,7 @@ body {
     font-size: 16px;
     text-align: right;
     width: 100%;
+    padding: 0 5px;
 }
 
 .feedback-message.correct {
@@ -210,7 +216,7 @@ body {
 
 /* Блок описания уровня */
 .level-description {
-    width: 100%;
+    width: calc(100% - 20px);
     background-color: #e0f2fe;
     border-radius: 10px;
     padding: 12px;
@@ -220,6 +226,8 @@ body {
     max-height: 20vh;
     overflow-y: auto;
     line-height: 1.4;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 #level-desc-text {
@@ -234,6 +242,7 @@ body {
     gap: 15px;
     margin: 10px 0;
     flex-direction: column;
+    padding: 0 5px;
 }
 
 .playground-container {
@@ -245,6 +254,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 45%;
+    margin: 0 5px;
 }
 
 .playground {
@@ -269,6 +279,7 @@ body {
     align-items: flex-start;
     overflow-y: auto;
     min-height: 40%;
+    margin: 0 5px;
 }
 
 .equipment-panel {
@@ -278,11 +289,12 @@ body {
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
+    align-items: center;
 }
 
 .slot {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     background-color: #e5e7eb;
     border: 2px dashed #9ca3af;
     display: flex;
@@ -336,36 +348,29 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     padding: 10px;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s;
     background-color: #e5e7eb;
-    width: 100px;
-    min-height: 110px;
+    width: 120px;
+    height: 120px;
+    margin: 5px;
 }
 
 .equipment {
-    width: 70px;
-    height: 70px;
+    width: 90px;
+    height: 90px;
     pointer-events: none;
     object-fit: contain;
 }
 
 .equipment-placed {
-    width: 90%;
-    height: 90%;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     z-index: 2;
-}
-
-.equipment-btn p {
-    margin-top: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #1f2937;
-    text-align: center;
-    line-height: 1.2;
 }
 
 #launch-btn {
@@ -379,6 +384,7 @@ body {
     margin: 10px 0;
     transition: all 0.3s;
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    min-width: 200px;
 }
 
 #launch-btn:disabled {
@@ -398,6 +404,7 @@ body {
     color: white;
     z-index: 100;
     justify-content: center;
+    padding: 20px;
 }
 
 .win-text {
@@ -427,6 +434,7 @@ body {
     font-size: 16px;
     cursor: pointer;
     transition: all 0.3s;
+    min-width: 200px;
 }
 
 .restart-btn {
@@ -439,6 +447,7 @@ body {
     font-size: 16px;
     cursor: pointer;
     transition: all 0.3s;
+    min-width: 200px;
 }
 
 .next-level-btn:hover, .restart-btn:hover {
@@ -461,12 +470,12 @@ body {
     color: white;
     z-index: 100;
     justify-content: center;
+    padding: 20px;
 }
 
 /* Адаптивность для мобильных */
 @media (max-width: 768px) {
     .screen {
-        width: 100%;
         height: 95vh;
         max-height: none;
         padding: 10px;
@@ -504,17 +513,21 @@ body {
     }
     
     .slot, .equipment-btn {
-        width: 90px;
-        height: 90px;
+        width: 110px;
+        height: 110px;
     }
     
     .equipment {
-        width: 60px;
-        height: 60px;
+        width: 85px;
+        height: 85px;
     }
 }
 
 @media (max-width: 480px) {
+    .screen {
+        padding: 8px;
+    }
+    
     .game-header {
         flex-direction: column;
     }
@@ -527,29 +540,32 @@ body {
     .level-name, .timer {
         text-align: center;
         width: 100%;
+        font-size: 16px;
+    }
+    
+    .timer {
+        font-size: 22px;
     }
     
     .feedback-message {
         text-align: center;
+        font-size: 14px;
     }
     
     .slot, .equipment-btn {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
     }
     
     .equipment {
-        width: 50px;
-        height: 50px;
-    }
-    
-    .equipment-btn p {
-        font-size: 11px;
+        width: 75px;
+        height: 75px;
     }
     
     #launch-btn, .next-level-btn, .restart-btn, #back-to-menu {
         padding: 10px 20px;
         font-size: 15px;
+        min-width: 180px;
     }
     
     .level-card h2 {
@@ -560,8 +576,15 @@ body {
         font-size: 12px;
     }
     
-    .timer {
-        font-size: 22px;
+    .level-description {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+    
+    .playground-container, 
+    .equipment-panel-container {
+        margin-left: 2px;
+        margin-right: 2px;
     }
 }
 

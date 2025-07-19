@@ -57,15 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Названия оборудования
-    const equipNames = {
-        fermenter: "Ферментер",
-        "heat-exchanger": "Теплообменник",
-        centrifuge: "Центрифуга",
-        boiler: "Котёл",
-        cooler: "Охладитель"
-    };
-
     // Элементы интерфейса
     const startScreen = document.getElementById('start-screen');
     const levelSelectScreen = document.getElementById('level-select-screen');
@@ -114,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 gameProgress.bestTimes = parsed.bestTimes || {};
                 gameProgress.bestStars = parsed.bestStars || {};
             } catch (e) {
-                console.error('Error loading progress:', e);
+                console.error('Ошибка загрузки прогресса:', e);
             }
         }
     }
@@ -142,8 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
         timer = setInterval(updateTimer, 1000);
         
         // Предзагрузка звуков
-        successSound.load().catch(e => console.log('Sound preload error:', e));
-        errorSound.load().catch(e => console.log('Sound preload error:', e));
+        successSound.load().catch(e => console.log('Ошибка загрузки звука:', e));
+        errorSound.load().catch(e => console.log('Ошибка загрузки звука:', e));
         
         // Предзагрузка изображений
         preloadEquipmentImages();
@@ -214,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 successSound.play();
             } catch (e) {
-                console.log('Sound play error:', e);
+                console.log('Ошибка воспроизведения звука:', e);
             }
             createConfetti();
         } else {
@@ -222,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 errorSound.play();
             } catch (e) {
-                console.log('Sound play error:', e);
+                console.log('Ошибка воспроизведения звука:', e);
             }
         }
     }
@@ -277,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const equipmentImg = document.createElement('img');
         equipmentImg.src = `assets/images/${equipmentId}.png`;
         equipmentImg.className = 'equipment-placed';
-        equipmentImg.alt = equipNames[equipmentId];
+        equipmentImg.alt = equipmentId;
         
         slot.innerHTML = '';
         
@@ -334,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('.playground').appendChild(slot);
         });
         
-        // Создание оборудования
+        // Создание оборудования (без подписей)
         level.equipment.forEach(equipId => {
             const btn = document.createElement('div');
             btn.className = 'equipment-btn';
@@ -343,13 +334,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = document.createElement('img');
             img.src = `assets/images/${equipId}.png`;
             img.className = 'equipment';
-            img.alt = equipNames[equipId];
-            
-            const label = document.createElement('p');
-            label.textContent = equipNames[equipId];
+            img.alt = equipId;
             
             btn.appendChild(img);
-            btn.appendChild(label);
             document.querySelector('.equipment-panel').appendChild(btn);
         });
         
@@ -403,8 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.style.opacity = btn === equipmentBtn ? '1' : '0.5';
             });
             
-            const equipmentName = equipmentBtn.querySelector('p').textContent;
-            feedbackMessage.textContent = `Выбрано: ${equipmentName}`;
+            feedbackMessage.textContent = `Выбрано: ${selectedEquipment.toUpperCase()}`;
             feedbackMessage.className = 'feedback-message';
         }
     }
@@ -506,7 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('load', () => {
         const sounds = [successSound, errorSound];
         sounds.forEach(sound => {
-            sound.load().catch(e => console.log('Initial sound preload error:', e));
+            sound.load().catch(e => console.log('Ошибка предзагрузки звука:', e));
         });
     });
 });
