@@ -4,62 +4,58 @@ class BreweryGame {
     // Конфигурация уровней
     this.levels = {
       1: {
-        name: "Новичок",
-        time: 120,
+        name: "Варочный цех",
+        time: 300,
         slots: [
-          { id: "slot1", correct: "fermenter", number: 1 },
-          { id: "slot2", correct: "heat-exchanger", number: 2 }
+          { id: "slot1", correct: "malt-crusher", number: 1 },
+          { id: "slot2", correct: "congestion-device", number: 2 },
+          { id: "slot3", correct: "steam-generator", number: 3 },
+          { id: "slot4", correct: "hot-water-tank", number: 4 },
+          { id: "slot5", correct: "filtration-unit", number: 5 },
+          { id: "slot6", correct: "wort-brewing-machine", number: 6 },
+          { id: "slot7", correct: "hydrocyclone-apparatus", number: 7 }
         ],
-        equipment: ["fermenter", "heat-exchanger"],
-        threshold3: 30,
-        threshold2: 60,
-        description: "На заводе аврал! Рома не перезванивает по поводу КП, а заказчик требует срочно подключить оборудование. Переставьте оборудование в правильной последовательности. На первом этапе установите ферментер, а затем теплообменник.",
-        hint: "Начните с ферментера - это основа процесса брожения."
+        equipment: [
+          "malt-crusher", "congestion-device", "steam-generator", 
+          "hot-water-tank", "filtration-unit", "wort-brewing-machine", 
+          "hydrocyclone-apparatus", "heat-exchanger", "chiller", 
+          "cylinder-conical-tank"
+        ],
+        threshold3: 60,
+        threshold2: 120,
+        description: "Соберите правильную последовательность оборудования варочного цеха. Вам нужно расставить 7 из 10 предложенных элементов оборудования в правильном порядке.",
+        hint: "Правильный порядок: Дробилка солода → Заторный аппарат → Парогенератор → Бак горячей воды → Фильтрационный аппарат → Сусловарочный аппарат → Гидроциклонный аппарат"
       },
       2: {
-        name: "Специалист",
-        time: 90,
+        name: "Бродильный цех",
+        time: 180,
         slots: [
-          { id: "slot1", correct: "fermenter", number: 1 },
-          { id: "slot2", correct: "heat-exchanger", number: 2 },
-          { id: "slot3", correct: "centrifuge", number: 3 }
+          { id: "slot1", correct: "heat-exchanger", number: 1 },
+          { id: "slot2", correct: "chiller", number: 2 },
+          { id: "slot3", correct: "cylinder-conical-tank", number: 3 }
         ],
-        equipment: ["fermenter", "heat-exchanger", "centrifuge"],
-        threshold3: 25,
-        threshold2: 50,
-        description: "На предприятии ЧП - охранник перепутал схемы подключения. Помогите стажеру правильно подключить оборудование завода. Сначала установите ферментер, затем теплообменник, и в конце центрифугу для оптимальной работы системы.",
-        hint: "Теплообменник всегда следует после ферментера."
+        equipment: [
+          "malt-crusher", "congestion-device", "steam-generator", 
+          "hot-water-tank", "filtration-unit", "wort-brewing-machine", 
+          "hydrocyclone-apparatus", "heat-exchanger", "chiller", 
+          "cylinder-conical-tank"
+        ],
+        threshold3: 30,
+        threshold2: 60,
+        description: "Теперь соберите оборудование бродильного цеха. Вам нужно правильно расставить 3 элемента оборудования из 10 возможных.",
+        hint: "Правильный порядок: Теплообменник → Чилер → Цилиндро-конический танк"
       },
       3: {
-        name: "Эксперт",
-        time: 60,
-        slots: [
-          { id: "slot1", correct: "boiler", number: 1 },
-          { id: "slot2", correct: "centrifuge", number: 2 },
-          { id: "slot3", correct: "fermenter", number: 3 },
-          { id: "slot4", correct: "heat-exchanger", number: 4 }
+        name: "Настройки температуры",
+        time: 120,
+        settings: [
+          { id: "hot-water-temp", correct: 50, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
+          { id: "tank-temp", correct: -2, min: -10, max: 10, step: 1, label: "Температура в ЦКТ (°C)" }
         ],
-        equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler"],
-        threshold3: 20,
-        threshold2: 40,
-        description: "Все пошло не по плану! Нужно срочно переподключить оборудование в правильном порядке. Начните с котла, затем установите центрифугу, после этого ферментер и завершите теплообменником. Такая последовательность обеспечит бесперебойную работу.",
-        hint: "Котёл должен быть первым, так как он нагревает сусло перед ферментацией."
-      },
-      4: {
-        name: "Мастер",
-        time: 45,
-        slots: [
-          { id: "slot1", correct: "boiler", number: 1 },
-          { id: "slot2", correct: "heat-exchanger", number: 2 },
-          { id: "slot3", correct: "fermenter", number: 3 },
-          { id: "slot4", correct: "centrifuge", number: 4 },
-          { id: "slot5", correct: "cooler", number: 5 }
-        ],
-        equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler", "cooler"],
         threshold3: 30,
-        threshold2: 45,
-        description: "Я не понимаю как это подключить! - сказал главный инженер. Помогите правильно собрать сложную систему. Начните с котла, затем теплообменник, ферментер, центрифугу и завершите охладителем. Эта последовательность критически важна для безопасности и эффективности производства.",
-        hint: "Охладитель всегда должен быть последним в цепочке оборудования."
+        threshold2: 60,
+        description: "Установите правильные температурные режимы для оборудования. Бак горячей воды должен быть +50°C, а ЦКТ -2°C.",
+        hint: "Используйте ползунки для установки температуры. Точность важна - отклонение более чем на 3°C считается ошибкой."
       }
     };
 
@@ -70,14 +66,18 @@ class BreweryGame {
       gameStarted: false,
       equipmentPlaced: 0,
       hintUsed: false,
-      draggedItem: null
+      draggedItem: null,
+      scores: {
+        1: { correct: 0, total: 7 },
+        2: { correct: 0, total: 3 },
+        3: { correct: 0, total: 2 }
+      }
     };
 
     // Прогресс игрока
     this.progress = {
       unlockedLevels: [1],
-      bestTimes: {},
-      bestStars: {}
+      bestScores: {}
     };
 
     // Инициализация игры
@@ -105,14 +105,15 @@ class BreweryGame {
       timerDisplay: document.querySelector('.timer'),
       feedbackMessage: document.querySelector('.feedback-message'),
       timeSpentDisplay: document.getElementById('time-spent'),
-      starsEarnedDisplay: document.getElementById('stars-earned'),
+      scoreDisplay: document.getElementById('score-earned'),
       levelNameDisplay: document.querySelector('.level-name'),
       levelDescText: document.getElementById('level-desc-text'),
       playground: document.querySelector('.playground'),
       equipmentPanel: document.querySelector('.equipment-panel'),
       hintModal: document.getElementById('hint-modal'),
       hintText: document.getElementById('hint-text'),
-      closeModal: document.querySelector('.close-modal')
+      closeModal: document.querySelector('.close-modal'),
+      settingsContainer: document.querySelector('.settings-container')
     };
 
     this.sounds = {
@@ -156,7 +157,6 @@ class BreweryGame {
 
   // Инициализация обработчиков для мобильных устройств
   initMobileHandlers() {
-    // Обработка касаний оборудования
     document.addEventListener('touchstart', (e) => {
       const equipmentBtn = e.target.closest('.equipment-btn');
       if (equipmentBtn && equipmentBtn.style.display !== 'none') {
@@ -166,14 +166,12 @@ class BreweryGame {
       }
     }, { passive: false });
 
-    // Обработка перемещения оборудования
     document.addEventListener('touchmove', (e) => {
       if (this.state.draggedItem) {
         e.preventDefault();
       }
     }, { passive: false });
 
-    // Обработка размещения оборудования
     document.addEventListener('touchend', (e) => {
       if (this.state.draggedItem) {
         const slot = document.elementFromPoint(
@@ -193,7 +191,6 @@ class BreweryGame {
 
   // Инициализация обработчиков для десктопов
   initDesktopHandlers() {
-    // Выбор оборудования
     document.addEventListener('mousedown', (e) => {
       const equipmentBtn = e.target.closest('.equipment-btn');
       if (equipmentBtn && equipmentBtn.style.display !== 'none') {
@@ -202,7 +199,6 @@ class BreweryGame {
       }
     });
 
-    // Размещение оборудования
     document.addEventListener('mouseup', (e) => {
       if (this.state.draggedItem) {
         const slot = e.target.closest('.slot');
@@ -222,8 +218,7 @@ class BreweryGame {
       try {
         const parsed = JSON.parse(saved);
         this.progress.unlockedLevels = parsed.unlockedLevels || [1];
-        this.progress.bestTimes = parsed.bestTimes || {};
-        this.progress.bestStars = parsed.bestStars || {};
+        this.progress.bestScores = parsed.bestScores || {};
       } catch (e) {
         console.error('Ошибка загрузки прогресса:', e);
       }
@@ -249,12 +244,10 @@ class BreweryGame {
     this.elements.feedbackMessage.textContent = '';
     this.elements.feedbackMessage.className = 'feedback-message';
     
-    // Запуск таймера
     this.timer = setInterval(() => this.updateTimer(), 1000);
     
-    // Показ/скрытие кнопок
     this.elements.resetBtn.classList.remove('hidden');
-    this.elements.hintBtn.classList[this.state.currentLevel >= 3 ? 'remove' : 'add']('hidden');
+    this.elements.hintBtn.classList.remove('hidden');
     this.elements.hintBtn.disabled = false;
   }
 
@@ -289,13 +282,29 @@ class BreweryGame {
     this.playSound('click');
     this.state.selectedEquipment = equipmentBtn.dataset.equipment;
     
-    // Визуальное выделение выбранного оборудования
     document.querySelectorAll('.equipment-btn').forEach(btn => {
       btn.style.opacity = btn === equipmentBtn ? '1' : '0.5';
     });
     
-    this.elements.feedbackMessage.textContent = `Выбрано: ${this.state.selectedEquipment.toUpperCase()}`;
+    this.elements.feedbackMessage.textContent = `Выбрано: ${this.getEquipmentName(this.state.selectedEquipment)}`;
     this.elements.feedbackMessage.className = 'feedback-message';
+  }
+
+  // Получение читаемого названия оборудования
+  getEquipmentName(id) {
+    const names = {
+      'malt-crusher': 'Дробилка солода',
+      'congestion-device': 'Заторный аппарат',
+      'steam-generator': 'Парогенератор',
+      'hot-water-tank': 'Бак горячей воды',
+      'filtration-unit': 'Фильтрационный аппарат',
+      'wort-brewing-machine': 'Сусловарочный аппарат',
+      'hydrocyclone-apparatus': 'Гидроциклонный аппарат',
+      'heat-exchanger': 'Теплообменник',
+      'chiller': 'Чилер',
+      'cylinder-conical-tank': 'Цилиндро-конический танк'
+    };
+    return names[id] || id;
   }
 
   // Сброс выбора оборудования
@@ -312,32 +321,26 @@ class BreweryGame {
     
     this.playSound('click');
     
-    // Создание изображения оборудования
     const equipmentImg = document.createElement('img');
     equipmentImg.src = `assets/images/${equipmentId}.png`;
     equipmentImg.className = 'equipment-placed';
     equipmentImg.alt = equipmentId;
     
-    // Очистка слота и добавление номера
     slot.innerHTML = '';
     const slotNumber = document.createElement('div');
     slotNumber.className = 'slot-number';
     slotNumber.textContent = slot.dataset.number;
     slot.appendChild(slotNumber);
     
-    // Добавление оборудования
     slot.appendChild(equipmentImg);
     slot.dataset.filled = 'true';
     slot.dataset.equipment = equipmentId;
     
-    // Скрытие использованного оборудования
     document.querySelector(`.equipment-btn[data-equipment="${equipmentId}"]`).style.display = 'none';
     
-    // Обновление счетчика
     this.state.equipmentPlaced++;
     
-    // Проверка на заполнение всех слотов
-    if (this.state.equipmentPlaced === this.levels[this.state.currentLevel].equipment.length) {
+    if (this.state.equipmentPlaced === this.levels[this.state.currentLevel].slots.length) {
       this.elements.launchBtn.disabled = false;
       this.showFeedback('Все оборудование размещено!', 'correct');
     }
@@ -345,25 +348,64 @@ class BreweryGame {
 
   // Проверка решения
   checkSolution() {
+    if (this.state.currentLevel === 3) {
+      this.checkSettingsSolution();
+      return;
+    }
+
     const level = this.levels[this.state.currentLevel];
-    let allCorrect = true;
+    let correctCount = 0;
     
-    // Проверка каждого слота
     level.slots.forEach(slotConfig => {
       const slot = document.getElementById(slotConfig.id);
-      if (slot.dataset.equipment !== slotConfig.correct) {
-        allCorrect = false;
-        this.highlightSlot(slot, 'incorrect');
-      } else {
+      if (slot.dataset.equipment === slotConfig.correct) {
+        correctCount++;
         this.highlightSlot(slot, 'correct');
+      } else {
+        this.highlightSlot(slot, 'incorrect');
       }
     });
     
-    if (allCorrect) {
-      this.showFeedback('Правильно! Завод запущен!', 'correct');
+    // Сохраняем результат для текущего уровня
+    this.state.scores[this.state.currentLevel].correct = correctCount;
+    
+    if (correctCount === level.slots.length) {
+      this.showFeedback('Правильно! Оборудование установлено верно!', 'correct');
       setTimeout(() => this.endGame(true), 1500);
     } else {
-      this.showFeedback('Неверно! Завод не может работать!', 'incorrect');
+      this.showFeedback(`Правильно ${correctCount} из ${level.slots.length}`, 'incorrect');
+      setTimeout(() => this.endGame(false), 1500);
+    }
+  }
+
+  // Проверка настроек температуры (уровень 3)
+  checkSettingsSolution() {
+    const level = this.levels[3];
+    let correctCount = 0;
+    
+    level.settings.forEach(setting => {
+      const input = document.getElementById(setting.id);
+      const value = parseInt(input.value);
+      const diff = Math.abs(value - setting.correct);
+      
+      if (diff <= 3) { // Допустимое отклонение 3 градуса
+        correctCount++;
+        input.classList.add('correct-setting');
+        setTimeout(() => input.classList.remove('correct-setting'), 1000);
+      } else {
+        input.classList.add('incorrect-setting');
+        setTimeout(() => input.classList.remove('incorrect-setting'), 1000);
+      }
+    });
+    
+    // Сохраняем результат для уровня 3
+    this.state.scores[3].correct = correctCount;
+    
+    if (correctCount === level.settings.length) {
+      this.showFeedback('Правильно! Температуры установлены верно!', 'correct');
+      setTimeout(() => this.endGame(true), 1500);
+    } else {
+      this.showFeedback(`Правильно ${correctCount} из ${level.settings.length}`, 'incorrect');
       setTimeout(() => this.endGame(false), 1500);
     }
   }
@@ -384,13 +426,13 @@ class BreweryGame {
     const timeSpent = this.levels[this.state.currentLevel].time - this.state.timeLeft;
     this.elements.timeSpentDisplay.textContent = this.formatTime(timeSpent);
     
+    // Расчет общего счета
+    const totalScore = this.calculateTotalScore();
+    this.elements.scoreDisplay.textContent = totalScore;
+    
     if (isWin) {
-      // Расчет звезд
-      const stars = this.calculateStars(timeSpent);
-      this.elements.starsEarnedDisplay.textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
-      
       // Обновление прогресса
-      this.updateProgress(timeSpent, stars);
+      this.updateProgress(totalScore);
       
       // Показ экрана победы
       this.elements.gameScreen.classList.add('hidden');
@@ -405,26 +447,25 @@ class BreweryGame {
     }
   }
 
-  // Расчет количества звезд
-  calculateStars(timeSpent) {
-    const level = this.levels[this.state.currentLevel];
-    if (timeSpent <= level.threshold3) return 3;
-    if (timeSpent <= level.threshold2) return 2;
-    return 1;
+  // Расчет общего счета
+  calculateTotalScore() {
+    let score = 100; // Максимальный балл
+    
+    // Вычитаем 5 баллов за каждую ошибку
+    for (let level = 1; level <= 3; level++) {
+      const errors = this.state.scores[level].total - this.state.scores[level].correct;
+      score -= errors * 5;
+    }
+    
+    return Math.max(0, score); // Не может быть меньше 0
   }
 
   // Обновление прогресса
-  updateProgress(timeSpent, stars) {
-    // Лучшее время
-    if (!this.progress.bestTimes[this.state.currentLevel] || 
-        timeSpent < this.progress.bestTimes[this.state.currentLevel]) {
-      this.progress.bestTimes[this.state.currentLevel] = timeSpent;
-    }
-    
-    // Лучший результат по звездам
-    if (!this.progress.bestStars[this.state.currentLevel] || 
-        stars > this.progress.bestStars[this.state.currentLevel]) {
-      this.progress.bestStars[this.state.currentLevel] = stars;
+  updateProgress(score) {
+    // Лучший счет
+    if (!this.progress.bestScores[this.state.currentLevel] || 
+        score > this.progress.bestScores[this.state.currentLevel]) {
+      this.progress.bestScores[this.state.currentLevel] = score;
     }
     
     // Разблокировка следующего уровня
@@ -467,12 +508,10 @@ class BreweryGame {
       
       card.innerHTML = `
         <h2>${level.name}</h2>
-        <p>${level.equipment.length} оборудования</p>
+        <p>${level.slots ? level.slots.length + ' оборудования' : 'Настройки температуры'}</p>
         <p>${level.time} секунд</p>
-        <div class="level-stars">
-          ${this.progress.bestStars[levelNum] ? 
-            '★'.repeat(this.progress.bestStars[levelNum]) + 
-            '☆'.repeat(3 - this.progress.bestStars[levelNum]) : ''}
+        <div class="level-score">
+          ${this.progress.bestScores[levelNum] ? `Лучший счет: ${this.progress.bestScores[levelNum]}` : ''}
         </div>
         <div class="lock-icon ${isUnlocked ? 'hidden' : ''}"></div>
       `;
@@ -494,12 +533,59 @@ class BreweryGame {
     // Очистка игрового поля
     this.elements.playground.innerHTML = '';
     this.elements.equipmentPanel.innerHTML = '';
+    this.elements.settingsContainer.innerHTML = '';
     
     // Установка информации об уровне
     this.elements.levelNameDisplay.textContent = `Уровень: ${level.name}`;
     this.elements.levelDescText.textContent = level.description;
     
-    // Создание слотов
+    if (levelNum === 3) {
+      // Создание интерфейса настроек температуры
+      this.createSettingsInterface(level);
+    } else {
+      // Создание слотов для оборудования
+      this.createEquipmentSlots(level);
+      
+      // Создание панели оборудования
+      this.createEquipmentPanel(level);
+    }
+    
+    // Переход на игровой экран
+    this.elements.levelSelectScreen.classList.add('hidden');
+    this.elements.gameScreen.classList.remove('hidden');
+    
+    // Запуск игры
+    this.startGame();
+  }
+
+  // Создание интерфейса настроек температуры (уровень 3)
+  createSettingsInterface(level) {
+    const settingsHTML = level.settings.map(setting => `
+      <div class="setting-item">
+        <label for="${setting.id}">${setting.label}</label>
+        <div class="setting-controls">
+          <input type="range" id="${setting.id}" min="${setting.min}" max="${setting.max}" 
+                 step="${setting.step}" value="0" class="temp-slider">
+          <span class="temp-value">0°C</span>
+        </div>
+      </div>
+    `).join('');
+    
+    this.elements.settingsContainer.innerHTML = settingsHTML;
+    
+    // Добавление обработчиков для ползунков
+    level.settings.forEach(setting => {
+      const slider = document.getElementById(setting.id);
+      const valueDisplay = slider.nextElementSibling;
+      
+      slider.addEventListener('input', () => {
+        valueDisplay.textContent = `${slider.value}°C`;
+      });
+    });
+  }
+
+  // Создание слотов для оборудования
+  createEquipmentSlots(level) {
     level.slots.forEach(slotConfig => {
       const slot = document.createElement('div');
       slot.className = 'slot';
@@ -508,7 +594,6 @@ class BreweryGame {
       slot.dataset.number = slotConfig.number;
       slot.dataset.filled = 'false';
       
-      // Номер слота
       const slotNumber = document.createElement('div');
       slotNumber.className = 'slot-number';
       slotNumber.textContent = slotConfig.number;
@@ -516,8 +601,10 @@ class BreweryGame {
       
       this.elements.playground.appendChild(slot);
     });
-    
-    // Создание оборудования
+  }
+
+  // Создание панели оборудования
+  createEquipmentPanel(level) {
     level.equipment.forEach(equipId => {
       const btn = document.createElement('div');
       btn.className = 'equipment-btn';
@@ -531,18 +618,22 @@ class BreweryGame {
       btn.appendChild(img);
       this.elements.equipmentPanel.appendChild(btn);
     });
-    
-    // Переход на игровой экран
-    this.elements.levelSelectScreen.classList.add('hidden');
-    this.elements.gameScreen.classList.remove('hidden');
-    
-    // Запуск игры
-    this.startGame();
   }
 
   // Сброс оборудования
   resetEquipment() {
     this.playSound('click');
+    
+    if (this.state.currentLevel === 3) {
+      // Сброс настроек температуры
+      this.levels[3].settings.forEach(setting => {
+        const slider = document.getElementById(setting.id);
+        slider.value = 0;
+        slider.nextElementSibling.textContent = '0°C';
+      });
+      return;
+    }
+    
     const level = this.levels[this.state.currentLevel];
     
     // Очистка слотов
@@ -550,7 +641,6 @@ class BreweryGame {
       slot.innerHTML = '';
       slot.dataset.filled = 'false';
       
-      // Восстановление номера слота
       const slotNumber = document.createElement('div');
       slotNumber.className = 'slot-number';
       slotNumber.textContent = slot.dataset.number;
@@ -579,12 +669,12 @@ class BreweryGame {
     this.elements.hintText.textContent = hint;
     this.elements.hintModal.classList.remove('hidden');
     
-    // Отключение кнопки подсказки
     this.elements.hintBtn.disabled = true;
     this.elements.hintBtn.style.opacity = '0.6';
     
-    // Подсветка правильных слотов
-    this.highlightCorrectSlots();
+    if (this.state.currentLevel !== 3) {
+      this.highlightCorrectSlots();
+    }
   }
 
   // Подсветка правильных слотов
@@ -684,12 +774,17 @@ class BreweryGame {
     logo.src = 'assets/images/logo.png';
     
     // Предзагрузка изображений оборудования
-    for (const level of Object.values(this.levels)) {
-      level.equipment.forEach(equipId => {
-        const img = new Image();
-        img.src = `assets/images/${equipId}.png`;
-      });
-    }
+    const equipmentImages = [
+      'malt-crusher', 'congestion-device', 'steam-generator',
+      'hot-water-tank', 'filtration-unit', 'wort-brewing-machine',
+      'hydrocyclone-apparatus', 'heat-exchanger', 'chiller',
+      'cylinder-conical-tank'
+    ];
+    
+    equipmentImages.forEach(equipId => {
+      const img = new Image();
+      img.src = `assets/images/${equipId}.png`;
+    });
   }
 }
 

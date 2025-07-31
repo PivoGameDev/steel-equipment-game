@@ -16,13 +16,13 @@
             <h1 class="game-title">ИГРА</h1>
             <h1 class="game-name">Собери пивной завод</h1>
         </div>
-        <p class="welcome-text">Установите оборудование в правильные слоты и запустите производство!</p>
+        <p class="welcome-text">Установите оборудование в правильные слоты и настройте температуру для производства пива!</p>
         <button id="start-btn">Играть</button>
     </div>
 
     <!-- Экран выбора уровня -->
     <div id="level-select-screen" class="screen hidden">
-        <h1 class="level-select-title">Выберите уровень сложности</h1>
+        <h1 class="level-select-title">Выберите уровень</h1>
         <div class="level-cards">
             <!-- Уровни будут сгенерированы скриптом -->
         </div>
@@ -34,7 +34,7 @@
         <div class="game-header">
             <div class="header-left">
                 <p class="level-name">Уровень: Новичок</p>
-                <p class="timer">02:00</p>
+                <p class="timer">05:00</p>
             </div>
             <div class="header-right">
                 <p class="feedback-message"></p>
@@ -48,6 +48,7 @@
         <div class="game-container">
             <div class="playground-container">
                 <div class="playground"></div>
+                <div class="settings-container"></div>
             </div>
             
             <div class="equipment-panel-container">
@@ -58,7 +59,7 @@
         <div class="game-controls">
             <button id="reset-btn" class="hidden">Сбросить</button>
             <button id="hint-btn" class="hidden">Подсказка</button>
-            <button id="launch-btn" disabled>Запустить завод</button>
+            <button id="launch-btn" disabled>Проверить</button>
         </div>
     </div>
 
@@ -66,7 +67,7 @@
     <div id="win-screen" class="screen hidden">
         <h1 class="win-text">Поздравляем!</h1>
         <p>Вы справились за <span id="time-spent">00:00</span>!</p>
-        <p>Заработано звёзд: <span id="stars-earned">★★★</span></p>
+        <p>Ваш счет: <span id="score-earned">100</span> баллов</p>
         <button class="next-level-btn">Следующий уровень</button>
         <button class="restart-btn">Заново</button>
         <div class="confetti"></div>
@@ -75,7 +76,8 @@
     <!-- Экран проигрыша -->
     <div id="lose-screen" class="screen hidden">
         <h1>Время вышло!</h1>
-        <p>Завод не был запущен вовремя.</p>
+        <p>Производство не было настроено вовремя.</p>
+        <p>Ваш счет: <span id="score-earned-lose">0</span> баллов</p>
         <button class="restart-btn">Попробовать снова</button>
     </div>
 
