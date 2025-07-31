@@ -118,9 +118,9 @@ class BreweryGame {
     };
 
     this.sounds = {
-      success: document.getElementById('success-sound'),
-      error: document.getElementById('error-sound'),
-      click: document.getElementById('click-sound')
+      success: new Audio('assets/sounds/success.mp3'),
+      error: new Audio('assets/sounds/error.mp3'),
+      click: new Audio('assets/sounds/click.mp3')
     };
   }
 
@@ -297,6 +297,7 @@ class BreweryGame {
     // Установка правильного текста кнопки
     if (this.state.currentLevel === 3) {
       this.elements.launchBtn.textContent = 'Запустить завод';
+      this.elements.launchBtn.disabled = false; // Разблокируем кнопку для уровня с настройками
     } else {
       this.elements.launchBtn.textContent = 'Далее →';
     }
@@ -312,7 +313,9 @@ class BreweryGame {
     }
     
     if (this.state.timeLeft <= 0) {
+      clearInterval(this.timer);
       this.endGame(false);
+      this.playSound('error');
     }
   }
 
@@ -395,7 +398,7 @@ class BreweryGame {
     
     this.state.equipmentPlaced++;
     
-    if (this.state.equipmentPlaced === this.levels[this.state.currentLevel].slots.length) {
+    if (this.state.equipmentPlaced === this.levels[this.state.currentLevel].slots?.length) {
       this.elements.launchBtn.disabled = false;
       this.showFeedback('Все оборудование размещено!', 'correct');
     }
@@ -512,7 +515,6 @@ class BreweryGame {
       // Показ экрана поражения
       this.elements.gameScreen.classList.add('hidden');
       this.elements.loseScreen.classList.remove('hidden');
-      this.playSound('error');
     }
   }
 
@@ -649,6 +651,7 @@ class BreweryGame {
       
       slider.addEventListener('input', () => {
         valueDisplay.textContent = `${slider.value}°C`;
+        this.elements.launchBtn.disabled = false; // Разблокируем кнопку при изменении температуры
       });
     });
   }
@@ -704,6 +707,7 @@ class BreweryGame {
         slider.value = 0;
         slider.nextElementSibling.textContent = '0°C';
       });
+      this.elements.launchBtn.disabled = true;
       return;
     }
     
@@ -838,21 +842,12 @@ class BreweryGame {
 
   // Предзагрузка ресурсов
   preloadAssets() {
-    // Предзагрузка звуков
-    Object.values(this.sounds).forEach(sound => {
-      sound.load().catch(e => console.log('Ошибка загрузки звука:', e));
-    });
-    
-    // Предзагрузка логотипа
-    const logo = new Image();
-    logo.src = 'assets/images/logo.png';
-    
     // Предзагрузка изображений оборудования
     const equipmentImages = [
       'malt-crusher', 'congestion-device', 'steam-generator',
       'hot-water-tank', 'filtration-unit', 'wort-brewing-machine',
       'hydrocyclone-apparatus', 'heat-exchanger', 'chiller',
-      'cylinder-conical-tank'
+      'cylinder-conical-tank', 'placeholder'
     ];
     
     equipmentImages.forEach(equipId => {
