@@ -67,7 +67,7 @@ class BreweryGame {
       equipmentPlaced: 0,
       hintUsed: false,
       draggedItem: null,
-      scores: {
+      levelResults: {
         1: { correct: 0, total: 7 },
         2: { correct: 0, total: 3 },
         3: { correct: 0, total: 2 }
@@ -113,7 +113,8 @@ class BreweryGame {
       hintModal: document.getElementById('hint-modal'),
       hintText: document.getElementById('hint-text'),
       closeModal: document.querySelector('.close-modal'),
-      settingsContainer: document.querySelector('.settings-container')
+      settingsContainer: document.querySelector('.settings-container'),
+      levelDetails: document.getElementById('level-details')
     };
 
     this.sounds = {
@@ -169,6 +170,11 @@ class BreweryGame {
     document.addEventListener('touchmove', (e) => {
       if (this.state.draggedItem) {
         e.preventDefault();
+        // Обновляем позицию перетаскиваемого элемента
+        const touch = e.touches[0];
+        this.state.draggedItem.style.position = 'absolute';
+        this.state.draggedItem.style.left = (touch.clientX - 75) + 'px';
+        this.state.draggedItem.style.top = (touch.clientY - 75) + 'px';
       }
     }, { passive: false });
 
@@ -183,6 +189,11 @@ class BreweryGame {
           this.placeEquipment(slot, this.state.draggedItem.dataset.equipment);
         }
         
+        // Возвращаем элемент на место
+        this.state.draggedItem.style.position = '';
+        this.state.draggedItem.style.left = '';
+        this.state.draggedItem.style.top = '';
+        
         this.state.draggedItem = null;
         this.deselectEquipment();
       }
@@ -196,15 +207,48 @@ class BreweryGame {
       if (equipmentBtn && equipmentBtn.style.display !== 'none') {
         this.selectEquipment(equipmentBtn);
         this.state.draggedItem = equipmentBtn;
+        
+        // Для визуального эффекта перетаскивания
+        equipmentBtn.classList.add('dragging');
+      }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (this.state.draggedItem) {
+        // Обновляем позицию перетаскиваемого элемента
+        this.state.draggedItem.style.position = 'absolute';
+        this.state.draggedItem.style.left = (e.clientX - 75) + 'px';
+        this.state.draggedItem.style.top = (e.clientY - 75) + 'px';
+        
+        // Подсветка потенциального слота
+        const slot = document.elementFromPoint(e.clientX, e.clientY).closest('.slot');
+        document.querySelectorAll('.slot').forEach(s => {
+          s.classList.remove('drop-target');
+        });
+        if (slot) {
+          slot.classList.add('drop-target');
+        }
       }
     });
 
     document.addEventListener('mouseup', (e) => {
       if (this.state.draggedItem) {
-        const slot = e.target.closest('.slot');
+        const slot = document.elementFromPoint(e.clientX, e.clientY).closest('.slot');
         if (slot) {
           this.placeEquipment(slot, this.state.draggedItem.dataset.equipment);
         }
+        
+        // Возвращаем элемент на место
+        this.state.draggedItem.style.position = '';
+        this.state.draggedItem.style.left = '';
+        this.state.draggedItem.style.top = '';
+        this.state.draggedItem.classList.remove('dragging');
+        
+        // Снимаем подсветку
+        document.querySelectorAll('.slot').forEach(s => {
+          s.classList.remove('drop-target');
+        });
+        
         this.state.draggedItem = null;
         this.deselectEquipment();
       }
@@ -249,6 +293,13 @@ class BreweryGame {
     this.elements.resetBtn.classList.remove('hidden');
     this.elements.hintBtn.classList.remove('hidden');
     this.elements.hintBtn.disabled = false;
+    
+    // Установка правильного текста кнопки
+    if (this.state.currentLevel === 3) {
+      this.elements.launchBtn.textContent = 'Запустить завод';
+    } else {
+      this.elements.launchBtn.textContent = 'Далее →';
+    }
   }
 
   // Обновление таймера
@@ -325,6 +376,10 @@ class BreweryGame {
     equipmentImg.src = `assets/images/${equipmentId}.png`;
     equipmentImg.className = 'equipment-placed';
     equipmentImg.alt = equipmentId;
+    equipmentImg.onerror = () => {
+      console.error(`Ошибка загрузки изображения: assets/images/${equipmentId}.png`);
+      equipmentImg.src = 'assets/images/placeholder.png';
+    };
     
     slot.innerHTML = '';
     const slotNumber = document.createElement('div');
@@ -367,15 +422,17 @@ class BreweryGame {
     });
     
     // Сохраняем результат для текущего уровня
-    this.state.scores[this.state.currentLevel].correct = correctCount;
+    this.state.levelResults[this.state.currentLevel].correct = correctCount;
     
+    // Показываем результат
     if (correctCount === level.slots.length) {
       this.showFeedback('Правильно! Оборудование установлено верно!', 'correct');
-      setTimeout(() => this.endGame(true), 1500);
     } else {
       this.showFeedback(`Правильно ${correctCount} из ${level.slots.length}`, 'incorrect');
-      setTimeout(() => this.endGame(false), 1500);
     }
+    
+    // Переходим на следующий уровень
+    setTimeout(() => this.nextLevel(), 1500);
   }
 
   // Проверка настроек температуры (уровень 3)
@@ -399,15 +456,10 @@ class BreweryGame {
     });
     
     // Сохраняем результат для уровня 3
-    this.state.scores[3].correct = correctCount;
+    this.state.levelResults[3].correct = correctCount;
     
-    if (correctCount === level.settings.length) {
-      this.showFeedback('Правильно! Температуры установлены верно!', 'correct');
-      setTimeout(() => this.endGame(true), 1500);
-    } else {
-      this.showFeedback(`Правильно ${correctCount} из ${level.settings.length}`, 'incorrect');
-      setTimeout(() => this.endGame(false), 1500);
-    }
+    // Завершаем игру
+    setTimeout(() => this.endGame(true), 1500);
   }
 
   // Подсветка слота
@@ -429,6 +481,23 @@ class BreweryGame {
     // Расчет общего счета
     const totalScore = this.calculateTotalScore();
     this.elements.scoreDisplay.textContent = totalScore;
+    
+    // Формируем детали по уровням
+    let detailsHTML = '<div class="level-results">';
+    for (let level = 1; level <= 3; level++) {
+      const result = this.state.levelResults[level];
+      const errors = result.total - result.correct;
+      
+      detailsHTML += `
+        <div class="level-result">
+          <h3>Уровень ${level}: ${this.levels[level].name}</h3>
+          <p>Правильно: ${result.correct} из ${result.total}</p>
+          <p>Ошибки: ${errors} (${errors * 5} баллов)</p>
+        </div>
+      `;
+    }
+    detailsHTML += '</div>';
+    this.elements.levelDetails.innerHTML = detailsHTML;
     
     if (isWin) {
       // Обновление прогресса
@@ -453,7 +522,7 @@ class BreweryGame {
     
     // Вычитаем 5 баллов за каждую ошибку
     for (let level = 1; level <= 3; level++) {
-      const errors = this.state.scores[level].total - this.state.scores[level].correct;
+      const errors = this.state.levelResults[level].total - this.state.levelResults[level].correct;
       score -= errors * 5;
     }
     
@@ -614,6 +683,10 @@ class BreweryGame {
       img.src = `assets/images/${equipId}.png`;
       img.className = 'equipment';
       img.alt = equipId;
+      img.onerror = () => {
+        console.error(`Ошибка загрузки изображения: assets/images/${equipId}.png`);
+        img.src = 'assets/images/placeholder.png';
+      };
       
       btn.appendChild(img);
       this.elements.equipmentPanel.appendChild(btn);
@@ -710,13 +783,14 @@ class BreweryGame {
   // Следующий уровень
   nextLevel() {
     this.playSound('click');
-    this.elements.winScreen.classList.add('hidden');
+    this.elements.gameScreen.classList.add('hidden');
     
     const nextLevel = this.state.currentLevel + 1;
     if (nextLevel <= Object.keys(this.levels).length) {
       this.startLevel(nextLevel);
     } else {
-      this.showLevelSelect();
+      // Если это последний уровень, показываем результаты
+      this.endGame(true);
     }
   }
 
@@ -784,6 +858,9 @@ class BreweryGame {
     equipmentImages.forEach(equipId => {
       const img = new Image();
       img.src = `assets/images/${equipId}.png`;
+      img.onerror = () => {
+        console.error(`Ошибка предзагрузки: assets/images/${equipId}.png`);
+      };
     });
   }
 }

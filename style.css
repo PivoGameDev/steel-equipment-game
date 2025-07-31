@@ -590,6 +590,7 @@ body {
     z-index: 100;
     justify-content: center;
     padding: 20px;
+    overflow-y: auto;
 }
 
 .win-text {
@@ -600,6 +601,33 @@ body {
 @keyframes blink {
     from { opacity: 1; }
     to { opacity: 0.8; }
+}
+
+.level-results {
+    text-align: left;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    width: 100%;
+    max-width: 500px;
+}
+
+.level-result {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.level-result:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.level-result h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
 }
 
 .next-level-btn {
@@ -649,6 +677,7 @@ body {
     z-index: 100;
     justify-content: center;
     padding: 20px;
+    overflow-y: auto;
 }
 
 /* Модальное окно для подсказок */
