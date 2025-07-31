@@ -362,7 +362,6 @@ body {
     flex-shrink: 0;
 }
 
-/* Номер слота */
 .slot-number {
     position: absolute;
     top: 5px;

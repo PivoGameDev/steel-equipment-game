@@ -16,7 +16,51 @@ class BreweryGame {
         description: "На заводе аврал! Рома не перезванивает по поводу КП, а заказчик требует срочно подключить оборудование. Переставьте оборудование в правильной последовательности. На первом этапе установите ферментер, а затем теплообменник.",
         hint: "Начните с ферментера - это основа процесса брожения."
       },
-      // ... остальные уровни
+      2: {
+        name: "Специалист",
+        time: 90,
+        slots: [
+          { id: "slot1", correct: "fermenter", number: 1 },
+          { id: "slot2", correct: "heat-exchanger", number: 2 },
+          { id: "slot3", correct: "centrifuge", number: 3 }
+        ],
+        equipment: ["fermenter", "heat-exchanger", "centrifuge"],
+        threshold3: 25,
+        threshold2: 50,
+        description: "На предприятии ЧП - охранник перепутал схемы подключения. Помогите стажеру правильно подключить оборудование завода. Сначала установите ферментер, затем теплообменник, и в конце центрифугу для оптимальной работы системы.",
+        hint: "Теплообменник всегда следует после ферментера."
+      },
+      3: {
+        name: "Эксперт",
+        time: 60,
+        slots: [
+          { id: "slot1", correct: "boiler", number: 1 },
+          { id: "slot2", correct: "centrifuge", number: 2 },
+          { id: "slot3", correct: "fermenter", number: 3 },
+          { id: "slot4", correct: "heat-exchanger", number: 4 }
+        ],
+        equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler"],
+        threshold3: 20,
+        threshold2: 40,
+        description: "Все пошло не по плану! Нужно срочно переподключить оборудование в правильном порядке. Начните с котла, затем установите центрифугу, после этого ферментер и завершите теплообменником. Такая последовательность обеспечит бесперебойную работу.",
+        hint: "Котёл должен быть первым, так как он нагревает сусло перед ферментацией."
+      },
+      4: {
+        name: "Мастер",
+        time: 45,
+        slots: [
+          { id: "slot1", correct: "boiler", number: 1 },
+          { id: "slot2", correct: "heat-exchanger", number: 2 },
+          { id: "slot3", correct: "fermenter", number: 3 },
+          { id: "slot4", correct: "centrifuge", number: 4 },
+          { id: "slot5", correct: "cooler", number: 5 }
+        ],
+        equipment: ["fermenter", "heat-exchanger", "centrifuge", "boiler", "cooler"],
+        threshold3: 30,
+        threshold2: 45,
+        description: "Я не понимаю как это подключить! - сказал главный инженер. Помогите правильно собрать сложную систему. Начните с котла, затем теплообменник, ферментер, центрифугу и завершите охладителем. Эта последовательность критически важна для безопасности и эффективности производства.",
+        hint: "Охладитель всегда должен быть последним в цепочке оборудования."
+      }
     };
 
     // Состояние игры
@@ -169,18 +213,7 @@ class BreweryGame {
         this.deselectEquipment();
       }
     });
-
-    // Drag-and-drop эффекты
-    document.addEventListener('mousemove', (e) => {
-      if (this.state.draggedItem) {
-        // Можно добавить визуальные эффекты перетаскивания
-      }
-    });
   }
-
-  // ========================
-  // Основные игровые методы
-  // ========================
 
   // Загрузка сохраненного прогресса
   loadProgress() {
@@ -348,7 +381,7 @@ class BreweryGame {
     clearInterval(this.timer);
     this.state.gameStarted = false;
     
-    const timeSpent = Math.floor((Date.now() - this.startTime) / 1000);
+    const timeSpent = this.levels[this.state.currentLevel].time - this.state.timeLeft;
     this.elements.timeSpentDisplay.textContent = this.formatTime(timeSpent);
     
     if (isWin) {
@@ -395,18 +428,15 @@ class BreweryGame {
     }
     
     // Разблокировка следующего уровня
-    if (this.state.currentLevel < 4 && 
-        !this.progress.unlockedLevels.includes(this.state.currentLevel + 1)) {
-      this.progress.unlockedLevels.push(this.state.currentLevel + 1);
+    const nextLevel = this.state.currentLevel + 1;
+    if (nextLevel <= Object.keys(this.levels).length && 
+        !this.progress.unlockedLevels.includes(nextLevel)) {
+      this.progress.unlockedLevels.push(nextLevel);
     }
     
     this.saveProgress();
     this.renderLevelCards();
   }
-
-  // ========================
-  // Методы интерфейса
-  // ========================
 
   // Показать стартовый экран
   showStartScreen() {
@@ -507,7 +537,6 @@ class BreweryGame {
     this.elements.gameScreen.classList.remove('hidden');
     
     // Запуск игры
-    this.startTime = Date.now();
     this.startGame();
   }
 
@@ -593,8 +622,9 @@ class BreweryGame {
     this.playSound('click');
     this.elements.winScreen.classList.add('hidden');
     
-    if (this.state.currentLevel < 4) {
-      this.startLevel(this.state.currentLevel + 1);
+    const nextLevel = this.state.currentLevel + 1;
+    if (nextLevel <= Object.keys(this.levels).length) {
+      this.startLevel(nextLevel);
     } else {
       this.showLevelSelect();
     }
@@ -605,10 +635,6 @@ class BreweryGame {
     this.elements.feedbackMessage.textContent = message;
     this.elements.feedbackMessage.className = `feedback-message ${type}`;
   }
-
-  // ========================
-  // Вспомогательные методы
-  // ========================
 
   // Создание конфетти
   createConfetti() {
