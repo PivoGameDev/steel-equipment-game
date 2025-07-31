@@ -1,3 +1,4 @@
+/* Основные стили */
 * {
     margin: 0;
     padding: 0;
@@ -448,6 +449,26 @@ body {
     margin-top: 5px;
 }
 
+#reset-btn {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(156, 163, 175, 0.4);
+    min-width: 140px;
+    flex: 1;
+    max-width: 200px;
+}
+
+#reset-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(156, 163, 175, 0.6);
+}
+
 #hint-btn {
     padding: 12px 20px;
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
@@ -798,7 +819,7 @@ body {
         height: 115px;
     }
     
-    #hint-btn, #launch-btn {
+    #hint-btn, #launch-btn, #reset-btn {
         padding: 10px 15px;
         font-size: 14px;
         min-width: 120px;
@@ -846,4 +867,16 @@ body {
 
 .feedback-message {
     animation: fadeInOut 3s ease forwards;
+}
+
+/* Анимация drag-and-drop */
+.dragging {
+    opacity: 0.7;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.drop-target {
+    border: 2px dashed #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1);
 }
