@@ -69,7 +69,6 @@
         <p>Вы справились за <span id="time-spent">00:00</span>!</p>
         <p>Ваш счет: <span id="score-earned">100</span> баллов</p>
         <div id="level-details"></div>
-        <button class="next-level-btn">Следующий уровень</button>
         <button class="restart-btn">Заново</button>
         <div class="confetti"></div>
     </div>
@@ -84,10 +83,9 @@
     </div>
 
     <!-- Модальное окно для подсказок -->
-    <!-- ВАЖНО: .modal теперь видимый контейнер (display:flex), а класс .hidden его скрывает -->
-    <div id="hint-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="hint-text">
+    <div id="hint-modal" class="modal hidden">
         <div class="modal-content">
-            <span class="close-modal" title="Закрыть">&times;</span>
+            <span class="close-modal">&times;</span>
             <p id="hint-text"></p>
         </div>
     </div>

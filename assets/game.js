@@ -1,4 +1,4 @@
-// Улучшенный основной класс игры
+// Улучшенный основной класс игры с «умным» поиском картинок
 class BreweryGame {
   constructor() {
     this.levels = {
@@ -7,13 +7,13 @@ class BreweryGame {
         time: 300,
         slots: [
           { id: "slot1", correct: "malt-crusher", number: 1 },
-          { id: "slot2", correct: "congestion-device", number: 2 },
-          { id: "slot3", correct: "steam-generator", number: 3 },
-          { id: "slot4", correct: "hot-water-tank", number: 4 },
-          { id: "slot5", correct: "filtration-unit", number: 5 },
+          { id: "slot2", correct: "steam-generator", number: 2 },
+          { id: "slot3", correct: "congestion-device", number: 3 },
+          { id: "slot4", correct: "filtration-unit", number: 4 },
+          { id: "slot5", correct: "hot-water-tank", number: 5 },
           { id: "slot6", correct: "wort-brewing-machine", number: 6 },
           { id: "slot7", correct: "hydrocyclone-apparatus", number: 7 }
-        ],
+    ],
         equipment: [
           "malt-crusher", "congestion-device", "steam-generator", 
           "hot-water-tank", "filtration-unit", "wort-brewing-machine", 
@@ -23,7 +23,7 @@ class BreweryGame {
         threshold3: 60,
         threshold2: 120,
         description: "Соберите правильную последовательность оборудования варочного цеха. Вам нужно расставить 7 из 10 предложенных элементов оборудования в правильном порядке.",
-        hint: "Правильный порядок: Дробилка солода → Заторный аппарат → Парогенератор → Бак горячей воды → Фильтрационный аппарат → Сусловарочный аппарат → Гидроциклонный аппарат"
+        hint: "Правильный порядок: Дробилка солода → Парогенератор → Заторный аппарат → Фильтрационный аппарат → Бак горячей воды → Сусловарочный аппарат → Гидроциклонный аппарат"
       },
       2: {
         name: "Бродильный цех",
@@ -66,6 +66,7 @@ class BreweryGame {
       hintUsed: false,
       draggedItem: null,
       selectedEquipment: null,
+      savedLayouts: {1:{},2:{},3:{settings:{}}},
       levelResults: {
         1: { correct: 0, total: 7 },
         2: { correct: 0, total: 3 },
@@ -75,11 +76,72 @@ class BreweryGame {
 
     this.progress = { unlockedLevels: [1], bestScores: {} };
 
+
+    // === НАСТРОЙКИ ПУТЕЙ К КАРТИНКАМ ===
+    this.IMAGE_BASE = 'assets/images/';
+    this.PLACEHOLDER = this.IMAGE_BASE + 'placeholder.png';
+    // Если у вас свои имена файлов, внесите их сюда (с расширением)
+    // Пример: 'malt-crusher': 'дробилка.png'
+    this.CUSTOM_IMAGE_MAP = {
+      // 'malt-crusher': 'дробилка.png',
+      // 'congestion-device': 'заторный.png',
+      // 'steam-generator': 'парогенератор.jpg',
+      // 'hot-water-tank': 'бак_горячей_воды.webp',
+      // 'filtration-unit': 'фильтр.png',
+      // 'wort-brewing-machine': 'сусловарка.jpg',
+      // 'hydrocyclone-apparatus': 'гидроциклон.png',
+      // 'heat-exchanger': 'heat-exchanger.png',
+      // 'chiller': 'чиллер.jpeg',
+      // 'cylinder-conical-tank': 'цкт.png',
+    };
+    // Расширения, которые будут проверяться по очереди
+    this.IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.gif'];
+
     this.initElements();
+    this.levelReview = {1:{},2:{},3:{}};
     this.initEventListeners();
-    this.loadProgress();
-    this.renderLevelCards();
-    this.preloadAssets();
+}
+
+  // Пытается подставлять разные варианты имени файла и расширений, пока не загрузится
+  setSmartImage(imgEl, equipId) {
+    const manual = this.CUSTOM_IMAGE_MAP[equipId];
+    const baseNames = manual
+      ? [manual]
+      : [
+          equipId,                               // kebab-case
+          equipId.replace(/-/g, '_'),            // snake_case
+          equipId.replace(/-/g, ' '),            // c пробелами
+          equipId.replace(/-/g, ''),             // слитно
+        ];
+
+    // Если manual указан с расширением (например, .png), используем его как есть + пробуем без расширений
+    const candidates = [];
+    for (const base of baseNames) {
+      if (/\.(png|jpg|jpeg|webp|gif)$/i.test(base)) {
+        candidates.push(this.IMAGE_BASE + base);
+      } else {
+        for (const ext of this.IMAGE_EXTS) {
+          candidates.push(this.IMAGE_BASE + base + ext);
+        }
+      }
+    }
+    // fallback — placeholder
+    candidates.push(this.PLACEHOLDER);
+
+    let idx = 0;
+    const tryNext = () => {
+      if (idx >= candidates.length) return;
+      const url = candidates[idx++];
+      imgEl.src = url;
+    };
+
+    imgEl.onerror = () => {
+      // предотвращаем зацикливание на placeholder
+      if (imgEl.src.endsWith(this.PLACEHOLDER)) return;
+      tryNext();
+    };
+
+    tryNext();
   }
 
   initElements() {
@@ -104,6 +166,7 @@ class BreweryGame {
       levelDescText: document.getElementById('level-desc-text'),
       playground: document.querySelector('.playground'),
       equipmentPanel: document.querySelector('.equipment-panel'),
+      equipmentPanelContainer: document.querySelector('.equipment-panel-container'),
       hintModal: document.getElementById('hint-modal'),
       hintText: document.getElementById('hint-text'),
       closeModal: document.querySelector('.close-modal'),
@@ -112,14 +175,75 @@ class BreweryGame {
       levelDetailsLose: document.getElementById('level-details-lose')
     };
 
-    // Мягкая деградация: если каких-то звуков нет — игра не падает
     this.sounds = {
       success: new Audio('assets/sounds/success.mp3'),
       error: new Audio('assets/sounds/error.mp3'),
       click: new Audio('assets/sounds/click.mp3')
     };
-    // отключаем автозапуск, чтобы не ловить блокировку браузера
     Object.values(this.sounds).forEach(a => { try { a.preload = 'auto'; } catch(_){} });
+  }
+
+
+  buildPartialHint(levelNum) {
+    if (levelNum === 1) {
+      // показываем 2-й и 5-й элементы (номера слотов)
+      const map = {
+        
+        1: this.getEquipmentName(this.levels[1].slots[0].correct),
+        2: this.getEquipmentName(this.levels[1].slots[1].correct),
+        5: this.getEquipmentName(this.levels[1].slots[4].correct),
+      
+      };
+      let lines = [];
+      for (let i = 1; i <= 7; i++) {
+        if (map[i]) {
+          lines.push(`${i}) ${map[i]}`);
+        } else {
+          lines.push(`${i}) •••`);
+        }
+      }
+      return lines.join('\n');
+    }
+    if (levelNum === 2) {
+      // показываем только 2-й из 3
+      const name = this.getEquipmentName(this.levels[2].slots[1].correct);
+      return `1) •••\n2) ${name}\n3) •••`;
+    }
+    if (levelNum === 3) {
+      return "Подсказка: держите бак горячей воды около +50°C, а ЦКТ — в заметном минусе. Остальное подберите опытным путём.";
+    }
+    return "";
+  }
+
+  openInfoModal(text, buttons = []) {
+    // используем существующее модальное окно
+    this.elements.hintText.textContent = "";
+    this.elements.hintText.innerText = text;
+    // очищаем старые кнопки (если уже добавляли)
+    const oldBtns = this.elements.hintModal.querySelectorAll('.modal-action');
+    oldBtns.forEach(b => b.remove());
+    // добавим действия
+    const footer = document.createElement('div');
+    footer.style.display = 'flex';
+    footer.style.justifyContent = 'center';
+    footer.style.gap = '10px';
+    footer.style.marginTop = '10px';
+    buttons.forEach(({label, onClick, variant}) => {
+      const btn = document.createElement('button');
+      btn.className = 'modal-action';
+      btn.textContent = label;
+      btn.style.padding = '10px 16px';
+      btn.style.borderRadius = '10px';
+      btn.style.border = 'none';
+      btn.style.cursor = 'pointer';
+      btn.style.fontWeight = '600';
+      btn.style.background = variant === 'secondary' ? '#e5e7eb' : '#3b82f6';
+      btn.style.color = variant === 'secondary' ? '#111827' : '#fff';
+      btn.addEventListener('click', () => { onClick(); this.closeHintModal(); });
+      footer.appendChild(btn);
+    });
+    this.elements.hintModal.querySelector('.modal-content').appendChild(footer);
+    this.elements.hintModal.classList.remove('hidden');
   }
 
   initEventListeners() {
@@ -174,13 +298,59 @@ class BreweryGame {
     });
   }
 
+
+  // подсчёт занятых слотов
+  computeEquipmentPlaced() {
+    const level = this.levels[this.state.currentLevel];
+    const count = (level.slots||[]).filter(s => document.getElementById(s.id).dataset.filled==='true').length;
+    this.state.equipmentPlaced = count;
+    this.elements.launchBtn.disabled = count !== (level.slots?.length || 0);
+  }
+
+  setSlotEquipment(slot, equipmentId) {
+    // equipmentId === null => очистить слот
+    slot.innerHTML = '';
+    const slotNumber = document.createElement('div');
+    slotNumber.className = 'slot-number';
+    slotNumber.textContent = slot.dataset.number;
+    slot.appendChild(slotNumber);
+
+    if (equipmentId) {
+      const img = document.createElement('img');
+      img.className = 'equipment-placed';
+      img.alt = equipmentId;
+      this.setSmartImage(img, equipmentId);
+      slot.appendChild(img);
+      slot.dataset.filled = 'true';
+      slot.dataset.equipment = equipmentId;
+      // возможность кликом снять
+      slot.onclick = () => this.removeFromSlot(slot);
+      // спрячем кнопку в панели
+      const btn = document.querySelector(`.equipment-btn[data-equipment="${equipmentId}"]`);
+      if (btn) btn.style.display = 'none';
+    } else {
+      slot.dataset.filled = 'false';
+      slot.dataset.equipment = '';
+      // показать кнопку назад
+      // (кнопку мы покажем позже, когда знаем id снимаемого, или отдельно)
+    }
+  }
+
   initDesktopHandlers() {
     document.addEventListener('mousedown', (e) => {
       const equipmentBtn = e.target.closest('.equipment-btn');
+      const filledSlot = e.target.closest('.slot');
       if (equipmentBtn && equipmentBtn.style.display !== 'none') {
+        // тянем из панели
         this.selectEquipment(equipmentBtn);
         this.state.draggedItem = equipmentBtn;
+        this.state.dragSource = { type: 'panel', equipId: equipmentBtn.dataset.equipment };
         equipmentBtn.classList.add('dragging');
+      } else if (filledSlot && filledSlot.dataset.filled === 'true') {
+        // тянем из занятого слота
+        this.state.draggedItem = filledSlot;
+        this.state.dragSource = { type: 'slot', slotEl: filledSlot, equipId: filledSlot.dataset.equipment };
+        filledSlot.classList.add('dragging');
       }
     });
 
@@ -190,7 +360,8 @@ class BreweryGame {
         this.state.draggedItem.style.left = (e.clientX - 75) + 'px';
         this.state.draggedItem.style.top = (e.clientY - 75) + 'px';
 
-        const slot = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.slot');
+        const overEl = document.elementFromPoint(e.clientX, e.clientY);
+        const slot = overEl?.closest?.('.slot');
         document.querySelectorAll('.slot').forEach(s => s.classList.remove('drop-target'));
         if (slot) slot.classList.add('drop-target');
       }
@@ -198,9 +369,71 @@ class BreweryGame {
 
     document.addEventListener('mouseup', (e) => {
       if (this.state.draggedItem) {
-        const slot = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.slot');
-        if (slot) { this.placeEquipment(slot, this.state.draggedItem.dataset.equipment); }
+        const overEl = document.elementFromPoint(e.clientX, e.clientY);
+        const targetSlot = overEl?.closest?.('.slot');
+        const overPanel = overEl?.closest?.('.equipment-panel-container');
+
+        if (this.state.dragSource?.type === 'panel') {
+          if (targetSlot) {
+            // если слот занят — вернем то, что было, обратно в панель
+            if (targetSlot.dataset.filled === 'true') {
+              const prev = targetSlot.dataset.equipment;
+              const prevBtn = document.querySelector(`.equipment-btn[data-equipment="${prev}"]`);
+              if (prevBtn) prevBtn.style.display = '';
+            }
+            this.setSlotEquipment(targetSlot, this.state.dragSource.equipId);
+            this.state.savedLayouts[this.state.currentLevel][targetSlot.id] = this.state.dragSource.equipId;
+            // скрыть исходную кнопку
+            const btn = document.querySelector(`.equipment-btn[data-equipment="${this.state.dragSource.equipId}"]`);
+            if (btn) btn.style.display = 'none';
+          }
+        } else if (this.state.dragSource?.type === 'slot') {
+          if (targetSlot && targetSlot !== this.state.dragSource.slotEl) {
+            // swap или move
+            const src = this.state.dragSource.slotEl;
+            const srcId = src.dataset.equipment;
+            if (targetSlot.dataset.filled === 'true') {
+              const dstId = targetSlot.dataset.equipment;
+              this.setSlotEquipment(src, dstId);
+              this.setSlotEquipment(targetSlot, srcId);
+              this.state.savedLayouts[this.state.currentLevel][src.id] = dstId;
+              this.state.savedLayouts[this.state.currentLevel][targetSlot.id] = srcId;
+            } else {
+              // move
+              this.setSlotEquipment(targetSlot, srcId);
+              // вернуть кнопку у исходного только если там было оборудование, но мы очищаем слот
+              const srcBtn = document.querySelector(`.equipment-btn[data-equipment="${srcId}"]`);
+              if (srcBtn) srcBtn.style.display = 'none';
+              // очистить исходный слот
+              src.innerHTML = '';
+              const slotNumber = document.createElement('div');
+              slotNumber.className = 'slot-number';
+              slotNumber.textContent = src.dataset.number;
+              src.appendChild(slotNumber);
+              src.dataset.filled = 'false';
+              src.dataset.equipment = '';
+              this.state.savedLayouts[this.state.currentLevel][src.id] = '';
+            }
+          } else if (overPanel) {
+            // вернуть в панель
+            const src = this.state.dragSource.slotEl;
+            const id = src.dataset.equipment;
+            const btn = document.querySelector(`.equipment-btn[data-equipment="${id}"]`);
+            if (btn) btn.style.display = '';
+            src.innerHTML = '';
+            const slotNumber = document.createElement('div');
+            slotNumber.className = 'slot-number';
+            slotNumber.textContent = src.dataset.number;
+            src.appendChild(slotNumber);
+            src.dataset.filled = 'false';
+            src.dataset.equipment = '';
+            this.state.savedLayouts[this.state.currentLevel][src.id] = '';
+          }
+        }
+
+        this.computeEquipmentPlaced();
         this.resetDraggedVisual();
+        this.state.dragSource = null;
       }
     });
   }
@@ -233,7 +466,6 @@ class BreweryGame {
     this.state.equipmentPlaced = 0;
     this.state.hintUsed = false;
 
-    // Сбрасываем результат текущего уровня (на случай рестартов)
     if (this.state.currentLevel <= 3) {
       this.state.levelResults[this.state.currentLevel].correct = 0;
     }
@@ -310,15 +542,14 @@ class BreweryGame {
   }
 
   placeEquipment(slot, equipmentId) {
-    if (slot.dataset.filled === 'true') return; // только в пустые ячейки
+    if (slot.dataset.filled === 'true') return;
 
     this.playSound('click');
 
     const equipmentImg = document.createElement('img');
-    equipmentImg.src = `assets/images/${equipmentId}.png`;
     equipmentImg.className = 'equipment-placed';
     equipmentImg.alt = equipmentId;
-    equipmentImg.onerror = () => { equipmentImg.src = 'assets/images/placeholder.png'; };
+    this.setSmartImage(equipmentImg, equipmentId);
 
     slot.innerHTML = '';
     const slotNumber = document.createElement('div');
@@ -333,7 +564,6 @@ class BreweryGame {
     const btn = document.querySelector(`.equipment-btn[data-equipment="${equipmentId}"]`);
     if (btn) btn.style.display = 'none';
 
-    // Возможность удалить элемент нажатием по заполненному слоту
     slot.addEventListener('click', () => this.removeFromSlot(slot), { once: true });
 
     this.state.equipmentPlaced++;
@@ -341,6 +571,8 @@ class BreweryGame {
       this.elements.launchBtn.disabled = false;
       this.showFeedback('Все оборудование размещено!', 'correct');
     }
+    this.state.savedLayouts[this.state.currentLevel][slot.id] = equipmentId;
+    this.computeEquipmentPlaced();
   }
 
   removeFromSlot(slot) {
@@ -358,7 +590,7 @@ class BreweryGame {
     if (btn) btn.style.display = '';
 
     this.state.equipmentPlaced = Math.max(0, this.state.equipmentPlaced - 1);
-    this.elements.launchBtn.disabled = true; // нужно снова расставить все
+    this.elements.launchBtn.disabled = true;
   }
 
   checkSolution() {
@@ -387,7 +619,23 @@ class BreweryGame {
       this.playSound('error');
     }
 
-    setTimeout(() => this.nextLevel(), 1200);
+    // подготовим обзор без раскрытия верных ответов
+    const wrong = [];
+    const right = [];
+    level.slots.forEach((slotConfig, idx) => {
+      const slot = document.getElementById(slotConfig.id);
+      const placed = slot.dataset.equipment || '—';
+      if (placed === slotConfig.correct) right.push(idx+1); else wrong.push(idx+1);
+    });
+    this.levelReview[this.state.currentLevel] = { right, wrong };
+
+    let text = `Промежуточный разбор уровня «${level.name}»\n\n`;
+    text += right.length ? `Верно расположены позиции: ${right.join(', ')}\n` : 'Пока нет верно расположенных позиций.\n';
+    if (wrong.length) text += `Требуют внимания позиции: ${wrong.join(', ')}. Попробуйте переосмыслить поток процесса (от подготовки к варке и далее).`;
+
+    this.openInfoModal(text, [{label:'Далее', variant:'primary', onClick:()=>this.nextLevel()},
+    ]);
+
   }
 
   checkSettingsSolution() {
@@ -410,7 +658,21 @@ class BreweryGame {
     });
 
     this.state.levelResults[3].correct = correctCount;
-    setTimeout(() => this.endGame(true), 1200);
+    const tips = [];
+    this.levels[3].settings.forEach(s=>{
+      const val = parseInt(document.getElementById(s.id).value);
+      const diff = Math.abs(val - s.correct);
+      if (diff>3) tips.push(s.label);
+    });
+    let text = 'Проверка температур:\n';
+    if (tips.length){
+      text += 'Эти параметры требуют уточнения: ' + tips.join('; ') + '. Постарайтесь держать значения ближе к целевым.';
+    } else {
+      text += 'Отлично, все в допустимых пределах!';
+    }
+    this.openInfoModal(text, [
+      {label:'Завершить', variant:'primary', onClick:()=>this.endGame(true)}]);
+
   }
 
   highlightSlot(slot, type) {
@@ -429,9 +691,23 @@ class BreweryGame {
     this.elements.scoreDisplay.textContent = totalScore;
     this.elements.scoreDisplayLose.textContent = totalScore;
 
-    // Детализация по уровням
     const detailsHTML = (where) => {
       let html = '<div class="level-results">';
+      for (let level = 1; level <= 3; level++) {
+        const result = this.state.levelResults[level];
+        const review = this.levelReview[level] || {right:[], wrong:[]};
+        const errors = result.total - result.correct;
+        html += `
+          <div class="level-result">
+            <h3>Уровень ${level}: ${this.levels[level].name}</h3>
+            <p>Правильно: ${result.correct} из ${result.total}</p>
+            <p>Ошибки: ${errors} (${errors * 5} баллов)</p>
+            ${review.right?.length || review.wrong?.length ?
+              `<p><strong>Верные позиции:</strong> ${review.right.join(', ') || '—'}</p>
+               <p><strong>Пересмотрите позиции:</strong> ${review.wrong.join(', ') || '—'}</p>`
+              : ''}
+          </div>`;
+      }
       for (let level = 1; level <= 3; level++) {
         const result = this.state.levelResults[level];
         const errors = result.total - result.correct;
@@ -531,9 +807,11 @@ class BreweryGame {
 
     if (levelNum === 3) {
       this.createSettingsInterface(level);
+      this.elements.hintBtn.classList.add('hidden');
     } else {
       this.createEquipmentSlots(level);
       this.createEquipmentPanel(level);
+      this.elements.hintBtn.classList.remove('hidden');
     }
 
     this.elements.levelSelectScreen.classList.add('hidden');
@@ -588,14 +866,30 @@ class BreweryGame {
       btn.dataset.equipment = equipId;
 
       const img = document.createElement('img');
-      img.src = `assets/images/${equipId}.png`;
       img.className = 'equipment';
       img.alt = equipId;
-      img.onerror = () => { img.src = 'assets/images/placeholder.png'; };
+      this.setSmartImage(img, equipId);
 
       btn.appendChild(img);
       this.elements.equipmentPanel.appendChild(btn);
     });
+
+    
+    // восстановим сохранённую раскладку (если есть)
+    const saved = this.state.savedLayouts[this.state.currentLevel] || {};
+    level.slots.forEach(slotConfig => {
+      const slot = document.getElementById(slotConfig.id);
+      const eid = saved[slotConfig.id];
+      if (eid) {
+        this.setSlotEquipment(slot, eid);
+      }
+    });
+    // спрячем кнопки для уже стоящих
+    Object.values(saved).filter(Boolean).forEach(eid => {
+      const btn = document.querySelector(`.equipment-btn[data-equipment="${eid}"]`);
+      if (btn) btn.style.display = 'none';
+    });
+    this.computeEquipmentPlaced();
   }
 
   resetEquipment() {
@@ -625,6 +919,9 @@ class BreweryGame {
     level.equipment.forEach(equipId => {
       const btn = document.querySelector(`.equipment-btn[data-equipment="${equipId}"]`);
       if (btn) btn.style.display = '';
+      // Обновим изображения панели (на случай изменения CUSTOM_IMAGE_MAP)
+      const img = btn?.querySelector('img');
+      if (img) this.setSmartImage(img, equipId);
     });
 
     this.state.equipmentPlaced = 0;
@@ -637,9 +934,8 @@ class BreweryGame {
     this.playSound('click');
     this.state.hintUsed = true;
 
-    const hint = this.levels[this.state.currentLevel].hint;
-    this.elements.hintText.textContent = hint;
-    this.elements.hintModal.classList.remove('hidden');
+    const partial = this.buildPartialHint(this.state.currentLevel);
+    this.openInfoModal(partial, [{label:'Понял', onClick:()=>{}, variant:'primary'}]);
 
     this.elements.hintBtn.disabled = true;
     this.elements.hintBtn.style.opacity = '0.6';
@@ -719,17 +1015,81 @@ class BreweryGame {
   }
 
   preloadAssets() {
-    const equipmentImages = [
+    const allIds = [
       'malt-crusher', 'congestion-device', 'steam-generator',
       'hot-water-tank', 'filtration-unit', 'wort-brewing-machine',
       'hydrocyclone-apparatus', 'heat-exchanger', 'chiller',
       'cylinder-conical-tank', 'placeholder'
     ];
-    equipmentImages.forEach(equipId => {
+
+    allIds.forEach(equipId => {
       const img = new Image();
-      img.src = `assets/images/${equipId}.png`;
+      // используем тот же умный загрузчик
+      this.setSmartImage(img, equipId);
     });
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => { new BreweryGame(); });
+document.addEventListener('DOMContentLoaded', () => { window.app = new BreweryGame(); });
+
+
+// === SAFE RESULTS PATCH (non-invasive) ===
+(function(){
+  try {
+    const weights = {1: {ok: 10}, 2: {ok: 15}, 3: {ok: 20}};
+
+    // Keep a reference to original endGame
+    const _origEndGame = BreweryGame.prototype.endGame;
+
+    // Safer total score: only for correct answers
+    BreweryGame.prototype.calculateTotalScore = function(){
+      let total = 0;
+      for (let level = 1; level <= 3; level++) {
+        const res = (this.state && this.state.levelResults && this.state.levelResults[level]) || {correct:0};
+        total += (res.correct || 0) * weights[level].ok;
+      }
+      return total;
+    };
+
+    function buildDetailsHTML(self) {
+      let html = '<div class="level-results">';
+      for (let level = 1; level <= 3; level++) {
+        const result = (self.state && self.state.levelResults && self.state.levelResults[level]) || {correct:0,total:0};
+        const review = (self.levelReview && self.levelReview[level]) || {rightNames:[], wrong:[]};
+        const lvlScore = (result.correct || 0) * weights[level].ok;
+        html += `
+          <div class="level-result">
+            <h3>Уровень ${level}: ${self.levels[level].name}</h3>
+            <p>Очки за уровень: ${lvlScore}</p>
+            <p>Правильно: ${result.correct} из ${result.total}</p>
+            ${review.rightNames && review.rightNames.length ? `<p><strong>Верно расставлено:</strong> ${review.rightNames.join(', ')}</p>` : ''}
+            ${review.wrong && review.wrong.length ? `<p><strong>Проверьте слоты:</strong> ${review.wrong.join(', ')}</p>` : ''}
+          </div>`;
+      }
+      html += '</div>';
+      return html;
+    }
+
+    BreweryGame.prototype.endGame = function(isWin){
+      // Call original logic first (to keep flows/buttons/screens)
+      _origEndGame.call(this, isWin);
+
+      // Now, deterministically replace the results content and set total score
+      try {
+        const winDetails = document.getElementById('level-details');
+        const loseDetails = document.getElementById('level-details-lose');
+        const html = buildDetailsHTML(this);
+        if (winDetails) { winDetails.innerHTML = html; }
+        if (loseDetails) { loseDetails.innerHTML = html; }
+        const totalEl = document.getElementById('score-earned');
+        if (totalEl) totalEl.textContent = this.calculateTotalScore();
+      } catch (e) {
+        console.error('Results patch error:', e);
+      }
+    };
+  } catch(e) {
+    console.error('SAFE RESULTS PATCH init error:', e);
+  }
+})();
+// === /SAFE RESULTS PATCH ===
+
