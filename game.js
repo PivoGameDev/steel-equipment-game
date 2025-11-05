@@ -280,7 +280,7 @@ this.initElements();
     if (this.selectionMode) { this.initSelectionHandlers(); } else if (this.isMobile()) { this.initMobileHandlers(); } else { this.initDesktopHandlers(); }
 
     document.querySelectorAll('.restart-btn').forEach(btn => {
-      btn.addEventListener('click', () => this.restartLevel());
+      btn.addEventListener('click', () => this.showStartScreen());
     });
     document.querySelector('.next-level-btn').addEventListener('click', () => this.nextLevel());
   }
