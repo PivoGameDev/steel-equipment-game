@@ -1050,4 +1050,91 @@ class BreweryGame {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => { window.app = new BreweryGame(); });
+document.addEventListener('DOMContentLoaded', () => { new BreweryGame(); });
+
+
+// === RESULTS DEDUP + HIDE NEXT BTN + TOTAL SCORE (idempotent) ===
+(function(){
+  try {
+    if (window.__RESULTS_FIX_PATCH__) return;
+    window.__RESULTS_FIX_PATCH__ = true;
+
+    const WEIGHTS = {1:{ok:10}, 2:{ok:15}, 3:{ok:20}};
+
+    // safe total score (only correct answers)
+    if (!BreweryGame.prototype.calculateTotalScore || BreweryGame.prototype.calculateTotalScore.__patched__ !== true) {
+      const calc = function(){
+        try{
+          let total = 0;
+          for (let lvl = 1; lvl <= 3; lvl++) {
+            const res = (this.state && this.state.levelResults && this.state.levelResults[lvl]) || {correct:0};
+            total += (res.correct || 0) * WEIGHTS[lvl].ok;
+          }
+          return total;
+        } catch(e){ return 0; }
+      };
+      calc.__patched__ = true;
+      BreweryGame.prototype.calculateTotalScore = calc;
+    }
+
+    function buildDetailsHTML(self){
+      let html = '<div class="level-results">';
+      for (let lvl = 1; lvl <= 3; lvl++) {
+        const result = (self.state && self.state.levelResults && self.state.levelResults[lvl]) || {correct:0,total:0};
+        const review = (self.levelReview && self.levelReview[lvl]) || {rightNames:[], wrong:[]};
+        const lvlScore = (result.correct || 0) * WEIGHTS[lvl].ok;
+        html += `
+          <div class="level-result">
+            <h3>Уровень ${lvl}: ${self.levels[lvl].name}</h3>
+            <p>Очки за уровень: ${lvlScore}</p>
+            <p>Правильно: ${result.correct} из ${result.total}</p>
+            ${review.rightNames && review.rightNames.length ? `<p><strong>Верно расставлено:</strong> ${review.rightNames.join(', ')}</p>` : ''}
+            ${review.wrong && review.wrong.length ? `<p><strong>Проверьте слоты:</strong> ${review.wrong.join(', ')}</p>` : ''}
+          </div>`;
+      }
+      html += '</div>';
+      return html;
+    }
+
+    const _origEndGame = BreweryGame.prototype.endGame;
+    BreweryGame.prototype.endGame = function(isWin){
+      // call original first
+      if (typeof _origEndGame === 'function') _origEndGame.call(this, isWin);
+
+      // then normalize the results screen
+      try {
+        const html = buildDetailsHTML(this);
+
+        // 1) dedup/replace results in both win/lose containers
+        const winDetails = document.getElementById('level-details');
+        if (winDetails) winDetails.innerHTML = html;
+
+        const loseDetails = document.getElementById('level-details-lose');
+        if (loseDetails) loseDetails.innerHTML = html;
+
+        // 2) set total score
+        const totalEl = document.getElementById('score-earned');
+        if (totalEl) totalEl.textContent = this.calculateTotalScore();
+
+        // 3) remove any "Next level" buttons
+        document.querySelectorAll('.next-level-btn').forEach(btn => btn.remove());
+      } catch(e){
+        console.error('RESULTS FIX normalize error:', e);
+      }
+    };
+
+    // Initial pass + observe DOM for any dynamic "next-level" insertions
+    function removeNextButtons(root){
+      (root || document).querySelectorAll('.next-level-btn').forEach(b => b.remove());
+    }
+    removeNextButtons(document);
+    const mo = new MutationObserver(muts => muts.forEach(m => {
+      m.addedNodes && m.addedNodes.forEach(n => { if (n.nodeType === 1) removeNextButtons(n); });
+    }));
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+    window.__NEXT_BTN_KILLER__ = mo;
+  } catch(e){
+    console.error('RESULTS FIX PATCH init error:', e);
+  }
+})();
+// === /RESULTS DEDUP + HIDE NEXT BTN + TOTAL SCORE ===
