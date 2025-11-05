@@ -84,9 +84,10 @@
     </div>
 
     <!-- Модальное окно для подсказок -->
-    <div id="hint-modal" class="modal hidden">
+    <!-- ВАЖНО: .modal теперь видимый контейнер (display:flex), а класс .hidden его скрывает -->
+    <div id="hint-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="hint-text">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
+            <span class="close-modal" title="Закрыть">&times;</span>
             <p id="hint-text"></p>
         </div>
     </div>
