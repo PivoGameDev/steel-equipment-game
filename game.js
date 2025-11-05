@@ -96,7 +96,10 @@ class BreweryGame {
     // Расширения, которые будут проверяться по очереди
     this.IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.gif'];
 
-    this.initElements();
+    
+    // Режим выбора-и-клика вместо перетаскивания
+    this.selectionMode = true;
+this.initElements();
     this.levelReview = {1:{},2:{},3:{}};
     this.initEventListeners();
     // Создаем кнопку "На предыдущий уровень", если её нет
@@ -274,13 +277,47 @@ class BreweryGame {
       if (e.target === this.elements.hintModal) this.closeHintModal();
     });
 
-    if (this.isMobile()) { this.initMobileHandlers(); } else { this.initDesktopHandlers(); }
+    if (this.selectionMode) { this.initSelectionHandlers(); } else if (this.isMobile()) { this.initMobileHandlers(); } else { this.initDesktopHandlers(); }
 
     document.querySelectorAll('.restart-btn').forEach(btn => {
       btn.addEventListener('click', () => this.restartLevel());
     });
     document.querySelector('.next-level-btn').addEventListener('click', () => this.nextLevel());
   }
+
+  // === Обработчики режима выбора (без DnD) ===
+  initSelectionHandlers() {
+    // выбор оборудования кликом по панели
+    this.elements.equipmentPanel.addEventListener('click', (e) => {
+      const btn = e.target.closest('.equipment-btn');
+      if (!btn || btn.style.display === 'none') return;
+      this.selectEquipment(btn);
+    });
+
+    // клик по слоту — поставить выбранное или снять, если ничего не выбрано
+    this.elements.playground.addEventListener('click', (e) => {
+      const slot = e.target.closest('.slot');
+      if (!slot) return;
+      if (this.state.selectedEquipment) {
+        // если занято — вернуть предыдущую кнопку в панель
+        if (slot.dataset.filled === 'true') {
+          const prev = slot.dataset.equipment;
+          const prevBtn = document.querySelector(`.equipment-btn[data-equipment="${prev}"]`);
+          if (prevBtn) prevBtn.style.display = '';
+        }
+        this.setSlotEquipment(slot, this.state.selectedEquipment);
+        this.state.savedLayouts[this.state.currentLevel][slot.id] = this.state.selectedEquipment;
+        this.computeEquipmentPlaced();
+        this.deselectEquipment();
+      } else if (slot.dataset.filled === 'true') {
+        this.removeFromSlot(slot);
+      }
+    });
+
+    // Esc — снять выделение
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.deselectEquipment(); });
+  }
+
 
   isMobile() { return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0); }
 
@@ -341,7 +378,7 @@ class BreweryGame {
       slot.dataset.filled = 'true';
       slot.dataset.equipment = equipmentId;
       // возможность кликом снять
-      slot.onclick = () => this.removeFromSlot(slot);
+      if (!this.selectionMode) { slot.onclick = () => this.removeFromSlot(slot); } else { slot.onclick = null; }
       // спрячем кнопку в панели
       const btn = document.querySelector(`.equipment-btn[data-equipment="${equipmentId}"]`);
       if (btn) btn.style.display = 'none';
@@ -532,7 +569,7 @@ class BreweryGame {
   selectEquipment(equipmentBtn) {
     this.playSound('click');
     this.state.selectedEquipment = equipmentBtn.dataset.equipment;
-    document.querySelectorAll('.equipment-btn').forEach(btn => { btn.style.opacity = btn === equipmentBtn ? '1' : '0.5'; });
+    document.querySelectorAll('.equipment-btn').forEach(btn => { btn.classList.toggle('selected', btn === equipmentBtn); btn.style.opacity = '1'; });
     this.elements.feedbackMessage.textContent = `Выбрано: ${this.getEquipmentName(this.state.selectedEquipment)}`;
     this.elements.feedbackMessage.className = 'feedback-message';
   }
@@ -555,7 +592,7 @@ class BreweryGame {
 
   deselectEquipment() {
     this.state.selectedEquipment = null;
-    document.querySelectorAll('.equipment-btn').forEach(btn => { btn.style.opacity = '1'; });
+    document.querySelectorAll('.equipment-btn').forEach(btn => btn.classList.remove('selected')); this.elements.feedbackMessage.textContent = '';
   }
 
   placeEquipment(slot, equipmentId) {

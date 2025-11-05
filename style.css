@@ -495,3 +495,8 @@ body {
     .setting-controls { flex-direction: column; align-items: stretch; gap: 8px; }
     .temp-value { text-align: right; }
 }
+
+/* === Подсветка выбранного оборудования (режим выбора) === */
+.equipment-btn.selected{outline:3px solid #3b82f6;box-shadow:0 6px 18px rgba(59,130,246,.35);transform:scale(1.03);} 
+.playground .slot{cursor:pointer;} 
+.equipment-panel .equipment-btn{cursor:pointer;}
