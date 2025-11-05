@@ -7,10 +7,10 @@ class BreweryGame {
         time: 300,
         slots: [
           { id: "slot1", correct: "malt-crusher", number: 1 },
-          { id: "slot2", correct: "congestion-device", number: 2 },
-          { id: "slot3", correct: "steam-generator", number: 3 },
-          { id: "slot4", correct: "hot-water-tank", number: 4 },
-          { id: "slot5", correct: "filtration-unit", number: 5 },
+          { id: "slot2", correct: "steam-generator", number: 2 },
+          { id: "slot3", correct: "congestion-device", number: 3 },
+          { id: "slot4", correct: "filtration-unit", number: 4 },
+          { id: "slot5", correct: "hot-water-tank", number: 5 },
           { id: "slot6", correct: "wort-brewing-machine", number: 6 },
           { id: "slot7", correct: "hydrocyclone-apparatus", number: 7 }
         ],
@@ -23,7 +23,7 @@ class BreweryGame {
         threshold3: 60,
         threshold2: 120,
         description: "Соберите правильную последовательность оборудования варочного цеха. Вам нужно расставить 7 из 10 предложенных элементов оборудования в правильном порядке.",
-        hint: "Правильный порядок: Дробилка солода → Заторный аппарат → Парогенератор → Бак горячей воды → Фильтрационный аппарат → Сусловарочный аппарат → Гидроциклонный аппарат"
+        hint: "Правильный порядок: Дробилка солода → Парогенератор → Заторный аппарат → Фильтрационный аппарат → Бак горячей воды → Сусловарочный аппарат → Гидроциклонный аппарат"
       },
       2: {
         name: "Бродильный цех",
@@ -209,8 +209,9 @@ this.initElements();
 
   buildPartialHint(levelNum) {
     if (levelNum === 1) {
-      // показываем 2-й и 5-й элементы (номера слотов)
+      // показываем 1-й, 2-й и 5-й элементы (номера слотов)
       const map = {
+        1: this.getEquipmentName(this.levels[1].slots[0].correct),
         2: this.getEquipmentName(this.levels[1].slots[1].correct),
         5: this.getEquipmentName(this.levels[1].slots[4].correct),
       };
@@ -282,8 +283,9 @@ this.initElements();
     document.querySelectorAll('.restart-btn').forEach(btn => {
       btn.addEventListener('click', () => this.showStartScreen());
     });
-    document.querySelector('.next-level-btn').addEventListener('click', () => this.nextLevel());
-  }
+    const _nextBtn = document.querySelector('.next-level-btn');
+    if (_nextBtn) { _nextBtn.addEventListener('click', () => this.nextLevel()); }
+}
 
   // === Обработчики режима выбора (без DnD) ===
   initSelectionHandlers() {
