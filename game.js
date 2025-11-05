@@ -7,13 +7,13 @@ class BreweryGame {
         time: 300,
         slots: [
           { id: "slot1", correct: "malt-crusher", number: 1 },
-          { id: "slot2", correct: "steam-generator", number: 2 },
-          { id: "slot3", correct: "congestion-device", number: 3 },
-          { id: "slot4", correct: "filtration-unit", number: 4 },
-          { id: "slot5", correct: "hot-water-tank", number: 5 },
+          { id: "slot2", correct: "congestion-device", number: 2 },
+          { id: "slot3", correct: "steam-generator", number: 3 },
+          { id: "slot4", correct: "hot-water-tank", number: 4 },
+          { id: "slot5", correct: "filtration-unit", number: 5 },
           { id: "slot6", correct: "wort-brewing-machine", number: 6 },
           { id: "slot7", correct: "hydrocyclone-apparatus", number: 7 }
-    ],
+        ],
         equipment: [
           "malt-crusher", "congestion-device", "steam-generator", 
           "hot-water-tank", "filtration-unit", "wort-brewing-machine", 
@@ -23,7 +23,7 @@ class BreweryGame {
         threshold3: 60,
         threshold2: 120,
         description: "Соберите правильную последовательность оборудования варочного цеха. Вам нужно расставить 7 из 10 предложенных элементов оборудования в правильном порядке.",
-        hint: "Правильный порядок: Дробилка солода → Парогенератор → Заторный аппарат → Фильтрационный аппарат → Бак горячей воды → Сусловарочный аппарат → Гидроциклонный аппарат"
+        hint: "Правильный порядок: Дробилка солода → Заторный аппарат → Парогенератор → Бак горячей воды → Фильтрационный аппарат → Сусловарочный аппарат → Гидроциклонный аппарат"
       },
       2: {
         name: "Бродильный цех",
@@ -76,9 +76,8 @@ class BreweryGame {
 
     this.progress = { unlockedLevels: [1], bestScores: {} };
 
-
     // === НАСТРОЙКИ ПУТЕЙ К КАРТИНКАМ ===
-    this.IMAGE_BASE = 'assets/assets/images/';
+    this.IMAGE_BASE = 'assets/images/';
     this.PLACEHOLDER = this.IMAGE_BASE + 'placeholder.png';
     // Если у вас свои имена файлов, внесите их сюда (с расширением)
     // Пример: 'malt-crusher': 'дробилка.png'
@@ -100,7 +99,28 @@ class BreweryGame {
     this.initElements();
     this.levelReview = {1:{},2:{},3:{}};
     this.initEventListeners();
-}
+    // Создаем кнопку "На предыдущий уровень", если её нет
+    if (!document.getElementById('prev-level-btn')) {
+      const prevBtn = document.createElement('button');
+      prevBtn.id = 'prev-level-btn';
+      prevBtn.textContent = '← На предыдущий уровень';
+      prevBtn.style.padding = '12px 20px';
+      prevBtn.style.border = 'none';
+      prevBtn.style.borderRadius = '50px';
+      prevBtn.style.fontSize = '16px';
+      prevBtn.style.cursor = 'pointer';
+      prevBtn.style.minWidth = '180px';
+      prevBtn.style.background = 'linear-gradient(135deg, #6b7280 0%, #374151 100%)';
+      prevBtn.style.color = '#fff';
+      const controls = document.querySelector('.game-controls');
+      controls.insertBefore(prevBtn, document.getElementById('launch-btn'));
+      prevBtn.addEventListener('click', () => this.goToPreviousLevel());
+    }
+
+    this.loadProgress();
+    this.renderLevelCards();
+    this.preloadAssets();
+  }
 
   // Пытается подставлять разные варианты имени файла и расширений, пока не загрузится
   setSmartImage(imgEl, equipId) {
@@ -176,9 +196,9 @@ class BreweryGame {
     };
 
     this.sounds = {
-      success: new Audio('assets/assets/sounds/success.mp3'),
-      error: new Audio('assets/assets/sounds/error.mp3'),
-      click: new Audio('assets/assets/sounds/click.mp3')
+      success: new Audio('assets/sounds/success.mp3'),
+      error: new Audio('assets/sounds/error.mp3'),
+      click: new Audio('assets/sounds/click.mp3')
     };
     Object.values(this.sounds).forEach(a => { try { a.preload = 'auto'; } catch(_){} });
   }
@@ -188,11 +208,8 @@ class BreweryGame {
     if (levelNum === 1) {
       // показываем 2-й и 5-й элементы (номера слотов)
       const map = {
-        
-        1: this.getEquipmentName(this.levels[1].slots[0].correct),
         2: this.getEquipmentName(this.levels[1].slots[1].correct),
         5: this.getEquipmentName(this.levels[1].slots[4].correct),
-      
       };
       let lines = [];
       for (let i = 1; i <= 7; i++) {
@@ -633,7 +650,9 @@ class BreweryGame {
     text += right.length ? `Верно расположены позиции: ${right.join(', ')}\n` : 'Пока нет верно расположенных позиций.\n';
     if (wrong.length) text += `Требуют внимания позиции: ${wrong.join(', ')}. Попробуйте переосмыслить поток процесса (от подготовки к варке и далее).`;
 
-    this.openInfoModal(text, [{label:'Далее', variant:'primary', onClick:()=>this.nextLevel()},
+    this.openInfoModal(text, [
+      {label:'Попробовать ещё', variant:'secondary', onClick:()=>this.restartLevel()},
+      {label:'Далее', variant:'primary', onClick:()=>this.nextLevel()},
     ]);
 
   }
@@ -671,7 +690,8 @@ class BreweryGame {
       text += 'Отлично, все в допустимых пределах!';
     }
     this.openInfoModal(text, [
-      {label:'Завершить', variant:'primary', onClick:()=>this.endGame(true)}]);
+      {label:'Завершить', variant:'primary', onClick:()=>this.endGame(true)}
+    ]);
 
   }
 
@@ -1031,65 +1051,3 @@ class BreweryGame {
 }
 
 document.addEventListener('DOMContentLoaded', () => { window.app = new BreweryGame(); });
-
-
-// === SAFE RESULTS PATCH (non-invasive) ===
-(function(){
-  try {
-    const weights = {1: {ok: 10}, 2: {ok: 15}, 3: {ok: 20}};
-
-    // Keep a reference to original endGame
-    const _origEndGame = BreweryGame.prototype.endGame;
-
-    // Safer total score: only for correct answers
-    BreweryGame.prototype.calculateTotalScore = function(){
-      let total = 0;
-      for (let level = 1; level <= 3; level++) {
-        const res = (this.state && this.state.levelResults && this.state.levelResults[level]) || {correct:0};
-        total += (res.correct || 0) * weights[level].ok;
-      }
-      return total;
-    };
-
-    function buildDetailsHTML(self) {
-      let html = '<div class="level-results">';
-      for (let level = 1; level <= 3; level++) {
-        const result = (self.state && self.state.levelResults && self.state.levelResults[level]) || {correct:0,total:0};
-        const review = (self.levelReview && self.levelReview[level]) || {rightNames:[], wrong:[]};
-        const lvlScore = (result.correct || 0) * weights[level].ok;
-        html += `
-          <div class="level-result">
-            <h3>Уровень ${level}: ${self.levels[level].name}</h3>
-            <p>Очки за уровень: ${lvlScore}</p>
-            <p>Правильно: ${result.correct} из ${result.total}</p>
-            ${review.rightNames && review.rightNames.length ? `<p><strong>Верно расставлено:</strong> ${review.rightNames.join(', ')}</p>` : ''}
-            ${review.wrong && review.wrong.length ? `<p><strong>Проверьте слоты:</strong> ${review.wrong.join(', ')}</p>` : ''}
-          </div>`;
-      }
-      html += '</div>';
-      return html;
-    }
-
-    BreweryGame.prototype.endGame = function(isWin){
-      // Call original logic first (to keep flows/buttons/screens)
-      _origEndGame.call(this, isWin);
-
-      // Now, deterministically replace the results content and set total score
-      try {
-        const winDetails = document.getElementById('level-details');
-        const loseDetails = document.getElementById('level-details-lose');
-        const html = buildDetailsHTML(this);
-        if (winDetails) { winDetails.innerHTML = html; }
-        if (loseDetails) { loseDetails.innerHTML = html; }
-        const totalEl = document.getElementById('score-earned');
-        if (totalEl) totalEl.textContent = this.calculateTotalScore();
-      } catch (e) {
-        console.error('Results patch error:', e);
-      }
-    };
-  } catch(e) {
-    console.error('SAFE RESULTS PATCH init error:', e);
-  }
-})();
-// === /SAFE RESULTS PATCH ===
-
