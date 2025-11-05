@@ -78,7 +78,7 @@ class BreweryGame {
 
 
     // === НАСТРОЙКИ ПУТЕЙ К КАРТИНКАМ ===
-    this.IMAGE_BASE = 'assets/images/';
+    this.IMAGE_BASE = 'assets/assets/images/';
     this.PLACEHOLDER = this.IMAGE_BASE + 'placeholder.png';
     // Если у вас свои имена файлов, внесите их сюда (с расширением)
     // Пример: 'malt-crusher': 'дробилка.png'
@@ -176,9 +176,9 @@ class BreweryGame {
     };
 
     this.sounds = {
-      success: new Audio('assets/sounds/success.mp3'),
-      error: new Audio('assets/sounds/error.mp3'),
-      click: new Audio('assets/sounds/click.mp3')
+      success: new Audio('assets/assets/sounds/success.mp3'),
+      error: new Audio('assets/assets/sounds/error.mp3'),
+      click: new Audio('assets/assets/sounds/click.mp3')
     };
     Object.values(this.sounds).forEach(a => { try { a.preload = 'auto'; } catch(_){} });
   }
