@@ -29,10 +29,7 @@ class BreweryGame {
         name: "Бродильный цех",
         time: 180,
         slots: [
-          { id: "slot1", correct: "heat-exchanger", number: 1 },
-          { id: "slot2", correct: "chiller", number: 2 },
-          { id: "slot3", correct: "cylinder-conical-tank", number: 3 }
-        ],
+          { id: "slot1", correct: "chiller", number: 1 }, { id: "slot2", correct: "heat-exchanger", number: 2 }, { id: "slot3", correct: "cylinder-conical-tank", number: 3 }],
         equipment: [
           "malt-crusher", "congestion-device", "steam-generator", 
           "hot-water-tank", "filtration-unit", "wort-brewing-machine", 
@@ -102,24 +99,6 @@ class BreweryGame {
 this.initElements();
     this.levelReview = {1:{},2:{},3:{}};
     this.initEventListeners();
-    // Создаем кнопку "На предыдущий уровень", если её нет
-    if (!document.getElementById('prev-level-btn')) {
-      const prevBtn = document.createElement('button');
-      prevBtn.id = 'prev-level-btn';
-      prevBtn.textContent = '← На предыдущий уровень';
-      prevBtn.style.padding = '12px 20px';
-      prevBtn.style.border = 'none';
-      prevBtn.style.borderRadius = '50px';
-      prevBtn.style.fontSize = '16px';
-      prevBtn.style.cursor = 'pointer';
-      prevBtn.style.minWidth = '180px';
-      prevBtn.style.background = 'linear-gradient(135deg, #6b7280 0%, #374151 100%)';
-      prevBtn.style.color = '#fff';
-      const controls = document.querySelector('.game-controls');
-      controls.insertBefore(prevBtn, document.getElementById('launch-btn'));
-      prevBtn.addEventListener('click', () => this.goToPreviousLevel());
-    }
-
     this.loadProgress();
     this.renderLevelCards();
     this.preloadAssets();
@@ -689,10 +668,7 @@ this.initElements();
     text += right.length ? `Верно расположены позиции: ${right.join(', ')}\n` : 'Пока нет верно расположенных позиций.\n';
     if (wrong.length) text += `Требуют внимания позиции: ${wrong.join(', ')}. Попробуйте переосмыслить поток процесса (от подготовки к варке и далее).`;
 
-    this.openInfoModal(text, [
-      {label:'Попробовать ещё', variant:'secondary', onClick:()=>this.restartLevel()},
-      {label:'Далее', variant:'primary', onClick:()=>this.nextLevel()},
-    ]);
+    this.openInfoModal(text, [{label:'Далее', variant:'primary', onClick:()=>this.nextLevel()}]);
 
   }
 
@@ -728,9 +704,7 @@ this.initElements();
     } else {
       text += 'Отлично, все в допустимых пределах!';
     }
-    this.openInfoModal(text, [
-      {label:'Завершить', variant:'primary', onClick:()=>this.endGame(true)}
-    ]);
+    this.openInfoModal(text, [{label:'Далее', variant:'primary', onClick:()=>this.nextLevel()}]);
 
   }
 
