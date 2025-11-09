@@ -47,7 +47,7 @@ class BreweryGame {
         settings: [
           { id: "hot-water-temp", correct: 50, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
           { id: "tank-temp", correct: -2, min: -10, max: 10, step: 1, label: "Температура в ЦКТ (°C)" },
-          { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время цикла варки сусла (часы)" },
+          { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время от начала затирания до перекачки в ЦКТ (часы)" }, 
           { id: "maturation-time", correct: 21, min: 5, max: 60, step: 1, label: "Время созревания (дни)" }
         ],
         threshold3: 30,
