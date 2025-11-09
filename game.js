@@ -884,42 +884,43 @@ this.initElements();
     this.startGame();
   }
 
-  createSettingsInterface(level) {
-    const settingsHTML = level.settings.map(setting => {
-      // Определяем единицы измерения для отображения
-      let unit = '°C';
-      if (setting.id === "wort-brewing-time") unit = 'ч';
-      if (setting.id === "maturation-time") unit = 'дн';
-      
-      return `
-      <div class="setting-item">
-        <label for="${setting.id}">${setting.label}</label>
-        <div class="setting-controls">
-          <input type="range" id="${setting.id}" min="${setting.min}" max="${setting.max}" step="${setting.step}" value="0" class="temp-slider">
-          <span class="temp-value">0${unit}</span>
-        </div>
-      </div>`;
-    }).join('');
+createSettingsInterface(level) {
+  const settingsHTML = level.settings.map(setting => {
+    // Определяем единицы измерения для отображения
+    let unit = '°C';
+    if (setting.id === "wort-brewing-time") unit = 'ч';
+    if (setting.id === "maturation-time") unit = 'дн';
+    
+    return `
+    <div class="setting-item">
+      <label for="${setting.id}">${setting.label}</label>
+      <div class="setting-controls">
+        <input type="range" id="${setting.id}" min="${setting.min}" max="${setting.max}" step="${setting.step}" value="0" class="temp-slider">
+        <span class="temp-value">0${unit}</span>
+      </div>
+    </div>`;
+  }).join('');
 
-    this.elements.settingsContainer.innerHTML = settingsHTML;
-    // Добавляем класс для компактного отображения
-    this.elements.settingsContainer.classList.add('compact');
+  this.elements.settingsContainer.innerHTML = settingsHTML;
+  
+  // УБИРАЕМ класс compact для нормального отображения
+  this.elements.settingsContainer.classList.remove('compact');
 
-    level.settings.forEach(setting => {
-      const slider = document.getElementById(setting.id);
-      const valueDisplay = slider.nextElementSibling;
-      
-      // Определяем единицы измерения
-      let unit = '°C';
-      if (setting.id === "wort-brewing-time") unit = 'ч';
-      if (setting.id === "maturation-time") unit = 'дн';
-      
-      slider.addEventListener('input', () => {
-        valueDisplay.textContent = `${slider.value}${unit}`;
-        this.elements.launchBtn.disabled = false;
-      });
+  level.settings.forEach(setting => {
+    const slider = document.getElementById(setting.id);
+    const valueDisplay = slider.nextElementSibling;
+    
+    // Определяем единицы измерения
+    let unit = '°C';
+    if (setting.id === "wort-brewing-time") unit = 'ч';
+    if (setting.id === "maturation-time") unit = 'дн';
+    
+    slider.addEventListener('input', () => {
+      valueDisplay.textContent = `${slider.value}${unit}`;
+      this.elements.launchBtn.disabled = false;
     });
-  }
+  });
+}
 
   createEquipmentSlots(level) {
     level.slots.forEach(slotConfig => {
