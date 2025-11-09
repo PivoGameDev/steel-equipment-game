@@ -443,6 +443,17 @@ body {
     100% { opacity: 0; transform: translateY(-10px); }
 }
 
+/* Анимация мигания для кнопки подсказки */
+@keyframes hint-btn-pulse {
+  0% { transform: scale(1); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
+  50% { transform: scale(1.05); box-shadow: 0 0 20px 5px rgba(245, 158, 11, 0.8); }
+  100% { transform: scale(1); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
+}
+
+.hint-btn-pulse {
+  animation: hint-btn-pulse 1s ease-in-out infinite !important;
+}
+
 .dragging { opacity: .7; transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,.3); }
 .drop-target { border: 2px dashed #3b82f6; background-color: rgba(59,130,246,.1); }
 

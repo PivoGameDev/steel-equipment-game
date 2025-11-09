@@ -73,6 +73,13 @@ class BreweryGame {
 
     this.progress = { unlockedLevels: [1], bestScores: {} };
 
+    // === ДОБАВЬТЕ ЭТО ДЛЯ МИГАНИЯ ПОДСКАЗКИ ===
+    this.hintPulseInterval = null;
+    this.hintPulseEnabled = true;
+    // === КОНЕЦ ДОБАВЛЕНИЯ ===
+
+    this.initElements();
+
     // === НАСТРОЙКИ ПУТЕЙ К КАРТИНКАМ ===
     this.IMAGE_BASE = 'assets/images/';
     this.PLACEHOLDER = this.IMAGE_BASE + 'placeholder.png';
@@ -520,6 +527,16 @@ this.initElements();
     this.elements.hintBtn.disabled = false;
     this.elements.hintBtn.style.opacity = '';
 
+    // === ДОБАВЬТЕ ЭТО ДЛЯ МИГАНИЯ ПОДСКАЗКИ ===
+    this.startHintPulse();
+    // === КОНЕЦ ДОБАВЛЕНИЯ ===
+
+
+
+    // === ДОБАВЬТЕ ЭТО ДЛЯ МИГАНИЯ ПОДСКАЗКИ ===
+    this.startHintPulse();
+    // === КОНЕЦ ДОБАВЛЕНИЯ ===
+
     if (this.state.currentLevel === 3) {
       this.elements.launchBtn.textContent = 'Запустить завод';
       this.elements.launchBtn.disabled = false;
@@ -714,6 +731,10 @@ this.initElements();
   }
 
   endGame(isWin) {
+    // === ДОБАВЬТЕ ЭТО ДЛЯ МИГАНИЯ ПОДСКАЗКИ ===
+    this.stopHintPulse();
+    // === КОНЕЦ ДОБАВЛЕНИЯ ===
+
     clearInterval(this.timer);
     this.state.gameStarted = false;
 
@@ -967,6 +988,10 @@ this.initElements();
     this.playSound('click');
     this.state.hintUsed = true;
 
+    // === ДОБАВЬТЕ ЭТО ДЛЯ МИГАНИЯ ПОДСКАЗКИ ===
+    this.disableHintPulse();
+    // === КОНЕЦ ДОБАВЛЕНИЯ ===
+
     const partial = this.buildPartialHint(this.state.currentLevel);
     this.openInfoModal(partial, [{label:'Понял', onClick:()=>{}, variant:'primary'}]);
 
@@ -1061,7 +1086,49 @@ this.initElements();
       this.setSmartImage(img, equipId);
     });
   }
+
+  // === ДОБАВЬТЕ ЭТИ МЕТОДЫ ДЛЯ МИГАНИЯ ПОДСКАЗКИ ===
+  
+  // Запуск мигания кнопки подсказки
+  startHintPulse() {
+    if (!this.hintPulseEnabled) return;
+    
+    this.stopHintPulse();
+    
+    this.hintPulseInterval = setInterval(() => {
+      if (!this.state.hintUsed && this.elements.hintBtn && !this.elements.hintBtn.disabled) {
+        this.elements.hintBtn.classList.add('hint-btn-pulse');
+        
+        setTimeout(() => {
+          if (this.elements.hintBtn) {
+            this.elements.hintBtn.classList.remove('hint-btn-pulse');
+          }
+        }, 900);
+      }
+    }, 5000);
+  }
+
+  // Остановка мигания
+  stopHintPulse() {
+    if (this.hintPulseInterval) {
+      clearInterval(this.hintPulseInterval);
+      this.hintPulseInterval = null;
+    }
+    if (this.elements.hintBtn) {
+      this.elements.hintBtn.classList.remove('hint-btn-pulse');
+    }
+  }
+
+  // Отключение мигания
+  disableHintPulse() {
+    this.hintPulseEnabled = false;
+    this.stopHintPulse();
+  }
+  // === КОНЕЦ ДОБАВЛЕНИЯ МЕТОДОВ ===
+
 }
+
+document.addEventListener('DOMContentLoaded', () => { new BreweryGame(); });
 
 document.addEventListener('DOMContentLoaded', () => { new BreweryGame(); });
 
