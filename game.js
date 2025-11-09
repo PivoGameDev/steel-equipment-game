@@ -43,15 +43,17 @@ class BreweryGame {
       },
       3: {
         name: "Настройки температуры",
-        time: 120,
+        time: 180, // увеличим время, т.к. настроек больше
         settings: [
-          { id: "hot-water-temp", correct: 80, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
-          { id: "tank-temp", correct: 0, min: -10, max: 10, step: 1, label: "Температура в ЦКТ (°C)" }
+          { id: "hot-water-temp", correct: 50, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
+          { id: "tank-temp", correct: -2, min: -10, max: 10, step: 1, label: "Температура в ЦКТ (°C)" },
+          { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время цикла варки сусла (часы)" },
+          { id: "maturation-time", correct: 21, min: 5, max: 60, step: 1, label: "Время созревания (дни)" }
         ],
         threshold3: 30,
         threshold2: 60,
         description: "Установите правильные температурные режимы для оборудования.",
-        hint: "Используйте ползунки для установки температуры. Точность важна - отклонение более чем на 3°C считается ошибкой."
+        hint: "Используйте ползунки для установки параметров. Допустимое отклонение: температура ±3°C, время варки ±1 час, время созревания ±2 дня."
       }
     };
 
@@ -67,7 +69,7 @@ class BreweryGame {
       levelResults: {
         1: { correct: 0, total: 7 },
         2: { correct: 0, total: 3 },
-        3: { correct: 0, total: 2 }
+        3: { correct: 0, total: 4 }
       }
     };
 
@@ -698,7 +700,16 @@ this.initElements();
       const value = parseInt(input.value);
       const diff = Math.abs(value - setting.correct);
 
-      if (diff <= 3) {
+      // Разные допустимые отклонения для разных параметров
+      let allowedDeviation = 3; // по умолчанию для температуры
+      
+      if (setting.id === "wort-brewing-time") {
+        allowedDeviation = 1; // для времени варки ±1 час
+      } else if (setting.id === "maturation-time") {
+        allowedDeviation = 2; // для времени созревания ±2 дня
+      }
+
+      if (diff <= allowedDeviation) {
         correctCount++;
         input.classList.add('correct-setting');
         setTimeout(() => input.classList.remove('correct-setting'), 1000);
