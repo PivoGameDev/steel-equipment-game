@@ -41,15 +41,19 @@ class BreweryGame {
         description: "Теперь соберите оборудование бродильного цеха. Вам нужно правильно расставить 3 элемента оборудования из 10 возможных.",
         hint: "Правильный порядок: Теплообменник → Чилер → Цилиндро-конический танк"
       },
-      3: {
-        name: "Настройки температуры",
-        time: 180, // увеличим время, т.к. настроек больше
-        settings: [
-          { id: "hot-water-temp", correct: 80, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
-          { id: "tank-temp", correct: -2, min: -10, max: 10, step: 1, label: "Температура в ЦКТ (°C)" },
-          { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время от начала затирания до перекачки в ЦКТ (часы)" }, 
-          { id: "maturation-time", correct: 21, min: 5, max: 60, step: 1, label: "Время созревания (дни)" }
-        ],
+3: {
+  name: "Настройки температуры",
+  time: 180,
+  settings: [
+    { id: "hot-water-temp", correct: 80, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
+    { id: "tank-temp", correct: -2, min: -10, max: 10, step: 1, label: "Температура в ЦКТ (°C)" },
+    { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время от начала затирания до перекачки в ЦКТ (часы)" }, 
+    { id: "maturation-time", correct: 21, min: 5, max: 60, step: 1, label: "Время созревания (дни)" },
+    // ↓↓↓ ДОБАВЬ ЭТИ 2 СТРОКИ ↓↓↓
+    { id: "wort-boiling-time", correct: 90, min: 30, max: 180, step: 1, label: "Время кипячения сусла (минуты)" },
+    { id: "malt-consumption", correct: 185, min: 100, max: 500, step: 5, label: "Расход солода на 1000 литров (кг)" }
+    // ↑↑↑ ДОБАВЬ ЭТИ 2 СТРОКИ ↑↑↑
+  ],
         threshold3: 30,
         threshold2: 60,
         description: "Установите правильные температурные режимы для оборудования.",
@@ -691,23 +695,67 @@ this.initElements();
 
   }
 
-  checkSettingsSolution() {
-    const level = this.levels[3];
-    let correctCount = 0;
+checkSettingsSolution() {
+  const level = this.levels[3];
+  let correctCount = 0;
 
-    level.settings.forEach(setting => {
-      const input = document.getElementById(setting.id);
-      const value = parseInt(input.value);
-      const diff = Math.abs(value - setting.correct);
+  level.settings.forEach(setting => {
+    const input = document.getElementById(setting.id);
+    const value = parseInt(input.value);
+    const diff = Math.abs(value - setting.correct);
 
-      // Разные допустимые отклонения для разных параметров
-      let allowedDeviation = 3; // по умолчанию для температуры
-      
-      if (setting.id === "wort-brewing-time") {
-        allowedDeviation = 1; // для времени варки ±1 час
-      } else if (setting.id === "maturation-time") {
-        allowedDeviation = 2; // для времени созревания ±2 дня
-      }
+    // Разные допустимые отклонения для разных параметров
+    let allowedDeviation = 3; // по умолчанию для температуры
+    
+    if (setting.id === "wort-brewing-time") {
+      allowedDeviation = 1; // для времени варки ±1 час
+    } else if (setting.id === "maturation-time") {
+      allowedDeviation = 2; // для времени созревания ±2 дня
+    } else if (setting.id === "wort-boiling-time") {
+      allowedDeviation = 10; // для времени кипячения ±10 минут
+    } else if (setting.id === "malt-consumption") {
+      allowedDeviation = 15; // для расхода солода ±15 кг
+    }
+
+    if (diff <= allowedDeviation) {
+      correctCount++;
+      input.classList.add('correct-setting');
+      setTimeout(() => input.classList.remove('correct-setting'), 1000);
+    } else {
+      input.classList.add('incorrect-setting');
+      setTimeout(() => input.classList.remove('incorrect-setting'), 1000);
+    }
+  });
+
+  this.state.levelResults[3].correct = correctCount;
+  this.state.levelResults[3].total = level.settings.length;
+
+  const tips = [];
+  this.levels[3].settings.forEach(s => {
+    const val = parseInt(document.getElementById(s.id).value);
+    const diff = Math.abs(val - s.correct);
+    let allowed = 3;
+    if (s.id === "wort-brewing-time") allowed = 1;
+    else if (s.id === "maturation-time") allowed = 2;
+    else if (s.id === "wort-boiling-time") allowed = 10;
+    else if (s.id === "malt-consumption") allowed = 15;
+    
+    if (diff > allowed) tips.push(s.label);
+  });
+  
+  let text = 'Проверка настроек:\n';
+  if (tips.length){
+    text += 'Эти параметры требуют уточнения: ' + tips.join('; ') + '. Постарайтесь держать значения ближе к целевым.';
+  } else {
+    text += 'Отлично, все в допустимых пределах!';
+  }
+  this.openInfoModal(text, [{label:'Далее', variant:'primary', onClick:()=>this.nextLevel()}]);
+}
+
+  this.state.levelResults[3].correct = correctCount;
+  // ↓↓↓ ДОБАВЬ ЭТУ СТРОКУ ↓↓↓
+  this.state.levelResults[3].total = level.settings.length;
+  // ↑↑↑ ДОБАВЬ ЭТУ СТРОКУ ↑↑↑
 
       if (diff <= allowedDeviation) {
         correctCount++;
@@ -720,12 +768,20 @@ this.initElements();
     });
 
     this.state.levelResults[3].correct = correctCount;
-    const tips = [];
-    this.levels[3].settings.forEach(s=>{
-      const val = parseInt(document.getElementById(s.id).value);
-      const diff = Math.abs(val - s.correct);
-      if (diff>3) tips.push(s.label);
-    });
+  const tips = [];
+  this.levels[3].settings.forEach(s => {
+    const val = parseInt(document.getElementById(s.id).value);
+    const diff = Math.abs(val - s.correct);
+    let allowed = 3;
+    if (s.id === "wort-brewing-time") allowed = 1;
+    else if (s.id === "maturation-time") allowed = 2;
+    // ↓↓↓ ДОБАВЬ ЭТИ 2 СТРОКИ ↓↓↓
+    else if (s.id === "wort-boiling-time") allowed = 10;
+    else if (s.id === "malt-consumption") allowed = 15;
+    // ↑↑↑ ДОБАВЬ ЭТИ 2 СТРОКИ ↑↑↑
+    
+    if (diff > allowed) tips.push(s.label);
+  });
     let text = 'Проверка температур:\n';
     if (tips.length){
       text += 'Эти параметры требуют уточнения: ' + tips.join('; ') + '. Постарайтесь держать значения ближе к целевым.';
@@ -890,6 +946,8 @@ createSettingsInterface(level) {
     let unit = '°C';
     if (setting.id === "wort-brewing-time") unit = 'ч';
     if (setting.id === "maturation-time") unit = 'дн';
+    if (setting.id === "wort-boiling-time") unit = 'мин';
+    if (setting.id === "malt-consumption") unit = 'кг';
     
     return `
     <div class="setting-item">
@@ -914,6 +972,8 @@ createSettingsInterface(level) {
     let unit = '°C';
     if (setting.id === "wort-brewing-time") unit = 'ч';
     if (setting.id === "maturation-time") unit = 'дн';
+    if (setting.id === "wort-boiling-time") unit = 'мин';
+    if (setting.id === "malt-consumption") unit = 'кг';
     
     slider.addEventListener('input', () => {
       valueDisplay.textContent = `${slider.value}${unit}`;

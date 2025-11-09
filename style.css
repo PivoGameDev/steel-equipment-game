@@ -269,7 +269,7 @@ body {
 
 .settings-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 15px;
     padding: 10px;
     overflow-y: visible;
@@ -279,7 +279,7 @@ body {
 /* Компактные настройки для уровня 3 */
 .settings-container.compact {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 15px;
     padding: 10px;
     overflow-y: visible;
