@@ -267,7 +267,7 @@ this.initElements();
     if (this.selectionMode) { this.initSelectionHandlers(); } else if (this.isMobile()) { this.initMobileHandlers(); } else { this.initDesktopHandlers(); }
 
     document.querySelectorAll('.restart-btn').forEach(btn => {
-      btn.addEventListener('click', () => this.showStartScreen());
+      btn.addEventListener('click', () => this.restartLevel()); 
     });
     const _nextBtn = document.querySelector('.next-level-btn');
     if (_nextBtn) { _nextBtn.addEventListener('click', () => this.nextLevel()); }
