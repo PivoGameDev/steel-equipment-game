@@ -900,7 +900,7 @@ body {
         gap: 8px !important; 
     }
     .playground-container { min-height: 35% !important; max-height: 140px !important; }
-    .equipment-panel-container { min-height: 25% !important; max-height: 100px !important; }
+    .equipment-panel-container { min-height: 40% !important; max-height: 150px !important; width: 100% !important; padding: 5px !important; }
     .settings-container { max-height: 100px !important; min-height: 80px !important; }
     .level-cards { flex-direction: column; align-items: center; max-height: 60%; }
     .level-card { width: 100%; max-width: 300px; margin-bottom: 10px; }
@@ -912,61 +912,47 @@ body {
 }
 
 @media (max-width: 480px) {
-    body { padding: 5px; }
-    .screen { padding: 5px 8px 0 !important; width: 100%; height: 98vh; }
-    .logo-container { width: 200px; height: 210px; margin: 0 auto 10px; }
-    .game-title { font-size: 2.2rem; }
-    .game-name { font-size: 1.8rem; }
-    .welcome-text { font-size: 1rem; margin-bottom: 15px; }
-    #start-btn { padding: 14px 35px; font-size: 1.1rem; }
-    .game-header { flex-direction: column; margin-bottom: 0; }
-    .header-left, .header-right { align-items: center; width: 100%; margin-bottom: 3px; }
-    .level-name, .timer { text-align: center; width: 100%; font-size: 15px; }
-    .timer { font-size: 20px; }
-    .feedback-message { text-align: center; font-size: 14px; height: 20px; }
-    .slot, .equipment-btn { width: 145px; height: 145px; }
-    .equipment { width: 115px; height: 115px; }
+    .screen { height: 95vh; max-height: none; padding: 8px 10px 0; }
+    .logo-container { width: 250px; height: 260px; margin: 5px auto 10px; }
+    .game-title { font-size: 2.5rem; }
+    .game-name { font-size: 2rem; }
+    .welcome-text { font-size: 1.1rem; margin-bottom: 20px; }
+    .game-container { 
+        height: calc(65vh - 50px) !important; 
+        max-height: 320px !important; 
+        margin-bottom: 0 !important; 
+        gap: 8px !important; 
+    }
+    .playground-container { min-height: 35% !important; max-height: 140px !important; }
+    .equipment-panel-container { min-height: 40% !important; max-height: 150px !important; width: 100% !important; padding: 5px !important; }
+    .settings-container { max-height: 100px !important; min-height: 80px !important; }
+    .level-cards { flex-direction: column; align-items: center; max-height: 60%; }
+    .level-card { width: 100%; max-width: 300px; margin-bottom: 10px; }
+    .level-description { font-size: 14px; padding: 10px; min-height: 100px; max-height: 100px; }
     
-    
-    /* Супер-компактные настройки */
-    .settings-container.compact {
-        max-height: 55px !important;
-        min-height: 55px !important;
-        gap: 2px !important;
-        padding: 2px !important;
+    /* Растягиваем картинки оборудования */
+    .equipment-panel {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        gap: 10px !important;
+        padding: 5px !important;
     }
     
-    .settings-container.compact .setting-item {
-        min-height: 45px !important;
-        padding: 2px !important;
+    .slot, .equipment-btn {
+        width: 150px !important;
+        height: 150px !important;
+        flex-shrink: 0 !important;
     }
     
-    .settings-container.compact .setting-item label {
-        font-size: 8px !important;
-        margin-bottom: 1px !important;
+    .equipment {
+        width: 140px !important;
+        height: 140px !important;
     }
     
-    .settings-container.compact .temp-slider {
-        height: 8px !important;
-    }
-    
-    .settings-container.compact .temp-value {
-        font-size: 9px !important;
-    }
-    
-    .level-description {
-        margin: 2px 0 5px !important;
-        min-height: 80px !important;
-        max-height: 80px !important;
-        padding: 8px !important;
-        font-size: 12px !important;
-    }
-    
-    .game-container {
-        height: calc(60vh - 45px) !important;
-        max-height: 280px !important;
-    }
+    .game-header { margin-bottom: 0; }
+    .header-left, .header-right { margin-bottom: 0; }
 }
+
 
 /* Еще более компактно для очень маленьких экранов */
 @media (max-width: 360px) {
@@ -1005,4 +991,10 @@ body {
     .slot, .equipment-btn { width: 170px; height: 170px; }
     .equipment { width: 140px; height: 140px; }
 }
-
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    .equipment-panel-container { 
+        min-height: 45% !important; 
+        max-height: 160px !important; 
+    }
+}
