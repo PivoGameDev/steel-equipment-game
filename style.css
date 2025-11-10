@@ -561,3 +561,82 @@ body {
 .equipment-btn.selected{outline:3px solid #3b82f6;box-shadow:0 6px 18px rgba(59,130,246,.35);transform:scale(1.03);} 
 .playground .slot{cursor:pointer;} 
 .equipment-panel .equipment-btn{cursor:pointer;}
+/* Стили для формы email */
+.email-form {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 500px;
+}
+
+.email-form p {
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.email-input {
+    width: 80%;
+    max-width: 300px;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.9);
+    color: #1f2937;
+    transition: all 0.3s ease;
+}
+
+.email-input:focus {
+    outline: none;
+    border-color: #10b981;
+    background: white;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.email-input::placeholder {
+    color: #6b7280;
+}
+
+.send-results-btn {
+    background: white;
+    color: #10b981;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 10px 0;
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+.send-results-btn:hover:not(:disabled) {
+    background: #10b981;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.send-results-btn:disabled {
+    background: #9ca3af;
+    color: #6b7280;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.email-note {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 10px;
+    font-style: italic;
+}

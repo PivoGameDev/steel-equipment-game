@@ -95,6 +95,7 @@ this.state = {
     // === КОНЕЦ ДОБАВЛЕНИЯ ===
 
     this.initElements();
+    this.initEmailForm();
 
     // === НАСТРОЙКИ ПУТЕЙ К КАРТИНКАМ ===
     this.IMAGE_BASE = 'assets/images/';
@@ -786,6 +787,24 @@ this.openInfoModal(text, [{label: buttonLabel, variant:'primary', onClick:()=>th
     this.stopHintPulse();
     // === КОНЕЦ ДОБАВЛЕНИЯ ===
 
+    // === ДОБАВЬ ЭТО ДЛЯ СБРОСА ФОРМЫ ===
+    if (isWin) {
+        // Сбрасываем форму email
+        const emailForm = document.getElementById('email-form');
+        const sendBtn = document.getElementById('send-results-btn');
+        
+        if (emailForm) emailForm.reset();
+        if (sendBtn) {
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Отправить результаты';
+            sendBtn.style.background = '';
+        }
+        
+        // Подготавливаем данные для email
+        this.prepareEmailData();
+    }
+    // === КОНЕЦ ДОБАВЛЕНИЯ ===
+
     clearInterval(this.timer);
     this.state.gameStarted = false;
 
@@ -1182,7 +1201,63 @@ createSettingsInterface(level) {
     this.stopHintPulse();
   }
   // === КОНЕЦ ДОБАВЛЕНИЯ МЕТОДОВ ===
+  // === МЕТОДЫ ДЛЯ EMAIL ФОРМЫ ===
+  
+  initEmailForm() {
+    const emailForm = document.getElementById('email-form');
+    const emailInput = document.getElementById('user-email');
+    const sendBtn = document.getElementById('send-results-btn');
+    
+    if (emailForm && emailInput && sendBtn) {
+      // Валидация email в реальном времени
+      emailInput.addEventListener('input', () => {
+        sendBtn.disabled = !this.isValidEmail(emailInput.value);
+      });
+      
+      // Обработка отправки формы
+      emailForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.prepareEmailData();
+        // Форма отправится автоматически через Formspree
+        sendBtn.textContent = '✅ Отправлено!';
+        sendBtn.disabled = true;
+        sendBtn.style.background = '#10b981';
+        
+        // Показываем сообщение об успехе
+        this.showFeedback(`Результаты отправлены! Проверь почту`, 'correct');
+      });
+    }
+  }
 
+  isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  prepareEmailData() {
+    const totalScore = this.calculateTotalScore();
+    const totalTime = this.formatTime(this.levels[this.state.currentLevel].time - this.state.timeLeft);
+    
+    // Заполняем скрытые поля формы
+    const subjectEl = document.getElementById('email-subject');
+    const scoreEl = document.getElementById('email-score');
+    const timeEl = document.getElementById('email-time');
+    const level1El = document.getElementById('email-level1');
+    const level2El = document.getElementById('email-level2');
+    const level3El = document.getElementById('email-level3');
+    const level4El = document.getElementById('email-level4');
+    const totalTimeEl = document.getElementById('email-totalTime');
+    
+    if (subjectEl) subjectEl.value = `🎯 Результат игры: ${totalScore} баллов`;
+    if (scoreEl) scoreEl.value = totalScore;
+    if (timeEl) timeEl.value = totalTime;
+    if (level1El) level1El.value = `${this.state.levelResults[1].correct}/${this.state.levelResults[1].total}`;
+    if (level2El) level2El.value = `${this.state.levelResults[2].correct}/${this.state.levelResults[2].total}`;
+    if (level3El) level3El.value = `${this.state.levelResults[3].correct}/${this.state.levelResults[3].total}`;
+    if (level4El) level4El.value = `${this.state.levelResults[4].correct}/${this.state.levelResults[4].total}`;
+    if (totalTimeEl) totalTimeEl.value = totalTime;
+  }
+  // === КОНЕЦ МЕТОДОВ ДЛЯ EMAIL ФОРМЫ ===
 }
 
 document.addEventListener('DOMContentLoaded', () => { new BreweryGame(); });
