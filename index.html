@@ -8,27 +8,27 @@
 </head>
 <body>
     <!-- Стартовый экран -->
-<div id="start-screen" class="screen">
-    <!-- Черный фон для анимации -->
-    <div id="animation-overlay" class="animation-overlay">
-        <div class="logo-animation-container">
-            <img src="assets/images/logo.png" alt="Логотип" class="logo-animated">
+    <div id="start-screen" class="screen">
+        <!-- Черный фон для анимации -->
+        <div id="animation-overlay" class="animation-overlay">
+            <div class="logo-animation-container">
+                <img src="assets/images/logo.png" alt="Логотип" class="logo-animated">
+            </div>
+        </div>
+        
+        <!-- Основной контент (пока скрыт) -->
+        <div id="main-content" class="main-content hidden">
+            <div class="logo-container">
+                <img src="assets/images/logo.png" alt="Логотип пивного завода" class="game-logo">
+            </div>
+            <div class="game-titles">
+                <h1 class="game-title">ИГРА</h1>
+                <h1 class="game-name">Собери пивной завод</h1>
+            </div>
+            <p class="welcome-text">Установите оборудование в правильные слоты и настройте температуру для производства пива!</p>
+            <button id="start-btn">Играть</button>
         </div>
     </div>
-    
-    <!-- Основной контент (пока скрыт) -->
-    <div id="main-content" class="main-content hidden">
-        <div class="logo-container">
-            <img src="assets/images/logo.png" alt="Логотип пивного завода" class="game-logo">
-        </div>
-        <div class="game-titles">
-            <h1 class="game-title">ИГРА</h1>
-            <h1 class="game-name">Собери пивной завод</h1>
-        </div>
-        <p class="welcome-text">Установите оборудование в правильные слоты и настройте температуру для производства пива!</p>
-        <button id="start-btn">Играть</button>
-    </div>
-</div>
 
     <!-- Экран выбора уровня -->
     <div id="level-select-screen" class="screen hidden">
@@ -61,50 +61,50 @@
                 <div class="settings-container"></div>
             </div>
             
-<div class="equipment-panel-container">
-    <img src="assets/images/construction.png" alt="Оборудование недоступно" class="placeholder-image">
-    <div class="equipment-panel"></div>
-</div>
+            <div class="equipment-panel-container">
+                <img src="assets/images/construction.png" alt="Оборудование недоступно" class="placeholder-image">
+                <div class="equipment-panel"></div>
+            </div>
         </div>
         
-<div class="game-controls">
-    <button id="hint-btn" class="hidden">Подсказка</button>
-    <button id="launch-btn" disabled>Далее →</button>
-</div>
+        <!-- ФИКСИРОВАННЫЙ КОНТЕЙНЕР С КНОПКАМИ ВНИЗУ ЭКРАНА -->
+        <div class="game-controls-container">
+            <div class="game-controls">
+                <button id="hint-btn" class="hidden">Подсказка</button>
+                <button id="launch-btn" disabled>Далее →</button>
+            </div>
+        </div>
     </div>
 
-<!-- Экран победы -->
-<div id="win-screen" class="screen hidden">
-    <h1 class="win-text">Поздравляем!</h1>
-    <p>Вы справились за <span id="time-spent">00:00</span>!</p>
-    <p>Ваш счет: <span id="score-earned">100</span> баллов</p>
-    
-    <form id="email-form" class="email-form" action="https://formspree.io/f/mzzyplzq" method="POST">
-        <p>Получите детальный отчет о вашем результате!</p>
+    <!-- Экран победы -->
+    <div id="win-screen" class="screen hidden">
+        <h1 class="win-text">Поздравляем!</h1>
+        <p>Вы справились за <span id="time-spent">00:00</span>!</p>
+        <p>Ваш счет: <span id="score-earned">100</span> баллов</p>
         
-        <input type="email" name="email" id="user-email" 
-               placeholder="Введите ваш email" class="email-input" required>
+        <form id="email-form" class="email-form" action="https://formspree.io/f/mzzyplzq" method="POST">
+            <p>Получите детальный отчет о вашем результате!</p>
+            
+            <input type="email" name="email" id="user-email" 
+                   placeholder="Введите ваш email" class="email-input" required>
+            
+            <!-- Скрытые поля с данными игры -->
+            <input type="hidden" name="_subject" id="email-subject">
+            <input type="hidden" name="score" id="email-score">
+            <input type="hidden" name="time" id="email-time">
+            <input type="hidden" name="level1" id="email-level1">
+            <input type="hidden" name="level2" id="email-level2">
+            <input type="hidden" name="level3" id="email-level3">
+            <input type="hidden" name="level4" id="email-level4">
+            <input type="hidden" name="totalTime" id="email-totalTime">
+            
+            <button type="submit" id="send-results-btn" class="send-results-btn">Отправить результаты</button>
+            <p class="email-note">Полный отчет по всем уровням придет Вам на почту</p>
+        </form>
         
-        <!-- Скрытые поля с данными игры -->
-        <input type="hidden" name="_subject" id="email-subject">
-        <input type="hidden" name="score" id="email-score">
-        <input type="hidden" name="time" id="email-time">
-        <input type="hidden" name="level1" id="email-level1">
-        <input type="hidden" name="level2" id="email-level2">
-        <input type="hidden" name="level3" id="email-level3">
-        <input type="hidden" name="level4" id="email-level4">
-        <input type="hidden" name="totalTime" id="email-totalTime">
-        
-        <button type="submit" id="send-results-btn" class="send-results-btn">Отправить результаты</button>
-        <p class="email-note">Полный отчет по всем уровням придет Вам на почту</p>
-    </form>
-    
-    <!-- ТЕСТОВАЯ КНОПКА -->
-    <button id="test-results-btn" class="test-results-btn">Показать результаты в консоли</button>
-    
-    <div id="level-details"></div>
-    <div class="confetti"></div>
-</div>
+        <div id="level-details"></div>
+        <div class="confetti"></div>
+    </div>
 
     <!-- Экран проигрыша -->
     <div id="lose-screen" class="screen hidden">
@@ -124,11 +124,5 @@
     </div>
 
     <script src="game.js"></script>
-    <!-- Подключаем EmailJS -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script>
-    // Инициализация EmailJS (бесплатный сервис)
-    emailjs.init("YOUR_PUBLIC_KEY"); // Нужно зарегистрироваться на https://emailjs.com
-</script>
 </body>
 </html>
