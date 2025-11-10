@@ -1,146 +1,143 @@
 // Улучшенный основной класс игры с «умным» поиском картинок
 class BreweryGame {
   constructor() {
-this.levels = {
-1: {
-  name: "Основы заторного процесса",
-  time: 180,
-  settings: [
-    { id: "hot-water-temp", correct: 80, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
-    { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время от начала затирания до перекачки в ЦКТ (часы)" }
-  ],
-  threshold3: 30,
-  threshold2: 60,
-  description: "Добро пожаловать в варочный цех, ученик пивовара! Прежде чем начать варку, нужно правильно подготовить затор. От точности начальных настроек зависит всё - от прозрачности сусла до будущего вкуса пива. Настрой температуру воды и время затирания.",
-  hint: "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём..."
-},
-  2: {
-    name: "Сборка варочной линии",
-    time: 300,
-    slots: [
-      { id: "slot1", correct: "malt-crusher", number: 1 },
-      { id: "slot2", correct: "steam-generator", number: 2 },
-      { id: "slot3", correct: "congestion-device", number: 3 },
-      { id: "slot4", correct: "filtration-unit", number: 4 },
-      { id: "slot5", correct: "hot-water-tank", number: 5 },
-      { id: "slot6", correct: "wort-brewing-machine", number: 6 },
-      { id: "slot7", correct: "hydrocyclone-apparatus", number: 7 }
-    ],
-    equipment: [
-      "malt-crusher", "congestion-device", "steam-generator", 
-      "hot-water-tank", "filtration-unit", "wort-brewing-machine", 
-      "hydrocyclone-apparatus", "heat-exchanger", "chiller", 
-      "cylinder-conical-tank"
-    ],
-    threshold3: 60,
-    threshold2: 120,
-    description: "Отличная работа с настройками! Теперь собери технологическую цепочку варочного цеха. Расставь оборудование в правильной последовательности - от подготовки сырья до получения сусла. Каждое звено цепи критически важно!",
-    hint: "Правильный порядок: Дробилка солода → Парогенератор → .. → .. → Бак горячей воды → .. → .."
-  },
-  3: {
-    name: "Настройки брожения",
-    time: 180,
-    settings: [
-      { id: "tank-temp", correct: -2, min: -10, max: 10, step: 1, label: "Температура в ЦКТ (°C)" },
-      { id: "maturation-time", correct: 21, min: 5, max: 60, step: 1, label: "Время созревания (дни)" }
-    ],
-    threshold3: 30,
-    threshold2: 60,
-    description: "Сусло готово! Теперь самый деликатный этап - брожение. Дрожжи - живые организмы, требующие идеальных условий. Установи температуру созревания и продолжительность ферментации. Один неверный параметр - и весь результат под угрозой.",
-    hint: "Температура в ЦКТ .. , время созревания: 21 день"
-  },
-  4: {
-    name: "Финальная сборка",
-    time: 180,
-    slots: [
-      { id: "slot1", correct: "heat-exchanger", number: 1 },
-      { id: "slot2", correct: "chiller", number: 2 },
-      { id: "slot3", correct: "cylinder-conical-tank", number: 3 }
-    ],
-    equipment: [
-      "malt-crusher", "congestion-device", "steam-generator", 
-      "hot-water-tank", "filtration-unit", "wort-brewing-machine", 
-      "hydrocyclone-apparatus", "heat-exchanger", "chiller", 
-      "cylinder-conical-tank"
-    ],
-    threshold3: 30,
-    threshold2: 60,
-    description: "Пиво почти готово! Осталось собрать линию охлаждения и дображивания. Выбери только необходимое оборудование для финального этапа. Помни - здесь важна не только последовательность, но и правильный выбор аппаратов.",
-    hint: "Правильный порядок: .. → Чилер → .."
-  }
-};
+    this.levels = {
+      1: {
+        name: "Основы заторного процесса",
+        time: 180,
+        settings: [
+          { id: "hot-water-temp", correct: 80, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
+          { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время от начала затирания до перекачки в ЦКТ (часы)" }
+        ],
+        threshold3: 30,
+        threshold2: 60,
+        description: "Добро пожаловать в варочный цех, ученик пивовара! Прежде чем начать варку, нужно правильно подготовить затор. От точности начальных настроек зависит всё - от прозрачности сусла до будущего вкуса пива. Настрой температуру воды и время затирания.",
+        hint: "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём..."
+      },
+      2: {
+        name: "Сборка варочной линии",
+        time: 300,
+        slots: [
+          { id: "slot1", correct: "malt-crusher", number: 1 },
+          { id: "slot2", correct: "steam-generator", number: 2 },
+          { id: "slot3", correct: "congestion-device", number: 3 },
+          { id: "slot4", correct: "filtration-unit", number: 4 },
+          { id: "slot5", correct: "hot-water-tank", number: 5 },
+          { id: "slot6", correct: "wort-brewing-machine", number: 6 },
+          { id: "slot7", correct: "hydrocyclone-apparatus", number: 7 }
+        ],
+        equipment: [
+          "malt-crusher", "congestion-device", "steam-generator", 
+          "hot-water-tank", "filtration-unit", "wort-brewing-machine", 
+          "hydrocyclone-apparatus", "heat-exchanger", "chiller", 
+          "cylinder-conical-tank"
+        ],
+        threshold3: 60,
+        threshold2: 120,
+        description: "Отличная работа с настройками! Теперь собери технологическую цепочку варочного цеха. Расставь оборудование в правильной последовательности - от подготовки сырья до получения сусла. Каждое звено цепи критически важно!",
+        hint: "Правильный порядок: Дробилка солода → Парогенератор → .. → .. → Бак горячей воды → .. → .."
+      },
+      3: {
+        name: "Настройки брожения",
+        time: 180,
+        settings: [
+          { id: "tank-temp", correct: -2, min: -10, max: 10, step: 1, label: "Температура в ЦКТ (°C)" },
+          { id: "maturation-time", correct: 21, min: 5, max: 60, step: 1, label: "Время созревания (дни)" }
+        ],
+        threshold3: 30,
+        threshold2: 60,
+        description: "Сусло готово! Теперь самый деликатный этап - брожение. Дрожжи - живые организмы, требующие идеальных условий. Установи температуру созревания и продолжительность ферментации. Один неверный параметр - и весь результат под угрозой.",
+        hint: "Температура в ЦКТ .. , время созревания: 21 день"
+      },
+      4: {
+        name: "Финальная сборка",
+        time: 180,
+        slots: [
+          { id: "slot1", correct: "heat-exchanger", number: 1 },
+          { id: "slot2", correct: "chiller", number: 2 },
+          { id: "slot3", correct: "cylinder-conical-tank", number: 3 }
+        ],
+        equipment: [
+          "malt-crusher", "congestion-device", "steam-generator", 
+          "hot-water-tank", "filtration-unit", "wort-brewing-machine", 
+          "hydrocyclone-apparatus", "heat-exchanger", "chiller", 
+          "cylinder-conical-tank"
+        ],
+        threshold3: 30,
+        threshold2: 60,
+        description: "Пиво почти готово! Осталось собрать линию охлаждения и дображивания. Выбери только необходимое оборудование для финального этапа. Помни - здесь важна не только последовательность, но и правильный выбор аппаратов.",
+        hint: "Правильный порядок: .. → Чилер → .."
+      }
+    };
 
-this.state = {
-  currentLevel: 1,
-  timeLeft: 0,
-  gameStarted: false,
-  equipmentPlaced: 0,
-  hintUsed: false,
-  draggedItem: null,
-  selectedEquipment: null,
-  savedLayouts: {1:{settings:{}}, 2:{}, 3:{settings:{}}, 4:{}}, // ← ДОБАВЬТЕ ЗАПЯТУЮ ЗДЕСЬ
-  levelResults: {
-    1: { correct: 0, total: 2 },  // 2 настройки
-    2: { correct: 0, total: 7 },  // 7 оборудования
-    3: { correct: 0, total: 2 },  // 2 настройки  
-    4: { correct: 0, total: 3 }   // 3 оборудования
-  }
-};
+    this.state = {
+      currentLevel: 1,
+      timeLeft: 0,
+      gameStarted: false,
+      equipmentPlaced: 0,
+      hintUsed: false,
+      draggedItem: null,
+      selectedEquipment: null,
+      savedLayouts: {1:{settings:{}}, 2:{}, 3:{settings:{}}, 4:{}},
+      levelResults: {
+        1: { correct: 0, total: 2 },
+        2: { correct: 0, total: 7 },
+        3: { correct: 0, total: 2 },
+        4: { correct: 0, total: 3 }
+      }
+    };
 
     this.progress = { unlockedLevels: [1], bestScores: {} };
-
-    // === ДОБАВЬТЕ ЭТО ДЛЯ МИГАНИЯ ПОДСКАЗКИ ===
     this.hintPulseInterval = null;
     this.hintPulseEnabled = true;
-    // === КОНЕЦ ДОБАВЛЕНИЯ ===
 
     this.initElements();
     this.initEmailForm();
 
-    // === НАСТРОЙКИ ПУТЕЙ К КАРТИНКАМ ===
     this.IMAGE_BASE = 'assets/images/';
     this.PLACEHOLDER = this.IMAGE_BASE + 'placeholder.png';
-    // Если у вас свои имена файлов, внесите их сюда (с расширением)
-    // Пример: 'malt-crusher': 'дробилка.png'
-    this.CUSTOM_IMAGE_MAP = {
-      // 'malt-crusher': 'дробилка.png',
-      // 'congestion-device': 'заторный.png',
-      // 'steam-generator': 'парогенератор.jpg',
-      // 'hot-water-tank': 'бак_горячей_воды.webp',
-      // 'filtration-unit': 'фильтр.png',
-      // 'wort-brewing-machine': 'сусловарка.jpg',
-      // 'hydrocyclone-apparatus': 'гидроциклон.png',
-      // 'heat-exchanger': 'heat-exchanger.png',
-      // 'chiller': 'чиллер.jpeg',
-      // 'cylinder-conical-tank': 'цкт.png',
-    };
-    // Расширения, которые будут проверяться по очереди
+    this.CUSTOM_IMAGE_MAP = {};
     this.IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.gif'];
-
-    
-    // Режим выбора-и-клика вместо перетаскивания
     this.selectionMode = true;
-this.initElements();
-this.levelReview = {1:{}, 2:{}, 3:{}, 4:{}};
+    this.levelReview = {1:{}, 2:{}, 3:{}, 4:{}};
+
     this.initEventListeners();
     this.loadProgress();
     this.renderLevelCards();
     this.preloadAssets();
+
+    // Запускаем интро-анимацию при загрузке
+    setTimeout(() => {
+      this.initIntroAnimation();
+    }, 500);
   }
 
-  // Пытается подставлять разные варианты имени файла и расширений, пока не загрузится
+  initIntroAnimation() {
+    const overlay = document.getElementById('animation-overlay');
+    const mainContent = document.getElementById('main-content');
+    
+    if (!overlay || !mainContent) {
+      console.log('Элементы анимации не найдены');
+      return;
+    }
+    
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      mainContent.classList.remove('hidden');
+    }, 3000);
+  }
+
   setSmartImage(imgEl, equipId) {
     const manual = this.CUSTOM_IMAGE_MAP[equipId];
     const baseNames = manual
       ? [manual]
       : [
-          equipId,                               // kebab-case
-          equipId.replace(/-/g, '_'),            // snake_case
-          equipId.replace(/-/g, ' '),            // c пробелами
-          equipId.replace(/-/g, ''),             // слитно
+          equipId,
+          equipId.replace(/-/g, '_'),
+          equipId.replace(/-/g, ' '),
+          equipId.replace(/-/g, ''),
         ];
 
-    // Если manual указан с расширением (например, .png), используем его как есть + пробуем без расширений
     const candidates = [];
     for (const base of baseNames) {
       if (/\.(png|jpg|jpeg|webp|gif)$/i.test(base)) {
@@ -151,7 +148,6 @@ this.levelReview = {1:{}, 2:{}, 3:{}, 4:{}};
         }
       }
     }
-    // fallback — placeholder
     candidates.push(this.PLACEHOLDER);
 
     let idx = 0;
@@ -162,7 +158,6 @@ this.levelReview = {1:{}, 2:{}, 3:{}, 4:{}};
     };
 
     imgEl.onerror = () => {
-      // предотвращаем зацикливание на placeholder
       if (imgEl.src.endsWith(this.PLACEHOLDER)) return;
       tryNext();
     };
@@ -208,47 +203,41 @@ this.levelReview = {1:{}, 2:{}, 3:{}, 4:{}};
     Object.values(this.sounds).forEach(a => { try { a.preload = 'auto'; } catch(_){} });
   }
 
-
-buildPartialHint(levelNum) {
-  if (levelNum === 1) {
-    return "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём...";
-  }
-  if (levelNum === 2) {
-    // показываем 1-й, 2-й и 5-й элементы (номера слотов)
-    const map = {
-      1: this.getEquipmentName(this.levels[2].slots[0].correct),
-      2: this.getEquipmentName(this.levels[2].slots[1].correct),
-      5: this.getEquipmentName(this.levels[2].slots[4].correct),
-    };
-    let lines = [];
-    for (let i = 1; i <= 7; i++) {
-      if (map[i]) {
-        lines.push(`${i}) ${map[i]}`);
-      } else {
-        lines.push(`${i}) •••`);
-      }
+  buildPartialHint(levelNum) {
+    if (levelNum === 1) {
+      return "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём...";
     }
-    return lines.join('\n');
+    if (levelNum === 2) {
+      const map = {
+        1: this.getEquipmentName(this.levels[2].slots[0].correct),
+        2: this.getEquipmentName(this.levels[2].slots[1].correct),
+        5: this.getEquipmentName(this.levels[2].slots[4].correct),
+      };
+      let lines = [];
+      for (let i = 1; i <= 7; i++) {
+        if (map[i]) {
+          lines.push(`${i}) ${map[i]}`);
+        } else {
+          lines.push(`${i}) •••`);
+        }
+      }
+      return lines.join('\n');
+    }
+    if (levelNum === 3) {
+      return "Подсказка: температура в ЦКТ .. , время созревания 21 день (±2 дня)";
+    }
+    if (levelNum === 4) {
+      const name = this.getEquipmentName(this.levels[4].slots[1].correct);
+      return `1) •••\n2) ${name}\n3) •••`;
+    }
+    return "";
   }
-  if (levelNum === 3) {
-    return "Подсказка: температура в ЦКТ .. , время созревания 21 день (±2 дня)";
-  }
-  if (levelNum === 4) {
-    // показываем только 2-й из 3
-    const name = this.getEquipmentName(this.levels[4].slots[1].correct);
-    return `1) •••\n2) ${name}\n3) •••`;
-  }
-  return "";
-}
 
   openInfoModal(text, buttons = []) {
-    // используем существующее модальное окно
     this.elements.hintText.textContent = "";
     this.elements.hintText.innerText = text;
-    // очищаем старые кнопки (если уже добавляли)
     const oldBtns = this.elements.hintModal.querySelectorAll('.modal-action');
     oldBtns.forEach(b => b.remove());
-    // добавим действия
     const footer = document.createElement('div');
     footer.style.display = 'flex';
     footer.style.justifyContent = 'center';
@@ -289,23 +278,19 @@ buildPartialHint(levelNum) {
     });
     const _nextBtn = document.querySelector('.next-level-btn');
     if (_nextBtn) { _nextBtn.addEventListener('click', () => this.nextLevel()); }
-}
+  }
 
-  // === Обработчики режима выбора (без DnD) ===
   initSelectionHandlers() {
-    // выбор оборудования кликом по панели
     this.elements.equipmentPanel.addEventListener('click', (e) => {
       const btn = e.target.closest('.equipment-btn');
       if (!btn || btn.style.display === 'none') return;
       this.selectEquipment(btn);
     });
 
-    // клик по слоту — поставить выбранное или снять, если ничего не выбрано
     this.elements.playground.addEventListener('click', (e) => {
       const slot = e.target.closest('.slot');
       if (!slot) return;
       if (this.state.selectedEquipment) {
-        // если занято — вернуть предыдущую кнопку в панель
         if (slot.dataset.filled === 'true') {
           const prev = slot.dataset.equipment;
           const prevBtn = document.querySelector(`.equipment-btn[data-equipment="${prev}"]`);
@@ -320,10 +305,8 @@ buildPartialHint(levelNum) {
       }
     });
 
-    // Esc — снять выделение
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.deselectEquipment(); });
   }
-
 
   isMobile() { return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0); }
 
@@ -352,14 +335,11 @@ buildPartialHint(levelNum) {
         const el = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
         const slot = el ? el.closest('.slot') : null;
         if (slot) { this.placeEquipment(slot, this.state.draggedItem.dataset.equipment); }
-
         this.resetDraggedVisual();
       }
     });
   }
 
-
-  // подсчёт занятых слотов
   computeEquipmentPlaced() {
     const level = this.levels[this.state.currentLevel];
     const count = (level.slots||[]).filter(s => document.getElementById(s.id).dataset.filled==='true').length;
@@ -368,7 +348,6 @@ buildPartialHint(levelNum) {
   }
 
   setSlotEquipment(slot, equipmentId) {
-    // equipmentId === null => очистить слот
     slot.innerHTML = '';
     const slotNumber = document.createElement('div');
     slotNumber.className = 'slot-number';
@@ -383,16 +362,12 @@ buildPartialHint(levelNum) {
       slot.appendChild(img);
       slot.dataset.filled = 'true';
       slot.dataset.equipment = equipmentId;
-      // возможность кликом снять
       if (!this.selectionMode) { slot.onclick = () => this.removeFromSlot(slot); } else { slot.onclick = null; }
-      // спрячем кнопку в панели
       const btn = document.querySelector(`.equipment-btn[data-equipment="${equipmentId}"]`);
       if (btn) btn.style.display = 'none';
     } else {
       slot.dataset.filled = 'false';
       slot.dataset.equipment = '';
-      // показать кнопку назад
-      // (кнопку мы покажем позже, когда знаем id снимаемого, или отдельно)
     }
   }
 
@@ -401,13 +376,11 @@ buildPartialHint(levelNum) {
       const equipmentBtn = e.target.closest('.equipment-btn');
       const filledSlot = e.target.closest('.slot');
       if (equipmentBtn && equipmentBtn.style.display !== 'none') {
-        // тянем из панели
         this.selectEquipment(equipmentBtn);
         this.state.draggedItem = equipmentBtn;
         this.state.dragSource = { type: 'panel', equipId: equipmentBtn.dataset.equipment };
         equipmentBtn.classList.add('dragging');
       } else if (filledSlot && filledSlot.dataset.filled === 'true') {
-        // тянем из занятого слота
         this.state.draggedItem = filledSlot;
         this.state.dragSource = { type: 'slot', slotEl: filledSlot, equipId: filledSlot.dataset.equipment };
         filledSlot.classList.add('dragging');
@@ -435,7 +408,6 @@ buildPartialHint(levelNum) {
 
         if (this.state.dragSource?.type === 'panel') {
           if (targetSlot) {
-            // если слот занят — вернем то, что было, обратно в панель
             if (targetSlot.dataset.filled === 'true') {
               const prev = targetSlot.dataset.equipment;
               const prevBtn = document.querySelector(`.equipment-btn[data-equipment="${prev}"]`);
@@ -443,13 +415,11 @@ buildPartialHint(levelNum) {
             }
             this.setSlotEquipment(targetSlot, this.state.dragSource.equipId);
             this.state.savedLayouts[this.state.currentLevel][targetSlot.id] = this.state.dragSource.equipId;
-            // скрыть исходную кнопку
             const btn = document.querySelector(`.equipment-btn[data-equipment="${this.state.dragSource.equipId}"]`);
             if (btn) btn.style.display = 'none';
           }
         } else if (this.state.dragSource?.type === 'slot') {
           if (targetSlot && targetSlot !== this.state.dragSource.slotEl) {
-            // swap или move
             const src = this.state.dragSource.slotEl;
             const srcId = src.dataset.equipment;
             if (targetSlot.dataset.filled === 'true') {
@@ -459,12 +429,9 @@ buildPartialHint(levelNum) {
               this.state.savedLayouts[this.state.currentLevel][src.id] = dstId;
               this.state.savedLayouts[this.state.currentLevel][targetSlot.id] = srcId;
             } else {
-              // move
               this.setSlotEquipment(targetSlot, srcId);
-              // вернуть кнопку у исходного только если там было оборудование, но мы очищаем слот
               const srcBtn = document.querySelector(`.equipment-btn[data-equipment="${srcId}"]`);
               if (srcBtn) srcBtn.style.display = 'none';
-              // очистить исходный слот
               src.innerHTML = '';
               const slotNumber = document.createElement('div');
               slotNumber.className = 'slot-number';
@@ -475,7 +442,6 @@ buildPartialHint(levelNum) {
               this.state.savedLayouts[this.state.currentLevel][src.id] = '';
             }
           } else if (overPanel) {
-            // вернуть в панель
             const src = this.state.dragSource.slotEl;
             const id = src.dataset.equipment;
             const btn = document.querySelector(`.equipment-btn[data-equipment="${id}"]`);
@@ -521,7 +487,7 @@ buildPartialHint(levelNum) {
 
   saveProgress() { localStorage.setItem('breweryGameProgress', JSON.stringify(this.progress)); }
 
-startGame() {
+  startGame() {
     this.state.gameStarted = true;
     this.state.equipmentPlaced = 0;
     this.state.hintUsed = false;
@@ -544,24 +510,22 @@ startGame() {
     this.elements.hintBtn.disabled = false;
     this.elements.hintBtn.style.opacity = '';
 
-    // === ИСПРАВЛЕННАЯ ЧАСТЬ ===
-if (this.state.currentLevel === 1) {
-  this.elements.launchBtn.textContent = 'Запустить заторный процесс';
-  this.elements.launchBtn.disabled = false;
-} else if (this.state.currentLevel === 3) {
-  this.elements.launchBtn.textContent = 'Запустить брожение';
-  this.elements.launchBtn.disabled = false;
-} else if (this.state.currentLevel === 4) {
-  this.elements.launchBtn.textContent = 'Завершить производство';
-  this.elements.launchBtn.disabled = true;
-} else {
-  this.elements.launchBtn.textContent = 'Далее →';
-  this.elements.launchBtn.disabled = true;
-}
-    // === КОНЕЦ ИСПРАВЛЕНИЯ ===
+    if (this.state.currentLevel === 1) {
+      this.elements.launchBtn.textContent = 'Запустить заторный процесс';
+      this.elements.launchBtn.disabled = false;
+    } else if (this.state.currentLevel === 3) {
+      this.elements.launchBtn.textContent = 'Запустить брожение';
+      this.elements.launchBtn.disabled = false;
+    } else if (this.state.currentLevel === 4) {
+      this.elements.launchBtn.textContent = 'Завершить производство';
+      this.elements.launchBtn.disabled = true;
+    } else {
+      this.elements.launchBtn.textContent = 'Далее →';
+      this.elements.launchBtn.disabled = true;
+    }
 
     this.startHintPulse();
-} // ← эта скобка закрывает метод startGame
+  }
 
   updateTimer() {
     this.state.timeLeft--;
@@ -663,116 +627,112 @@ if (this.state.currentLevel === 1) {
     this.elements.launchBtn.disabled = true;
   }
 
-checkSolution() {
-  // ИЗМЕНИТЕ ЭТО УСЛОВИЕ:
-  if (this.state.currentLevel === 1 || this.state.currentLevel === 3) { 
-    this.checkSettingsSolution(); 
-    return; 
-  }
-
-  const level = this.levels[this.state.currentLevel];
-  let correctCount = 0;
-
-  level.slots.forEach(slotConfig => {
-    const slot = document.getElementById(slotConfig.id);
-    if (slot.dataset.equipment === slotConfig.correct) {
-      correctCount++;
-      this.highlightSlot(slot, 'correct');
-    } else {
-      this.highlightSlot(slot, 'incorrect');
+  checkSolution() {
+    if (this.state.currentLevel === 1 || this.state.currentLevel === 3) { 
+      this.checkSettingsSolution(); 
+      return; 
     }
-  });
 
-  this.state.levelResults[this.state.currentLevel].correct = correctCount;
+    const level = this.levels[this.state.currentLevel];
+    let correctCount = 0;
 
-  if (correctCount === level.slots.length) {
-    this.showFeedback('Правильно! Оборудование установлено верно!', 'correct');
-    this.playSound('success');
-  } else {
-    this.showFeedback(`Правильно ${correctCount} из ${level.slots.length}`, 'incorrect');
-    this.playSound('error');
+    level.slots.forEach(slotConfig => {
+      const slot = document.getElementById(slotConfig.id);
+      if (slot.dataset.equipment === slotConfig.correct) {
+        correctCount++;
+        this.highlightSlot(slot, 'correct');
+      } else {
+        this.highlightSlot(slot, 'incorrect');
+      }
+    });
+
+    this.state.levelResults[this.state.currentLevel].correct = correctCount;
+
+    if (correctCount === level.slots.length) {
+      this.showFeedback('Правильно! Оборудование установлено верно!', 'correct');
+      this.playSound('success');
+    } else {
+      this.showFeedback(`Правильно ${correctCount} из ${level.slots.length}`, 'incorrect');
+      this.playSound('error');
+    }
+
+    const wrong = [];
+    const right = [];
+    level.slots.forEach((slotConfig, idx) => {
+      const slot = document.getElementById(slotConfig.id);
+      const placed = slot.dataset.equipment || '—';
+      if (placed === slotConfig.correct) right.push(idx+1); else wrong.push(idx+1);
+    });
+    this.levelReview[this.state.currentLevel] = { right, wrong };
+
+    let text = `Промежуточный разбор уровня «${level.name}»\n\n`;
+    text += right.length ? `Верно расположены позиции: ${right.join(', ')}\n` : 'Пока нет верно расположенных позиций.\n';
+    if (wrong.length) text += `Требуют внимания позиции: ${wrong.join(', ')}. Попробуйте переосмыслить поток процесса (от подготовки к варке и далее).`;
+
+    let buttonText = 'Далее →';
+    if (this.state.currentLevel === 2) {
+      buttonText = 'К брожению →';
+    } else if (this.state.currentLevel === 4) {
+      buttonText = 'Посмотреть результаты';
+    }
+
+    this.openInfoModal(text, [{label: buttonText, variant:'primary', onClick:()=>this.nextLevel()}]);
   }
 
-  // подготовим обзор без раскрытия верных ответов
-  const wrong = [];
-  const right = [];
-  level.slots.forEach((slotConfig, idx) => {
-    const slot = document.getElementById(slotConfig.id);
-    const placed = slot.dataset.equipment || '—';
-    if (placed === slotConfig.correct) right.push(idx+1); else wrong.push(idx+1);
-  });
-  this.levelReview[this.state.currentLevel] = { right, wrong };
+  checkSettingsSolution() {
+    const level = this.levels[this.state.currentLevel];
+    let correctCount = 0;
 
-  let text = `Промежуточный разбор уровня «${level.name}»\n\n`;
-  text += right.length ? `Верно расположены позиции: ${right.join(', ')}\n` : 'Пока нет верно расположенных позиций.\n';
-  if (wrong.length) text += `Требуют внимания позиции: ${wrong.join(', ')}. Попробуйте переосмыслить поток процесса (от подготовки к варке и далее).`;
+    level.settings.forEach(setting => {
+      const input = document.getElementById(setting.id);
+      const value = parseInt(input.value);
+      const diff = Math.abs(value - setting.correct);
 
-// Умный текст кнопки в зависимости от текущего уровня
-let buttonText = 'Далее →';
-if (this.state.currentLevel === 2) {
-  buttonText = 'К брожению →';
-} else if (this.state.currentLevel === 4) {
-  buttonText = 'Посмотреть результаты';  // ← МЕНЯЕМ ТОЛЬКО ЭТО
-}
+      let allowedDeviation = 3;
+      
+      if (setting.id === "wort-brewing-time") {
+        allowedDeviation = 1;
+      } else if (setting.id === "maturation-time") {
+        allowedDeviation = 2;
+      }
 
-  this.openInfoModal(text, [{label: buttonText, variant:'primary', onClick:()=>this.nextLevel()}]);
-}
+      if (diff <= allowedDeviation) {
+        correctCount++;
+        input.classList.add('correct-setting');
+        setTimeout(() => input.classList.remove('correct-setting'), 1000);
+      } else {
+        input.classList.add('incorrect-setting');
+        setTimeout(() => input.classList.remove('incorrect-setting'), 1000);
+      }
+    });
 
-checkSettingsSolution() {
-  const level = this.levels[this.state.currentLevel];
-  let correctCount = 0;
-
-  level.settings.forEach(setting => {
-    const input = document.getElementById(setting.id);
-    const value = parseInt(input.value);
-    const diff = Math.abs(value - setting.correct);
-
-    // Разные допустимые отклонения для разных параметров
-    let allowedDeviation = 3; // по умолчанию для температуры
+    this.state.levelResults[this.state.currentLevel].correct = correctCount;
     
-    if (setting.id === "wort-brewing-time") {
-      allowedDeviation = 1; // для времени варки ±1 час
-    } else if (setting.id === "maturation-time") {
-      allowedDeviation = 2; // для времени созревания ±2 дня
-    }
-
-    if (diff <= allowedDeviation) {
-      correctCount++;
-      input.classList.add('correct-setting');
-      setTimeout(() => input.classList.remove('correct-setting'), 1000);
+    const tips = [];
+    level.settings.forEach(s => {
+      const val = parseInt(document.getElementById(s.id).value);
+      const diff = Math.abs(val - s.correct);
+      if (diff > (s.id === "wort-brewing-time" ? 1 : s.id === "maturation-time" ? 2 : 3)) {
+        tips.push(s.label);
+      }
+    });
+    
+    let text = `Проверка настроек уровня «${level.name}»:\n\n`;
+    text += `Правильно настроено: ${correctCount} из ${level.settings.length}\n\n`;
+    
+    if (tips.length) {
+      text += 'Эти параметры требуют уточнения: ' + tips.join('; ') + '. Постарайтесь держать значения ближе к целевым.';
     } else {
-      input.classList.add('incorrect-setting');
-      setTimeout(() => input.classList.remove('incorrect-setting'), 1000);
+      text += 'Отлично, все в допустимых пределах!';
     }
-  });
+    
+    let buttonLabel = 'К варочной линии →';
+    if (this.state.currentLevel === 3) {
+      buttonLabel = 'К финальной сборке →';
+    }
 
-  this.state.levelResults[this.state.currentLevel].correct = correctCount;
-  
-  const tips = [];
-  level.settings.forEach(s => {
-    const val = parseInt(document.getElementById(s.id).value);
-    const diff = Math.abs(val - s.correct);
-    if (diff > (s.id === "wort-brewing-time" ? 1 : s.id === "maturation-time" ? 2 : 3)) {
-      tips.push(s.label);
-    }
-  });
-  
-  let text = `Проверка настроек уровня «${level.name}»:\n\n`;
-  text += `Правильно настроено: ${correctCount} из ${level.settings.length}\n\n`;
-  
-  if (tips.length) {
-    text += 'Эти параметры требуют уточнения: ' + tips.join('; ') + '. Постарайтесь держать значения ближе к целевым.';
-  } else {
-    text += 'Отлично, все в допустимых пределах!';
+    this.openInfoModal(text, [{label: buttonLabel, variant:'primary', onClick:()=>this.nextLevel()}]);
   }
-  
-let buttonLabel = 'К варочной линии →';
-if (this.state.currentLevel === 3) {
-  buttonLabel = 'К финальной сборке →';
-}
-
-this.openInfoModal(text, [{label: buttonLabel, variant:'primary', onClick:()=>this.nextLevel()}]);
-}
 
   highlightSlot(slot, type) {
     slot.classList.add(`highlight-${type}`);
@@ -780,13 +740,9 @@ this.openInfoModal(text, [{label: buttonLabel, variant:'primary', onClick:()=>th
   }
 
   endGame(isWin) {
-    // === ДОБАВЬТЕ ЭТО ДЛЯ МИГАНИЯ ПОДСКАЗКИ ===
     this.stopHintPulse();
-    // === КОНЕЦ ДОБАВЛЕНИЯ ===
 
-    // === ДОБАВЬ ЭТО ДЛЯ СБРОСА ФОРМЫ ===
     if (isWin) {
-        // Сбрасываем форму email
         const emailForm = document.getElementById('email-form');
         const sendBtn = document.getElementById('send-results-btn');
         
@@ -797,10 +753,8 @@ this.openInfoModal(text, [{label: buttonLabel, variant:'primary', onClick:()=>th
             sendBtn.style.background = '';
         }
         
-        // Подготавливаем данные для email
         this.prepareEmailData();
     }
-    // === КОНЕЦ ДОБАВЛЕНИЯ ===
 
     clearInterval(this.timer);
     this.state.gameStarted = false;
@@ -812,26 +766,25 @@ this.openInfoModal(text, [{label: buttonLabel, variant:'primary', onClick:()=>th
     this.elements.scoreDisplay.textContent = totalScore;
     this.elements.scoreDisplayLose.textContent = totalScore;
 
-const detailsHTML = (where) => {
-  let html = '<div class="level-results">';
-  // Показываем только уровень 1
-  const level = 1;
-  const result = this.state.levelResults[level];
-  const review = this.levelReview[level] || {right:[], wrong:[]};
-  const errors = result.total - result.correct;
-  html += `
-    <div class="level-result">
-      <h3>Уровень ${level}: ${this.levels[level].name}</h3>
-      <p>Правильно: ${result.correct} из ${result.total}</p>
-      <p>Ошибки: ${errors} (${errors * 5} баллов)</p>
-      ${review.right?.length || review.wrong?.length ?
-        `<p><strong>Верные позиции:</strong> ${review.right.join(', ') || '—'}</p>
-         <p><strong>Пересмотрите позиции:</strong> ${review.wrong.join(', ') || '—'}</p>`
-        : ''}
-    </div>`;
-  html += '</div>';
-  where.innerHTML = html;
-};
+    const detailsHTML = (where) => {
+      let html = '<div class="level-results">';
+      const level = 1;
+      const result = this.state.levelResults[level];
+      const review = this.levelReview[level] || {right:[], wrong:[]};
+      const errors = result.total - result.correct;
+      html += `
+        <div class="level-result">
+          <h3>Уровень ${level}: ${this.levels[level].name}</h3>
+          <p>Правильно: ${result.correct} из ${result.total}</p>
+          <p>Ошибки: ${errors} (${errors * 5} баллов)</p>
+          ${review.right?.length || review.wrong?.length ?
+            `<p><strong>Верные позиции:</strong> ${review.right.join(', ') || '—'}</p>
+             <p><strong>Пересмотрите позиции:</strong> ${review.wrong.join(', ') || '—'}</p>`
+            : ''}
+        </div>`;
+      html += '</div>';
+      where.innerHTML = html;
+    };
     detailsHTML(this.elements.levelDetails);
     detailsHTML(this.elements.levelDetailsLose);
 
@@ -847,14 +800,14 @@ const detailsHTML = (where) => {
     }
   }
 
-calculateTotalScore() {
-  let score = 100;
-  for (let level = 1; level <= 4; level++) {  // ← ИСПРАВИЛ: 3 на 4
-    const errors = this.state.levelResults[level].total - this.state.levelResults[level].correct;
-    score -= errors * 5;
+  calculateTotalScore() {
+    let score = 100;
+    for (let level = 1; level <= 4; level++) {
+      const errors = this.state.levelResults[level].total - this.state.levelResults[level].correct;
+      score -= errors * 5;
+    }
+    return Math.max(0, score);
   }
-  return Math.max(0, score);
-}
 
   updateProgress(score) {
     if (!this.progress.bestScores[this.state.currentLevel] || score > this.progress.bestScores[this.state.currentLevel]) {
@@ -872,6 +825,18 @@ calculateTotalScore() {
     this.playSound('click');
     this.elements.levelSelectScreen.classList.add('hidden');
     this.elements.startScreen.classList.remove('hidden');
+    
+    const overlay = document.getElementById('animation-overlay');
+    const mainContent = document.getElementById('main-content');
+    
+    if (overlay && mainContent) {
+      overlay.style.display = 'flex';
+      mainContent.classList.add('hidden');
+      
+      setTimeout(() => {
+        this.initIntroAnimation();
+      }, 100);
+    }
   }
 
   showLevelSelect() {
@@ -904,79 +869,73 @@ calculateTotalScore() {
     }
   }
 
-startLevel(levelNum) {
+  startLevel(levelNum) {
     this.playSound('click');
     this.state.currentLevel = levelNum;
     const level = this.levels[levelNum];
-
     this.elements.playground.innerHTML = '';
     this.elements.equipmentPanel.innerHTML = '';
     this.elements.settingsContainer.innerHTML = '';
-
     this.elements.levelNameDisplay.textContent = `Уровень: ${level.name}`;
     this.elements.levelDescText.textContent = level.description;
 
-    // ИЗМЕНИТЕ ЭТО УСЛОВИЕ:
-    if (levelNum === 1 || levelNum === 3) {  // Уровни 1 и 3 - настройки
+    if (levelNum === 1 || levelNum === 3) {
         this.createSettingsInterface(level);
-        this.elements.hintBtn.classList.remove('hidden'); // или оставьте add('hidden') если нужно скрыть подсказку
+        this.elements.hintBtn.classList.remove('hidden');
+        this.elements.equipmentPanelContainer.classList.add('placeholder-shown');
     } else {
         this.createEquipmentSlots(level);
         this.createEquipmentPanel(level);
         this.elements.hintBtn.classList.remove('hidden');
+        this.elements.equipmentPanelContainer.classList.remove('placeholder-shown');
     }
 
     this.elements.levelSelectScreen.classList.add('hidden');
     this.elements.gameScreen.classList.remove('hidden');
     this.startGame();
-}
+  }
 
-createSettingsInterface(level) {
-  const settingsHTML = level.settings.map(setting => {
-    let unit = '°C';
-    if (setting.id === "wort-brewing-time") unit = 'ч';
-    if (setting.id === "maturation-time") unit = 'дн';
-    
-    // УСТАНАВЛИВАЕМ СРЕДНЕЕ ЗНАЧЕНИЕ ВМЕСТО 0
-    const initialValue = Math.round((setting.min + setting.max) / 2);
-    
-    return `
-    <div class="setting-item">
-      <label for="${setting.id}">${setting.label}</label>
-      <div class="setting-controls">
-        <input type="range" id="${setting.id}" min="${setting.min}" max="${setting.max}" step="${setting.step}" value="${initialValue}" class="temp-slider">
-        <span class="temp-value">${initialValue}${unit}</span>
-      </div>
-    </div>`;
-  }).join('');
+  createSettingsInterface(level) {
+    const settingsHTML = level.settings.map(setting => {
+      let unit = '°C';
+      if (setting.id === "wort-brewing-time") unit = 'ч';
+      if (setting.id === "maturation-time") unit = 'дн';
+      
+      const initialValue = Math.round((setting.min + setting.max) / 2);
+      
+      return `
+      <div class="setting-item">
+        <label for="${setting.id}">${setting.label}</label>
+        <div class="setting-controls">
+          <input type="range" id="${setting.id}" min="${setting.min}" max="${setting.max}" step="${setting.step}" value="${initialValue}" class="temp-slider">
+          <span class="temp-value">${initialValue}${unit}</span>
+        </div>
+      </div>`;
+    }).join('');
 
-  this.elements.settingsContainer.innerHTML = settingsHTML;
-  
-  // УБИРАЕМ КОМПАКТНЫЙ СТИЛЬ ДЛЯ ВСЕХ УРОВНЕЙ
-  this.elements.settingsContainer.classList.remove('compact');
-  
-  // ОДИНАКОВЫЕ СТИЛИ ДЛЯ УРОВНЕЙ 1 И 3
-  this.elements.settingsContainer.style.minHeight = '220px';
-  this.elements.settingsContainer.style.display = 'flex';
-  this.elements.settingsContainer.style.flexDirection = 'column';
-  this.elements.settingsContainer.style.justifyContent = 'center';
-  this.elements.settingsContainer.style.gap = '25px';
-  this.elements.settingsContainer.style.padding = '15px';
+    this.elements.settingsContainer.innerHTML = settingsHTML;
+    this.elements.settingsContainer.classList.remove('compact');
 
-  level.settings.forEach(setting => {
-    const slider = document.getElementById(setting.id);
-    const valueDisplay = slider.nextElementSibling;
-    
-    let unit = '°C';
-    if (setting.id === "wort-brewing-time") unit = 'ч';
-    if (setting.id === "maturation-time") unit = 'дн';
-    
-    slider.addEventListener('input', () => {
-      valueDisplay.textContent = `${slider.value}${unit}`;
-      this.elements.launchBtn.disabled = false;
+    this.elements.settingsContainer.style.minHeight = '180px';
+    this.elements.settingsContainer.style.display = 'flex';
+    this.elements.settingsContainer.style.flexDirection = 'column';
+    this.elements.settingsContainer.style.justifyContent = 'center';
+    this.elements.settingsContainer.style.gap = '25px';
+
+    level.settings.forEach(setting => {
+      const slider = document.getElementById(setting.id);
+      const valueDisplay = slider.nextElementSibling;
+      
+      let unit = '°C';
+      if (setting.id === "wort-brewing-time") unit = 'ч';
+      if (setting.id === "maturation-time") unit = 'дн';
+      
+      slider.addEventListener('input', () => {
+        valueDisplay.textContent = `${slider.value}${unit}`;
+        this.elements.launchBtn.disabled = false;
+      });
     });
-  });
-}
+  }
 
   createEquipmentSlots(level) {
     level.slots.forEach(slotConfig => {
@@ -1011,8 +970,6 @@ createSettingsInterface(level) {
       this.elements.equipmentPanel.appendChild(btn);
     });
 
-    
-    // восстановим сохранённую раскладку (если есть)
     const saved = this.state.savedLayouts[this.state.currentLevel] || {};
     level.slots.forEach(slotConfig => {
       const slot = document.getElementById(slotConfig.id);
@@ -1021,7 +978,6 @@ createSettingsInterface(level) {
         this.setSlotEquipment(slot, eid);
       }
     });
-    // спрячем кнопки для уже стоящих
     Object.values(saved).filter(Boolean).forEach(eid => {
       const btn = document.querySelector(`.equipment-btn[data-equipment="${eid}"]`);
       if (btn) btn.style.display = 'none';
@@ -1056,7 +1012,6 @@ createSettingsInterface(level) {
     level.equipment.forEach(equipId => {
       const btn = document.querySelector(`.equipment-btn[data-equipment="${equipId}"]`);
       if (btn) btn.style.display = '';
-      // Обновим изображения панели (на случай изменения CUSTOM_IMAGE_MAP)
       const img = btn?.querySelector('img');
       if (img) this.setSmartImage(img, equipId);
     });
@@ -1071,9 +1026,7 @@ createSettingsInterface(level) {
     this.playSound('click');
     this.state.hintUsed = true;
 
-    // === ДОБАВЬТЕ ЭТО ДЛЯ МИГАНИЯ ПОДСКАЗКИ ===
     this.disableHintPulse();
-    // === КОНЕЦ ДОБАВЛЕНИЯ ===
 
     const partial = this.buildPartialHint(this.state.currentLevel);
     this.openInfoModal(partial, [{label:'Понял', onClick:()=>{}, variant:'primary'}]);
@@ -1152,7 +1105,7 @@ createSettingsInterface(level) {
       if (!snd) return;
       snd.currentTime = 0;
       snd.play().catch(()=>{});
-    } catch (e) { /* бесшумный фолбэк */ }
+    } catch (e) { }
   }
 
   preloadAssets() {
@@ -1165,14 +1118,10 @@ createSettingsInterface(level) {
 
     allIds.forEach(equipId => {
       const img = new Image();
-      // используем тот же умный загрузчик
       this.setSmartImage(img, equipId);
     });
   }
 
-  // === ДОБАВЬТЕ ЭТИ МЕТОДЫ ДЛЯ МИГАНИЯ ПОДСКАЗКИ ===
-  
-  // Запуск мигания кнопки подсказки
   startHintPulse() {
     if (!this.hintPulseEnabled) return;
     
@@ -1191,7 +1140,6 @@ createSettingsInterface(level) {
     }, 5000);
   }
 
-  // Остановка мигания
   stopHintPulse() {
     if (this.hintPulseInterval) {
       clearInterval(this.hintPulseInterval);
@@ -1202,28 +1150,23 @@ createSettingsInterface(level) {
     }
   }
 
-  // Отключение мигания
   disableHintPulse() {
     this.hintPulseEnabled = false;
     this.stopHintPulse();
   }
-  // === КОНЕЦ ДОБАВЛЕНИЯ МЕТОДОВ ===
-  // === МЕТОДЫ ДЛЯ EMAIL ФОРМЫ ===
-  
-initEmailForm() {
+
+  initEmailForm() {
     const emailForm = document.getElementById('email-form');
     const emailInput = document.getElementById('user-email');
     const sendBtn = document.getElementById('send-results-btn');
     
     if (emailForm && emailInput && sendBtn) {
-        // Валидация email в реальном времени
         emailInput.addEventListener('input', () => {
             const isValid = this.isValidEmail(emailInput.value);
             sendBtn.disabled = !isValid;
             sendBtn.style.opacity = isValid ? '1' : '0.6';
         });
         
-        // Обработка отправки формы
         emailForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -1237,7 +1180,6 @@ initEmailForm() {
             sendBtn.disabled = true;
             
             try {
-                // Пробуем отправить через Formspree
                 const formData = new FormData(emailForm);
                 const response = await fetch(emailForm.action, {
                     method: 'POST',
@@ -1254,17 +1196,14 @@ initEmailForm() {
                     throw new Error('Formspree failed');
                 }
             } catch (error) {
-                // Если Formspree не работает, пробуем резервный метод
                 console.log('Formspree не работает, пробуем резервный метод...');
                 this.tryBackupEmailMethod(emailInput.value, sendBtn);
             }
         });
     }
-}
+  }
 
-// Резервный метод отправки
-tryBackupEmailMethod(email, sendBtn) {
-    // Просто показываем данные в консоли для тестирования
+  tryBackupEmailMethod(email, sendBtn) {
     const totalScore = this.calculateTotalScore();
     const totalTime = this.formatTime(this.levels[this.state.currentLevel].time - this.state.timeLeft);
     
@@ -1278,53 +1217,22 @@ tryBackupEmailMethod(email, sendBtn) {
     console.log('Уровень 4:', `${this.state.levelResults[4].correct}/${this.state.levelResults[4].total}`);
     console.log('====================');
     
-    // Показываем пользователю альтернативный вариант
     this.showFeedback('📧 Результаты сохранены! Скопируйте из консоли браузера (F12)', 'correct');
     this.showFormSuccess(sendBtn);
-}
+  }
 
-showFormSuccess(sendBtn) {
+  showFormSuccess(sendBtn) {
     sendBtn.textContent = '✅ Отправлено!';
     sendBtn.disabled = true;
     sendBtn.style.background = '#10b981';
     sendBtn.style.opacity = '1';
     
-    // Через 5 секунд возвращаем обычный вид
     setTimeout(() => {
         sendBtn.textContent = 'Отправить результаты';
         sendBtn.disabled = false;
         sendBtn.style.background = '';
     }, 5000);
-}
-
-isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-prepareEmailData() {
-    const totalScore = this.calculateTotalScore();
-    const totalTime = this.formatTime(this.levels[this.state.currentLevel].time - this.state.timeLeft);
-    
-    // Заполняем скрытые поля формы
-    const subjectEl = document.getElementById('email-subject');
-    const scoreEl = document.getElementById('email-score');
-    const timeEl = document.getElementById('email-time');
-    const level1El = document.getElementById('email-level1');
-    const level2El = document.getElementById('email-level2');
-    const level3El = document.getElementById('email-level3');
-    const level4El = document.getElementById('email-level4');
-    const totalTimeEl = document.getElementById('email-totalTime');
-    
-    if (subjectEl) subjectEl.value = `🎯 Результат игры: ${totalScore} баллов`;
-    if (scoreEl) scoreEl.value = totalScore;
-    if (timeEl) timeEl.value = totalTime;
-    if (level1El) level1El.value = `${this.state.levelResults[1].correct}/${this.state.levelResults[1].total}`;
-    if (level2El) level2El.value = `${this.state.levelResults[2].correct}/${this.state.levelResults[2].total}`;
-    if (level3El) level3El.value = `${this.state.levelResults[3].correct}/${this.state.levelResults[3].total}`;
-    if (level4El) level4El.value = `${this.state.levelResults[4].correct}/${this.state.levelResults[4].total}`;
-    if (totalTimeEl) totalTimeEl.value = totalTime;
-}
+  }
 
   isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1335,7 +1243,6 @@ prepareEmailData() {
     const totalScore = this.calculateTotalScore();
     const totalTime = this.formatTime(this.levels[this.state.currentLevel].time - this.state.timeLeft);
     
-    // Заполняем скрытые поля формы
     const subjectEl = document.getElementById('email-subject');
     const scoreEl = document.getElementById('email-score');
     const timeEl = document.getElementById('email-time');
@@ -1354,85 +1261,73 @@ prepareEmailData() {
     if (level4El) level4El.value = `${this.state.levelResults[4].correct}/${this.state.levelResults[4].total}`;
     if (totalTimeEl) totalTimeEl.value = totalTime;
   }
-  // === КОНЕЦ МЕТОДОВ ДЛЯ EMAIL ФОРМЫ ===
 }
 
 document.addEventListener('DOMContentLoaded', () => { new BreweryGame(); });
 
-document.addEventListener('DOMContentLoaded', () => { new BreweryGame(); });
-
-
-// === RESULTS DEDUP + HIDE NEXT BTN + TOTAL SCORE (idempotent) ===
+// === RESULTS DEDUP + HIDE NEXT BTN + TOTAL SCORE ===
 (function(){
   try {
     if (window.__RESULTS_FIX_PATCH__) return;
     window.__RESULTS_FIX_PATCH__ = true;
 
-const WEIGHTS = {1:{ok:10}, 2:{ok:15}, 3:{ok:20}, 4:{ok:15}};
+    const WEIGHTS = {1:{ok:10}, 2:{ok:15}, 3:{ok:20}, 4:{ok:15}};
 
-// safe total score (only correct answers)
-if (!BreweryGame.prototype.calculateTotalScore || BreweryGame.prototype.calculateTotalScore.__patched__ !== true) {
-  const calc = function(){
-    try{
-      let total = 0;
-      for (let lvl = 1; lvl <= 4; lvl++) {  // ← ИСПРАВЛЕНО: 3 на 4
-        const res = (this.state && this.state.levelResults && this.state.levelResults[lvl]) || {correct:0};
-        total += (res.correct || 0) * WEIGHTS[lvl].ok;
-      }
-      return total;
-    } catch(e){ return 0; }
-  };
-  calc.__patched__ = true;
-  BreweryGame.prototype.calculateTotalScore = calc;
-}
+    if (!BreweryGame.prototype.calculateTotalScore || BreweryGame.prototype.calculateTotalScore.__patched__ !== true) {
+      const calc = function(){
+        try{
+          let total = 0;
+          for (let lvl = 1; lvl <= 4; lvl++) {
+            const res = (this.state && this.state.levelResults && this.state.levelResults[lvl]) || {correct:0};
+            total += (res.correct || 0) * WEIGHTS[lvl].ok;
+          }
+          return total;
+        } catch(e){ return 0; }
+      };
+      calc.__patched__ = true;
+      BreweryGame.prototype.calculateTotalScore = calc;
+    }
 
-function buildDetailsHTML(self){
-  let html = '<div class="level-results">';
-  // Показываем только уровень 1
-  const lvl = 1;
-  const result = (self.state && self.state.levelResults && self.state.levelResults[lvl]) || {correct:0,total:0};
-  const review = (self.levelReview && self.levelReview[lvl]) || {rightNames:[], wrong:[]};
-  const lvlScore = (result.correct || 0) * WEIGHTS[lvl].ok;
-  html += `
-    <div class="level-result">
-      <h3>Уровень ${lvl}: ${self.levels[lvl].name}</h3>
-      <p>Очки за уровень: ${lvlScore}</p>
-      <p>Правильно: ${result.correct} из ${result.total}</p>
-      ${review.rightNames && review.rightNames.length ? `<p><strong>Верно расставлено:</strong> ${review.rightNames.join(', ')}</p>` : ''}
-      ${review.wrong && review.wrong.length ? `<p><strong>Проверьте слоты:</strong> ${review.wrong.join(', ')}</p>` : ''}
-    </div>`;
-  html += '</div>';
-  return html;
-}
+    function buildDetailsHTML(self){
+      let html = '<div class="level-results">';
+      const lvl = 1;
+      const result = (self.state && self.state.levelResults && self.state.levelResults[lvl]) || {correct:0,total:0};
+      const review = (self.levelReview && self.levelReview[lvl]) || {rightNames:[], wrong:[]};
+      const lvlScore = (result.correct || 0) * WEIGHTS[lvl].ok;
+      html += `
+        <div class="level-result">
+          <h3>Уровень ${lvl}: ${self.levels[lvl].name}</h3>
+          <p>Очки за уровень: ${lvlScore}</p>
+          <p>Правильно: ${result.correct} из ${result.total}</p>
+          ${review.rightNames && review.rightNames.length ? `<p><strong>Верно расставлено:</strong> ${review.rightNames.join(', ')}</p>` : ''}
+          ${review.wrong && review.wrong.length ? `<p><strong>Проверьте слоты:</strong> ${review.wrong.join(', ')}</p>` : ''}
+        </div>`;
+      html += '</div>';
+      return html;
+    }
 
     const _origEndGame = BreweryGame.prototype.endGame;
     BreweryGame.prototype.endGame = function(isWin){
-      // call original first
       if (typeof _origEndGame === 'function') _origEndGame.call(this, isWin);
 
-      // then normalize the results screen
       try {
         const html = buildDetailsHTML(this);
 
-        // 1) dedup/replace results in both win/lose containers
         const winDetails = document.getElementById('level-details');
         if (winDetails) winDetails.innerHTML = html;
 
         const loseDetails = document.getElementById('level-details-lose');
         if (loseDetails) loseDetails.innerHTML = html;
 
-        // 2) set total score
         const totalEl = document.getElementById('score-earned');
         if (totalEl) totalEl.textContent = this.calculateTotalScore();
 
-        // 3) remove any "Next level" buttons
         document.querySelectorAll('.next-level-btn').forEach(btn => btn.remove());
       } catch(e){
         console.error('RESULTS FIX normalize error:', e);
       }
     };
 
-    // Initial pass + observe DOM for any dynamic "next-level" insertions
     function removeNextButtons(root){
       (root || document).querySelectorAll('.next-level-btn').forEach(b => b.remove());
     }
@@ -1446,4 +1341,3 @@ function buildDetailsHTML(self){
     console.error('RESULTS FIX PATCH init error:', e);
   }
 })();
-// === /RESULTS DEDUP + HIDE NEXT BTN + TOTAL SCORE ===

@@ -8,7 +8,16 @@
 </head>
 <body>
     <!-- Стартовый экран -->
-    <div id="start-screen" class="screen">
+<div id="start-screen" class="screen">
+    <!-- Черный фон для анимации -->
+    <div id="animation-overlay" class="animation-overlay">
+        <div class="logo-animation-container">
+            <img src="assets/images/logo.png" alt="Логотип" class="logo-animated">
+        </div>
+    </div>
+    
+    <!-- Основной контент (пока скрыт) -->
+    <div id="main-content" class="main-content hidden">
         <div class="logo-container">
             <img src="assets/images/logo.png" alt="Логотип пивного завода" class="game-logo">
         </div>
@@ -19,6 +28,7 @@
         <p class="welcome-text">Установите оборудование в правильные слоты и настройте температуру для производства пива!</p>
         <button id="start-btn">Играть</button>
     </div>
+</div>
 
     <!-- Экран выбора уровня -->
     <div id="level-select-screen" class="screen hidden">
@@ -51,9 +61,10 @@
                 <div class="settings-container"></div>
             </div>
             
-            <div class="equipment-panel-container">
-                <div class="equipment-panel"></div>
-            </div>
+<div class="equipment-panel-container">
+    <img src="assets/images/construction.png" alt="Оборудование недоступно" class="placeholder-image">
+    <div class="equipment-panel"></div>
+</div>
         </div>
         
 <div class="game-controls">
