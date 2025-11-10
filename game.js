@@ -940,11 +940,8 @@ createSettingsInterface(level) {
     // УСТАНАВЛИВАЕМ СРЕДНЕЕ ЗНАЧЕНИЕ ВМЕСТО 0
     const initialValue = Math.round((setting.min + setting.max) / 2);
     
-    // Для второй настройки уровня 1 делаем компактный вид
-    const isCompact = setting.id === "wort-brewing-time" && level.name.includes("заторного");
-    
     return `
-    <div class="setting-item ${isCompact ? 'compact-setting' : ''}">
+    <div class="setting-item">
       <label for="${setting.id}">${setting.label}</label>
       <div class="setting-controls">
         <input type="range" id="${setting.id}" min="${setting.min}" max="${setting.max}" step="${setting.step}" value="${initialValue}" class="temp-slider">
@@ -955,15 +952,15 @@ createSettingsInterface(level) {
 
   this.elements.settingsContainer.innerHTML = settingsHTML;
   
-  // Убираем компактный класс для контейнера (если был)
+  // УБИРАЕМ КОМПАКТНЫЙ СТИЛЬ ДЛЯ ВСЕХ УРОВНЕЙ
   this.elements.settingsContainer.classList.remove('compact');
   
-  // Устанавливаем стили для контейнера
-  this.elements.settingsContainer.style.minHeight = '180px';
+  // ОДИНАКОВЫЕ СТИЛИ ДЛЯ УРОВНЕЙ 1 И 3
+  this.elements.settingsContainer.style.minHeight = '220px';
   this.elements.settingsContainer.style.display = 'flex';
   this.elements.settingsContainer.style.flexDirection = 'column';
   this.elements.settingsContainer.style.justifyContent = 'center';
-  this.elements.settingsContainer.style.gap = '20px';
+  this.elements.settingsContainer.style.gap = '25px';
   this.elements.settingsContainer.style.padding = '15px';
 
   level.settings.forEach(setting => {
