@@ -879,6 +879,13 @@ class BreweryGame {
     this.elements.levelNameDisplay.textContent = `Уровень: ${level.name}`;
     this.elements.levelDescText.textContent = level.description;
 
+    // Автоматически применяем компактный стиль для настроек на мобильных
+    if ((levelNum === 1 || levelNum === 3) && this.isMobile()) {
+        this.elements.settingsContainer.classList.add('compact');
+    } else {
+        this.elements.settingsContainer.classList.remove('compact');
+    }
+
     if (levelNum === 1 || levelNum === 3) {
         this.createSettingsInterface(level);
         this.elements.hintBtn.classList.remove('hidden');
@@ -893,7 +900,7 @@ class BreweryGame {
     this.elements.levelSelectScreen.classList.add('hidden');
     this.elements.gameScreen.classList.remove('hidden');
     this.startGame();
-  }
+}
 
   createSettingsInterface(level) {
     const settingsHTML = level.settings.map(setting => {
