@@ -7,7 +7,7 @@ class BreweryGame {
         time: 180,
         settings: [
           { id: "hot-water-temp", correct: 80, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
-          { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время от начала затирания до перекачки в ЦКТ (часы)" }
+          { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время от затирания до перекачки в ЦКТ" }
         ],
         threshold3: 30,
         threshold2: 60,
