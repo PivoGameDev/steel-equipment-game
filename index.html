@@ -68,29 +68,29 @@
     <p>Вы справились за <span id="time-spent">00:00</span>!</p>
     <p>Ваш счет: <span id="score-earned">100</span> баллов</p>
     
-<form id="email-form" class="email-form" action="https://formspree.io/f/mzzyplzq" method="POST">
-    <p>Получите детальный отчет о вашем результате!</p>
+    <form id="email-form" class="email-form" action="https://formspree.io/f/mzzyplzq" method="POST">
+        <p>Получите детальный отчет о вашем результате!</p>
+        
+        <input type="email" name="email" id="user-email" 
+               placeholder="Введите ваш email" class="email-input" required>
+        
+        <!-- Скрытые поля с данными игры -->
+        <input type="hidden" name="_subject" id="email-subject">
+        <input type="hidden" name="score" id="email-score">
+        <input type="hidden" name="time" id="email-time">
+        <input type="hidden" name="level1" id="email-level1">
+        <input type="hidden" name="level2" id="email-level2">
+        <input type="hidden" name="level3" id="email-level3">
+        <input type="hidden" name="level4" id="email-level4">
+        <input type="hidden" name="totalTime" id="email-totalTime">
+        
+        <button type="submit" id="send-results-btn" class="send-results-btn">Отправить результаты</button>
+        <p class="email-note">Полный отчет по всем уровням придет Вам на почту</p>
+    </form>
     
-    <input type="email" name="email" id="user-email" 
-           placeholder="Введите ваш email" class="email-input" required>
+    <!-- ТЕСТОВАЯ КНОПКА -->
+    <button id="test-results-btn" class="test-results-btn">Показать результаты в консоли</button>
     
-    <!-- Скрытые поля с данными игры -->
-    <input type="hidden" name="_subject" id="email-subject" value="Результат игры Собери пивной завод">
-    <input type="hidden" name="score" id="email-score">
-    <input type="hidden" name="time" id="email-time">
-    <input type="hidden" name="level1" id="email-level1">
-    <input type="hidden" name="level2" id="email-level2">
-    <input type="hidden" name="level3" id="email-level3">
-    <input type="hidden" name="level4" id="email-level4">
-    <input type="hidden" name="totalTime" id="email-totalTime">
-    <input type="hidden" name="_replyto" id="email-replyto">
-    <input type="hidden" name="_language" value="ru">
-    
-    <button type="submit" id="send-results-btn" class="send-results-btn">Отправить результаты</button>
-    <p class="email-note">Полный отчет по всем уровням придет Вам на почту</p>
-</form>
-    
-
     <div id="level-details"></div>
     <div class="confetti"></div>
 </div>
