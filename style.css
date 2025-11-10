@@ -238,23 +238,23 @@ body {
 .game-container {
     display: flex;
     width: 100%;
-    height: 75vh; /* ЕЩЕ УВЕЛИЧИЛИ С 70vh на 75vh */
-    max-height: 500px; /* УВЕЛИЧИЛИ С 450px на 500px */
-    gap: 12px;
-    margin: 0 0 5px;
+    height: 58vh; /* ЕЩЕ УМЕНЬШАЕМ ВЫСОТУ */
+    max-height: 360px;
     flex-direction: column;
-    padding: 0 5px;
+    gap: 6px; /* УМЕНЬШАЕМ РАССТОЯНИЕ */
+    margin: 0 0 3px;
+    padding: 0 3px; /* УМЕНЬШАЕМ ОТСТУПЫ */
 }
 
 .playground-container {
-    flex: 1; /* УМЕНЬШИЛИ С 2 НА 1 */
+    flex: 2;
     background-color: #f3f4f6;
-    border-radius: 10px;
+    border-radius: 8px;
     overflow-x: auto;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    min-height: 40%; /* УМЕНЬШИЛИ С 48% НА 40% */
+    min-height: 45%; /* УМЕНЬШАЕМ ВЫСОТУ */
     white-space: nowrap;
 }
 
@@ -270,13 +270,13 @@ body {
 .settings-container {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-    overflow-y: visible;
+    gap: 12px;
+    padding: 10px;
+    overflow-x: hidden; /* УБИРАЕМ ГОРИЗОНТАЛЬНУЮ ПРОКРУТКУ */
     height: auto;
-    min-height: 160px;
-    align-items: stretch;
+    min-height: 140px;
     width: 100%;
+    align-items: stretch;
 }
 
 /* Компактные настройки для уровня 3 */
@@ -332,31 +332,35 @@ body {
 
 .setting-item {
     background: white;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    flex: 1;
-    min-height: 80px;
+    width: 100%; /* ЗАНИМАЕТ ВСЮ ШИРИНУ */
+    min-height: 70px;
+    margin: 0; /* УБИРАЕМ ЛЮБЫЕ ОТСТУПЫ */
 }
 .setting-item label {
     display: block;
-    margin-bottom: 12px; /* УВЕЛИЧЕНО */
+    margin-bottom: 8px;
     font-weight: bold;
     color: #1e293b;
-    font-size: 16px; /* УВЕЛИЧЕНО */
+    font-size: 13px; /* УМЕНЬШАЕМ ШРИФТ */
+    line-height: 1.3; /* ЛУЧШАЯ ЧИТАЕМОСТЬ */
+    word-break: break-word; /* ПЕРЕНОС ДЛИННЫХ СЛОВ */
 }
 .setting-controls { display: flex; align-items: center; gap: 15px; }
 
 .temp-slider {
     flex: 1;
-    height: 30px; /* УВЕЛИЧЕНО */
+    height: 25px; /* УМЕНЬШАЕМ ВЫСОТУ */
     -webkit-appearance: none;
     background: #e2e8f0;
-    border-radius: 12px; /* УВЕЛИЧЕНО */
+    border-radius: 10px;
     outline: none;
+    min-width: 0; /* РАЗРЕШАЕМ СЖАТИЕ */
 }
 .temp-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -575,12 +579,6 @@ body {
     .feedback-message { text-align: center; font-size: 14px; height: 20px; }
     .slot, .equipment-btn { width: 145px; height: 145px; }
     .equipment { width: 115px; height: 115px; }
-        .test-results-btn {
-        padding: 10px 20px;
-        font-size: 14px;
-        min-width: 180px;
-        margin: 10px 0;
-    }
 #hint-btn, #launch-btn { 
     padding: 12px 18px; 
     font-size: 14px; 
@@ -608,10 +606,17 @@ body {
 .setting-controls { 
     display: flex; 
     align-items: center; 
-    gap: 12px; 
+    gap: 8px; 
     flex-direction: row;
+    width: 100%; /* ЗАНИМАЕТ ВСЮ ШИРИНУ */
 }
-    .temp-value { text-align: right; }
+.temp-value {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    min-width: 45px; /* ФИКСИРОВАННАЯ ШИРИНА ДЛЯ ЦИФР */
+    flex-shrink: 0; /* НЕ СЖИМАЕТСЯ */
+}
 }
 
 /* === Подсветка выбранного оборудования (режим выбора) === */
@@ -630,29 +635,7 @@ body {
     width: 100%;
     max-width: 500px;
 }
-/* Стили для тестовой кнопки */
-.test-results-btn {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin: 15px 0;
-    min-width: 220px;
-}
 
-.test-results-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.6);
-    transform: translateY(-2px);
-}
-
-.test-results-btn:active {
-    transform: translateY(0);
-}
 .email-form p {
     margin-bottom: 15px;
     font-size: 16px;
