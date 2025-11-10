@@ -911,7 +911,7 @@ class BreweryGame {
     this.startGame();
   }
 
-  createSettingsInterface(level) {
+createSettingsInterface(level) {
     const settingsHTML = level.settings.map(setting => {
       let unit = '°C';
       if (setting.id === "wort-brewing-time") unit = 'ч';
@@ -930,13 +930,13 @@ class BreweryGame {
     }).join('');
 
     this.elements.settingsContainer.innerHTML = settingsHTML;
-    this.elements.settingsContainer.classList.remove('compact');
-
-    this.elements.settingsContainer.style.minHeight = '180px';
-    this.elements.settingsContainer.style.display = 'flex';
-    this.elements.settingsContainer.style.flexDirection = 'column';
-    this.elements.settingsContainer.style.justifyContent = 'center';
-    this.elements.settingsContainer.style.gap = '25px';
+    
+    // На мобильных добавляем класс для горизонтального расположения
+    if (this.isMobile()) {
+        this.elements.settingsContainer.classList.add('mobile-horizontal');
+    } else {
+        this.elements.settingsContainer.classList.remove('mobile-horizontal');
+    }
 
     level.settings.forEach(setting => {
       const slider = document.getElementById(setting.id);
