@@ -799,54 +799,90 @@ body {
     overflow-y: auto;
 }
 
-/* ГОРИЗОНТАЛЬНЫЕ НАСТРОЙКИ ДЛЯ МОБИЛЬНЫХ */
+/* ГОРИЗОНТАЛЬНЫЕ НАСТРОЙКИ В 2 РЯДА ДЛЯ МОБИЛЬНЫХ */
 @media (max-width: 480px) {
     .settings-container {
         flex-direction: row !important;
-        justify-content: space-around !important;
-        align-items: center !important;
-        gap: 5px !important;
-        padding: 5px !important;
-        max-height: 70px !important;
-        min-height: 70px !important;
-        overflow-x: auto !important;
-        overflow-y: hidden !important;
+        flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+        padding: 8px !important;
+        max-height: none !important;
+        min-height: auto !important;
+        overflow: visible !important;
     }
     
     .setting-item {
-        flex: 1 !important;
-        min-width: 45% !important;
-        min-height: 60px !important;
-        padding: 5px !important;
-        margin: 0 2px !important;
+        flex: 0 0 calc(50% - 4px) !important;
+        min-width: calc(50% - 4px) !important;
+        min-height: 80px !important;
+        padding: 10px !important;
+        margin: 0 !important;
     }
     
     .setting-item label {
-        font-size: 10px !important;
-        margin-bottom: 3px !important;
-        line-height: 1.1 !important;
+        font-size: 12px !important;
+        margin-bottom: 8px !important;
+        line-height: 1.2 !important;
         text-align: center !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        height: auto !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
     }
     
     .setting-controls {
-        flex-direction: column !important;
-        gap: 3px !important;
+        flex-direction: row !important;
+        gap: 8px !important;
         align-items: center !important;
+        justify-content: space-between !important;
     }
     
     .temp-slider {
         width: 100% !important;
         min-width: auto !important;
+        height: 14px !important;
+        flex: 1 !important;
+    }
+    
+    .temp-value {
+        font-size: 12px !important;
+        font-weight: bold !important;
+        min-width: 35px !important;
+        text-align: center !important;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    .settings-container {
+        gap: 6px !important;
+        padding: 6px !important;
+    }
+    
+    .setting-item {
+        flex: 0 0 calc(50% - 3px) !important;
+        min-width: calc(50% - 3px) !important;
+        min-height: 75px !important;
+        padding: 8px !important;
+    }
+    
+    .setting-item label {
+        font-size: 11px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .temp-slider {
         height: 12px !important;
     }
     
     .temp-value {
         font-size: 11px !important;
-        font-weight: bold !important;
-        min-width: auto !important;
+        min-width: 30px !important;
     }
 }
 
@@ -970,33 +1006,3 @@ body {
     .equipment { width: 140px; height: 140px; }
 }
 
-/* Компактный режим для настроек */
-.settings-container.compact {
-    gap: 5px !important;
-    padding: 3px !important;
-}
-
-.settings-container.compact .setting-item {
-    padding: 5px 8px !important;
-    min-height: 50px !important;
-}
-
-.settings-container.compact .setting-item label {
-    font-size: 11px !important;
-    margin-bottom: 2px !important;
-    line-height: 1.1 !important;
-}
-
-.settings-container.compact .temp-slider {
-    height: 14px !important;
-}
-
-.settings-container.compact .temp-slider::-webkit-slider-thumb {
-    width: 16px !important;
-    height: 16px !important;
-}
-
-.settings-container.compact .temp-value {
-    font-size: 10px !important;
-    min-width: 22px !important;
-}
