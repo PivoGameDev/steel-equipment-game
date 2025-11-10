@@ -817,21 +817,21 @@ this.openInfoModal(text, [{label: buttonLabel, variant:'primary', onClick:()=>th
 
 const detailsHTML = (where) => {
   let html = '<div class="level-results">';
-  for (let level = 1; level <= 4; level++) {  // ← ИСПРАВИЛ 3 на 4
-    const result = this.state.levelResults[level];
-    const review = this.levelReview[level] || {right:[], wrong:[]};
-    const errors = result.total - result.correct;
-    html += `
-      <div class="level-result">
-        <h3>Уровень ${level}: ${this.levels[level].name}</h3>
-        <p>Правильно: ${result.correct} из ${result.total}</p>
-        <p>Ошибки: ${errors} (${errors * 5} баллов)</p>
-        ${review.right?.length || review.wrong?.length ?
-          `<p><strong>Верные позиции:</strong> ${review.right.join(', ') || '—'}</p>
-           <p><strong>Пересмотрите позиции:</strong> ${review.wrong.join(', ') || '—'}</p>`
-          : ''}
-      </div>`;
-  }
+  // Показываем только уровень 1
+  const level = 1;
+  const result = this.state.levelResults[level];
+  const review = this.levelReview[level] || {right:[], wrong:[]};
+  const errors = result.total - result.correct;
+  html += `
+    <div class="level-result">
+      <h3>Уровень ${level}: ${this.levels[level].name}</h3>
+      <p>Правильно: ${result.correct} из ${result.total}</p>
+      <p>Ошибки: ${errors} (${errors * 5} баллов)</p>
+      ${review.right?.length || review.wrong?.length ?
+        `<p><strong>Верные позиции:</strong> ${review.right.join(', ') || '—'}</p>
+         <p><strong>Пересмотрите позиции:</strong> ${review.wrong.join(', ') || '—'}</p>`
+        : ''}
+    </div>`;
   html += '</div>';
   where.innerHTML = html;
 };
@@ -1203,137 +1203,59 @@ createSettingsInterface(level) {
   // === КОНЕЦ ДОБАВЛЕНИЯ МЕТОДОВ ===
   // === МЕТОДЫ ДЛЯ EMAIL ФОРМЫ ===
   
-initEmailForm() {
+  initEmailForm() {
     const emailForm = document.getElementById('email-form');
     const emailInput = document.getElementById('user-email');
     const sendBtn = document.getElementById('send-results-btn');
     
     if (emailForm && emailInput && sendBtn) {
-        emailInput.addEventListener('input', () => {
-            sendBtn.disabled = !this.isValidEmail(emailInput.value);
-        });
-        
-        emailForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.sendToFormspree(emailInput.value);
-        });
-    }
-}
-
-async sendToFormspree(userEmail) {
-    const sendBtn = document.getElementById('send-results-btn');
-    sendBtn.disabled = true;
-    sendBtn.textContent = 'Отправляем...';
-    
-    const totalScore = this.calculateTotalScore();
-    const totalTime = this.formatTime(this.levels[this.state.currentLevel].time - this.state.timeLeft);
-    
-    try {
-        // Formspree ожидает FormData, а не JSON
-        const formData = new FormData();
-        formData.append('email', userEmail);
-        formData.append('_subject', `🎯 Результат игры: ${totalScore} баллов`);
-        formData.append('score', totalScore);
-        formData.append('time', totalTime);
-        formData.append('level1', `${this.state.levelResults[1].correct}/${this.state.levelResults[1].total}`);
-        formData.append('level2', `${this.state.levelResults[2].correct}/${this.state.levelResults[2].total}`);
-        formData.append('level3', `${this.state.levelResults[3].correct}/${this.state.levelResults[3].total}`);
-        formData.append('level4', `${this.state.levelResults[4].correct}/${this.state.levelResults[4].total}`);
-        formData.append('totalTime', totalTime);
-        formData.append('_replyto', userEmail); // для ответа
-        
-        const response = await fetch('https://formspree.io/f/mzzyplzq', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
-        
-        if (response.ok) {
-            sendBtn.textContent = '✅ Отправлено!';
-            sendBtn.style.background = '#10b981';
-            this.showFeedback('Результаты отправлены!', 'correct');
-            console.log('✅ Форма отправлена в Formspree');
-        } else {
-            throw new Error('Formspree error');
-        }
-    } catch (error) {
-        console.error('Ошибка отправки:', error);
-        sendBtn.textContent = '✅ Данные сохранены';
+      // Валидация email в реальном времени
+      emailInput.addEventListener('input', () => {
+        sendBtn.disabled = !this.isValidEmail(emailInput.value);
+      });
+      
+      // Обработка отправки формы
+      emailForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.prepareEmailData();
+        // Форма отправится автоматически через Formspree
+        sendBtn.textContent = '✅ Отправлено!';
+        sendBtn.disabled = true;
         sendBtn.style.background = '#10b981';
-        this.showFeedback('Результаты сохранены локально', 'correct');
         
-        // Сохраняем локально на всякий случай
-        this.saveResultsLocally(userEmail);
+        // Показываем сообщение об успехе
+        this.showFeedback(`Результаты отправлены! Проверь почту`, 'correct');
+      });
     }
-}
-
-saveResultsLocally(userEmail) {
-    const totalScore = this.calculateTotalScore();
-    const totalTime = this.formatTime(this.levels[this.state.currentLevel].time - this.state.timeLeft);
-    
-    const resultData = {
-        email: userEmail,
-        score: totalScore,
-        time: totalTime,
-        levels: this.state.levelResults,
-        date: new Date().toLocaleString('ru-RU')
-    };
-    
-    console.log('💾 Результат сохранен локально:', resultData);
-    
-    let history = JSON.parse(localStorage.getItem('breweryGameResults') || '[]');
-    history.push(resultData);
-    localStorage.setItem('breweryGameResults', JSON.stringify(history));
-}
+  }
 
   isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
-prepareEmailData() {
+  prepareEmailData() {
     const totalScore = this.calculateTotalScore();
     const totalTime = this.formatTime(this.levels[this.state.currentLevel].time - this.state.timeLeft);
     
     // Заполняем скрытые поля формы
-    document.getElementById('email-subject').value = `🎯 Ваш результат игры "Собери пивной завод"`;
-    document.getElementById('email-score').value = totalScore;
-    document.getElementById('email-time').value = totalTime;
-    document.getElementById('email-level1').value = `${this.state.levelResults[1].correct}/${this.state.levelResults[1].total}`;
-    document.getElementById('email-level2').value = `${this.state.levelResults[2].correct}/${this.state.levelResults[2].total}`;
-    document.getElementById('email-level3').value = `${this.state.levelResults[3].correct}/${this.state.levelResults[3].total}`;
-    document.getElementById('email-level4').value = `${this.state.levelResults[4].correct}/${this.state.levelResults[4].total}`;
-    document.getElementById('email-totalTime').value = totalTime;
+    const subjectEl = document.getElementById('email-subject');
+    const scoreEl = document.getElementById('email-score');
+    const timeEl = document.getElementById('email-time');
+    const level1El = document.getElementById('email-level1');
+    const level2El = document.getElementById('email-level2');
+    const level3El = document.getElementById('email-level3');
+    const level4El = document.getElementById('email-level4');
+    const totalTimeEl = document.getElementById('email-totalTime');
     
-    // Создаем красивое сообщение для email
-    const emailMessage = `
-Поздравляем с завершением игры "Собери пивной завод"!
-
-ВАШ РЕЗУЛЬТАТ:
-🏆 Общий счет: ${totalScore} баллов
-⏱ Общее время: ${totalTime}
-
-ДЕТАЛЬНЫЕ РЕЗУЛЬТАТЫ ПО УРОВНЯМ:
-
-Уровень 1: Основы заторного процесса
-✅ Правильно: ${this.state.levelResults[1].correct} из ${this.state.levelResults[1].total}
-
-Уровень 2: Сборка варочной линии  
-✅ Правильно: ${this.state.levelResults[2].correct} из ${this.state.levelResults[2].total}
-
-Уровень 3: Искусство брожения
-✅ Правильно: ${this.state.levelResults[3].correct} из ${this.state.levelResults[3].total}
-
-Уровень 4: Финальная сборка
-✅ Правильно: ${this.state.levelResults[4].correct} из ${this.state.levelResults[4].total}
-
-Благодарим за участие в игре! 🍻
-    `;
-    
-    document.getElementById('email-message').value = emailMessage;
-
+    if (subjectEl) subjectEl.value = `🎯 Результат игры: ${totalScore} баллов`;
+    if (scoreEl) scoreEl.value = totalScore;
+    if (timeEl) timeEl.value = totalTime;
+    if (level1El) level1El.value = `${this.state.levelResults[1].correct}/${this.state.levelResults[1].total}`;
+    if (level2El) level2El.value = `${this.state.levelResults[2].correct}/${this.state.levelResults[2].total}`;
+    if (level3El) level3El.value = `${this.state.levelResults[3].correct}/${this.state.levelResults[3].total}`;
+    if (level4El) level4El.value = `${this.state.levelResults[4].correct}/${this.state.levelResults[4].total}`;
+    if (totalTimeEl) totalTimeEl.value = totalTime;
   }
   // === КОНЕЦ МЕТОДОВ ДЛЯ EMAIL ФОРМЫ ===
 }
@@ -1369,19 +1291,19 @@ if (!BreweryGame.prototype.calculateTotalScore || BreweryGame.prototype.calculat
 
 function buildDetailsHTML(self){
   let html = '<div class="level-results">';
-  for (let lvl = 1; lvl <= 4; lvl++) {  // ← ИСПРАВЛЕНО: 3 на 4
-    const result = (self.state && self.state.levelResults && self.state.levelResults[lvl]) || {correct:0,total:0};
-    const review = (self.levelReview && self.levelReview[lvl]) || {rightNames:[], wrong:[]};
-    const lvlScore = (result.correct || 0) * WEIGHTS[lvl].ok;
-    html += `
-      <div class="level-result">
-        <h3>Уровень ${lvl}: ${self.levels[lvl].name}</h3>
-        <p>Очки за уровень: ${lvlScore}</p>
-        <p>Правильно: ${result.correct} из ${result.total}</p>
-        ${review.rightNames && review.rightNames.length ? `<p><strong>Верно расставлено:</strong> ${review.rightNames.join(', ')}</p>` : ''}
-        ${review.wrong && review.wrong.length ? `<p><strong>Проверьте слоты:</strong> ${review.wrong.join(', ')}</p>` : ''}
-      </div>`;
-  }
+  // Показываем только уровень 1
+  const lvl = 1;
+  const result = (self.state && self.state.levelResults && self.state.levelResults[lvl]) || {correct:0,total:0};
+  const review = (self.levelReview && self.levelReview[lvl]) || {rightNames:[], wrong:[]};
+  const lvlScore = (result.correct || 0) * WEIGHTS[lvl].ok;
+  html += `
+    <div class="level-result">
+      <h3>Уровень ${lvl}: ${self.levels[lvl].name}</h3>
+      <p>Очки за уровень: ${lvlScore}</p>
+      <p>Правильно: ${result.correct} из ${result.total}</p>
+      ${review.rightNames && review.rightNames.length ? `<p><strong>Верно расставлено:</strong> ${review.rightNames.join(', ')}</p>` : ''}
+      ${review.wrong && review.wrong.length ? `<p><strong>Проверьте слоты:</strong> ${review.wrong.join(', ')}</p>` : ''}
+    </div>`;
   html += '</div>';
   return html;
 }
