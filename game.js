@@ -112,6 +112,10 @@ class BreweryGame {
     }, 500);
   }
 
+  isVerySmallScreen() {
+    return window.innerWidth <= 360;
+  }
+
   initIntroAnimation() {
     const overlay = document.getElementById('animation-overlay');
     const mainContent = document.getElementById('main-content');
@@ -879,11 +883,16 @@ class BreweryGame {
     this.elements.levelNameDisplay.textContent = `Уровень: ${level.name}`;
     this.elements.levelDescText.textContent = level.description;
 
-    // Автоматически применяем компактный стиль для настроек на мобильных
+    // АВТОМАТИЧЕСКИ ПРИМЕНЯЕМ КОМПАКТНЫЙ СТИЛЬ ДЛЯ МОБИЛЬНЫХ
     if ((levelNum === 1 || levelNum === 3) && this.isMobile()) {
         this.elements.settingsContainer.classList.add('compact');
+        if (this.isVerySmallScreen()) {
+            this.elements.settingsContainer.classList.add('super-compact');
+        } else {
+            this.elements.settingsContainer.classList.remove('super-compact');
+        }
     } else {
-        this.elements.settingsContainer.classList.remove('compact');
+        this.elements.settingsContainer.classList.remove('compact', 'super-compact');
     }
 
     if (levelNum === 1 || levelNum === 3) {
@@ -900,7 +909,7 @@ class BreweryGame {
     this.elements.levelSelectScreen.classList.add('hidden');
     this.elements.gameScreen.classList.remove('hidden');
     this.startGame();
-}
+  }
 
   createSettingsInterface(level) {
     const settingsHTML = level.settings.map(setting => {
@@ -1269,7 +1278,7 @@ class BreweryGame {
     if (totalTimeEl) totalTimeEl.value = totalTime;
   }
 }
-
+// ★★★★ КЛАСС ЗАКАНЧИВАЕТСЯ ЗДЕСЬ ★★★★
 document.addEventListener('DOMContentLoaded', () => { new BreweryGame(); });
 
 // === RESULTS DEDUP + HIDE NEXT BTN + TOTAL SCORE ===
