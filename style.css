@@ -254,7 +254,7 @@ body {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    min-height: 48%;
+    min-height: 55%; /* УВЕЛИЧЕНО С 48% */
     white-space: nowrap;
 }
 
@@ -269,11 +269,13 @@ body {
 
 .settings-container {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 15px;
-    padding: 10px;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px; /* УВЕЛИЧЕН РАЗРЫВ */
+    padding: 20px; /* УВЕЛИЧЕН ОТСТУП */
     overflow-y: visible;
     height: auto;
+    min-height: 180px; /* ДОБАВЛЕНО */
+    align-items: center;
 }
 
 /* Компактные настройки для уровня 3 */
@@ -329,29 +331,34 @@ body {
 
 .setting-item {
     background: white;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 20px; /* УВЕЛИЧЕНО */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* УЛУЧШЕНА ТЕНЬ */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 .setting-item label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 12px; /* УВЕЛИЧЕНО */
     font-weight: bold;
     color: #1e293b;
+    font-size: 16px; /* УВЕЛИЧЕНО */
 }
 .setting-controls { display: flex; align-items: center; gap: 15px; }
 
 .temp-slider {
     flex: 1;
-    height: 25px;
+    height: 30px; /* УВЕЛИЧЕНО */
     -webkit-appearance: none;
     background: #e2e8f0;
-    border-radius: 10px;
+    border-radius: 12px; /* УВЕЛИЧЕНО */
     outline: none;
 }
 .temp-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 25px; height: 25px;
+    width: 28px; height: 28px; /* УВЕЛИЧЕНО */
     border-radius: 50%;
     background: #3b82f6; cursor: pointer;
 }
@@ -546,8 +553,23 @@ body {
     .feedback-message { text-align: center; font-size: 14px; height: 20px; }
     .slot, .equipment-btn { width: 145px; height: 145px; }
     .equipment { width: 115px; height: 115px; }
-    #hint-btn, #launch-btn, #reset-btn { padding: 10px 15px; font-size: 14px; min-width: 120px; max-width: 100%; flex: 1 0 80%; margin: 3px 0; }
-    .game-controls { flex-direction: column; align-items: center; gap: 5px; padding: 0 5px 5px; }
+    #hint-btn, #launch-btn, #reset-btn { 
+        padding: 12px 20px; 
+        font-size: 14px; 
+        min-width: 140px; 
+        max-width: 200px; 
+        flex: none; 
+        margin: 3px 0; 
+        width: auto;
+    }
+       .game-controls { 
+        flex-direction: row; 
+        justify-content: center;
+        align-items: center; 
+        gap: 8px; 
+        padding: 0 5px 5px; 
+        flex-wrap: wrap;
+    }
     .level-card h2 { font-size: 16px; }
     .level-card p { font-size: 12px; }
     .level-description { margin: 2px 0 5px; min-height: 100px; max-height: 100px; padding: 8px; font-size: 13px; }

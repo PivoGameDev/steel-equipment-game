@@ -956,6 +956,13 @@ createSettingsInterface(level) {
   this.elements.settingsContainer.innerHTML = settingsHTML;
   this.elements.settingsContainer.classList.remove('compact');
 
+  // УВЕЛИЧИВАЕМ ВЫСОТУ КОНТЕЙНЕРА ДЛЯ НАСТРОЕК
+  this.elements.settingsContainer.style.minHeight = '180px';
+  this.elements.settingsContainer.style.display = 'flex';
+  this.elements.settingsContainer.style.flexDirection = 'column';
+  this.elements.settingsContainer.style.justifyContent = 'center';
+  this.elements.settingsContainer.style.gap = '25px';
+
   level.settings.forEach(setting => {
     const slider = document.getElementById(setting.id);
     const valueDisplay = slider.nextElementSibling;
