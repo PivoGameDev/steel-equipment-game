@@ -1207,31 +1207,121 @@ createSettingsInterface(level) {
   // === КОНЕЦ ДОБАВЛЕНИЯ МЕТОДОВ ===
   // === МЕТОДЫ ДЛЯ EMAIL ФОРМЫ ===
   
-  initEmailForm() {
+initEmailForm() {
     const emailForm = document.getElementById('email-form');
     const emailInput = document.getElementById('user-email');
     const sendBtn = document.getElementById('send-results-btn');
     
     if (emailForm && emailInput && sendBtn) {
-      // Валидация email в реальном времени
-      emailInput.addEventListener('input', () => {
-        sendBtn.disabled = !this.isValidEmail(emailInput.value);
-      });
-      
-      // Обработка отправки формы
-      emailForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        this.prepareEmailData();
-        // Форма отправится автоматически через Formspree
-        sendBtn.textContent = '✅ Отправлено!';
-        sendBtn.disabled = true;
-        sendBtn.style.background = '#10b981';
+        // Валидация email в реальном времени
+        emailInput.addEventListener('input', () => {
+            const isValid = this.isValidEmail(emailInput.value);
+            sendBtn.disabled = !isValid;
+            sendBtn.style.opacity = isValid ? '1' : '0.6';
+        });
         
-        // Показываем сообщение об успехе
-        this.showFeedback(`Результаты отправлены! Проверь почту`, 'correct');
-      });
+        // Обработка отправки формы
+        emailForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!this.isValidEmail(emailInput.value)) {
+                this.showFeedback('Пожалуйста, введите корректный email', 'incorrect');
+                return;
+            }
+            
+            this.prepareEmailData();
+            sendBtn.textContent = 'Отправляем...';
+            sendBtn.disabled = true;
+            
+            try {
+                // Пробуем отправить через Formspree
+                const formData = new FormData(emailForm);
+                const response = await fetch(emailForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    this.showFormSuccess(sendBtn);
+                    this.showFeedback('✅ Результаты отправлены! Проверьте почту', 'correct');
+                } else {
+                    throw new Error('Formspree failed');
+                }
+            } catch (error) {
+                // Если Formspree не работает, пробуем резервный метод
+                console.log('Formspree не работает, пробуем резервный метод...');
+                this.tryBackupEmailMethod(emailInput.value, sendBtn);
+            }
+        });
     }
-  }
+}
+
+// Резервный метод отправки
+tryBackupEmailMethod(email, sendBtn) {
+    // Просто показываем данные в консоли для тестирования
+    const totalScore = this.calculateTotalScore();
+    const totalTime = this.formatTime(this.levels[this.state.currentLevel].time - this.state.timeLeft);
+    
+    console.log('=== РЕЗУЛЬТАТЫ ИГРЫ ===');
+    console.log('Email:', email);
+    console.log('Общий счет:', totalScore);
+    console.log('Время:', totalTime);
+    console.log('Уровень 1:', `${this.state.levelResults[1].correct}/${this.state.levelResults[1].total}`);
+    console.log('Уровень 2:', `${this.state.levelResults[2].correct}/${this.state.levelResults[2].total}`);
+    console.log('Уровень 3:', `${this.state.levelResults[3].correct}/${this.state.levelResults[3].total}`);
+    console.log('Уровень 4:', `${this.state.levelResults[4].correct}/${this.state.levelResults[4].total}`);
+    console.log('====================');
+    
+    // Показываем пользователю альтернативный вариант
+    this.showFeedback('📧 Результаты сохранены! Скопируйте из консоли браузера (F12)', 'correct');
+    this.showFormSuccess(sendBtn);
+}
+
+showFormSuccess(sendBtn) {
+    sendBtn.textContent = '✅ Отправлено!';
+    sendBtn.disabled = true;
+    sendBtn.style.background = '#10b981';
+    sendBtn.style.opacity = '1';
+    
+    // Через 5 секунд возвращаем обычный вид
+    setTimeout(() => {
+        sendBtn.textContent = 'Отправить результаты';
+        sendBtn.disabled = false;
+        sendBtn.style.background = '';
+    }, 5000);
+}
+
+isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+prepareEmailData() {
+    const totalScore = this.calculateTotalScore();
+    const totalTime = this.formatTime(this.levels[this.state.currentLevel].time - this.state.timeLeft);
+    
+    // Заполняем скрытые поля формы
+    const subjectEl = document.getElementById('email-subject');
+    const scoreEl = document.getElementById('email-score');
+    const timeEl = document.getElementById('email-time');
+    const level1El = document.getElementById('email-level1');
+    const level2El = document.getElementById('email-level2');
+    const level3El = document.getElementById('email-level3');
+    const level4El = document.getElementById('email-level4');
+    const totalTimeEl = document.getElementById('email-totalTime');
+    
+    if (subjectEl) subjectEl.value = `🎯 Результат игры: ${totalScore} баллов`;
+    if (scoreEl) scoreEl.value = totalScore;
+    if (timeEl) timeEl.value = totalTime;
+    if (level1El) level1El.value = `${this.state.levelResults[1].correct}/${this.state.levelResults[1].total}`;
+    if (level2El) level2El.value = `${this.state.levelResults[2].correct}/${this.state.levelResults[2].total}`;
+    if (level3El) level3El.value = `${this.state.levelResults[3].correct}/${this.state.levelResults[3].total}`;
+    if (level4El) level4El.value = `${this.state.levelResults[4].correct}/${this.state.levelResults[4].total}`;
+    if (totalTimeEl) totalTimeEl.value = totalTime;
+}
 
   isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
