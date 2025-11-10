@@ -182,7 +182,6 @@ this.levelReview = {1:{}, 2:{}, 3:{}, 4:{}};
       levelCardsContainer: document.querySelector('.level-cards'),
       launchBtn: document.getElementById('launch-btn'),
       hintBtn: document.getElementById('hint-btn'),
-      resetBtn: document.getElementById('reset-btn'),
       timerDisplay: document.querySelector('.timer'),
       feedbackMessage: document.querySelector('.feedback-message'),
       timeSpentDisplay: document.getElementById('time-spent'),
@@ -278,7 +277,6 @@ buildPartialHint(levelNum) {
     this.elements.backToMenuBtn.addEventListener('click', () => this.showStartScreen());
     this.elements.launchBtn.addEventListener('click', () => this.checkSolution());
     this.elements.hintBtn.addEventListener('click', () => this.showHint());
-    this.elements.resetBtn.addEventListener('click', () => this.resetEquipment());
     this.elements.closeModal.addEventListener('click', () => this.closeHintModal());
     this.elements.hintModal.addEventListener('click', (e)=>{
       if (e.target === this.elements.hintModal) this.closeHintModal();
@@ -542,7 +540,6 @@ startGame() {
     clearInterval(this.timer);
     this.timer = setInterval(() => this.updateTimer(), 1000);
 
-    this.elements.resetBtn.classList.remove('hidden');
     this.elements.hintBtn.classList.remove('hidden');
     this.elements.hintBtn.disabled = false;
     this.elements.hintBtn.style.opacity = '';
