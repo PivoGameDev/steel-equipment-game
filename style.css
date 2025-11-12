@@ -1225,3 +1225,26 @@ body {
     background: rgba(255, 255, 255, 0.95) !important; /* Более плотный фон */
     backdrop-filter: blur(5px);
 }
+/* === КАРТИНКА ДЛЯ МОБИЛЬНЫХ === */
+@media (max-width: 768px) {
+    .brewery-background {
+        top: 400px !important; /* Выше для мобильных */
+        height: 150px !important; /* Меньше высота */
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .brewery-background {
+        top: 380px !important;
+        height: 130px !important;
+    }
+}
+
+/* Для супер-маленьких */
+@media (max-width: 360px) {
+    .brewery-background {
+        top: 350px !important;
+        height: 120px !important;
+    }
+}
