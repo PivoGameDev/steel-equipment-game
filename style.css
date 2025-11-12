@@ -1530,7 +1530,7 @@ body {
 
 /* Белый фон для основного текста */
 .win-content {
-    background: rgba(255, 255, 255, 0.98) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
     backdrop-filter: blur(20px);
     border-radius: 20px;
     padding: 25px;
