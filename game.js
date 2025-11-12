@@ -169,7 +169,7 @@ class BreweryGame {
     tryNext();
   }
 
-  initElements() {
+initElements() {
     this.elements = {
         startScreen: document.getElementById('start-screen'),
         levelSelectScreen: document.getElementById('level-select-screen'),
@@ -197,8 +197,8 @@ class BreweryGame {
         settingsContainer: document.querySelector('.settings-container'),
         levelDetails: document.getElementById('level-details'),
         levelDetailsLose: document.getElementById('level-details-lose'),
-        // ДОБАВЬ ЭТУ СТРОКУ ↓
-        playgroundContainer: document.querySelector('.playground-container')
+        breweryBackground: document.querySelector('.brewery-background'), // ← ЗАПЯТАЯ вместо точки с запятой
+        playgroundContainer: document.querySelector('.playground-container') // ← БЕЗ точки с запятой в конце
     };
 
     this.sounds = {
@@ -900,18 +900,20 @@ class BreweryGame {
     if (levelNum === 1 || levelNum === 3) {
         this.createSettingsInterface(level);
         this.elements.hintBtn.classList.remove('hidden');
-        // Скрываем playground и equipment, показываем settings
+        // Скрываем playground и equipment, показываем settings и картинку
         this.elements.playgroundContainer.classList.add('hidden');
         this.elements.equipmentPanelContainer.classList.add('hidden');
         this.elements.settingsContainer.classList.remove('hidden');
+        this.elements.breweryBackground.classList.remove('hidden'); // ← ДОБАВЬ ЭТУ СТРОКУ
     } else {
         this.createEquipmentSlots(level);
         this.createEquipmentPanel(level);
         this.elements.hintBtn.classList.remove('hidden');
-        // Скрываем settings, показываем playground и equipment
+        // Скрываем settings и картинку, показываем playground и equipment
         this.elements.settingsContainer.classList.add('hidden');
         this.elements.playgroundContainer.classList.remove('hidden');
         this.elements.equipmentPanelContainer.classList.remove('hidden');
+        this.elements.breweryBackground.classList.add('hidden'); // ← ДОБАВЬ ЭТУ СТРОКУ
     }
 
     this.elements.levelSelectScreen.classList.add('hidden');
