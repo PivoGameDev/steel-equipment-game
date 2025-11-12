@@ -1101,16 +1101,82 @@ body {
     .playground, .equipment-panel {
         gap: 15px !important;
         padding: 10px !important;
+        min-width: min-content !important;
+        flex-shrink: 0 !important;
     }
     
     /* Гарантируем, что контейнеры будут прокручиваться */
     .playground-container, .equipment-panel-container {
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
+        flex-shrink: 0 !important;
     }
     
-    /* Увеличиваем минимальную ширину для контента */
-    .playground, .equipment-panel {
-        min-width: min-content !important;
+    /* Предотвращаем сжатие элементов */
+    .slot, .equipment-btn {
+        flex-shrink: 0 !important;
+    }
+}
+/* ФИКС ДЛЯ МОБИЛЬНЫХ БРАУЗЕРОВ С ИЗМЕНЯЮЩЕЙСЯ ВЫСОТОЙ */
+@media (max-width: 480px) {
+    /* Используем min-height вместо height для стабильности */
+    .game-container { 
+        min-height: calc(70vh - 50px) !important;
+        height: auto !important;
+    }
+    
+    .playground-container, 
+    .equipment-panel-container {
+        min-height: 160px !important;
+        height: auto !important;
+        flex-shrink: 0 !important;
+    }
+    
+    /* Гарантируем, что слоты и кнопки всегда одного размера */
+    .slot, .equipment-btn {
+        min-width: 150px !important;
+        min-height: 150px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    /* Фикс для iOS Safari */
+    @supports (-webkit-touch-callout: none) {
+        .game-container {
+            min-height: calc(80vh - 50px) !important;
+        }
+    }
+    
+    /* Фикс для Android Chrome */
+    @supports not (-webkit-touch-callout: none) {
+        .game-container {
+            min-height: calc(75vh - 50px) !important;
+        }
+    }
+}
+
+/* Для высоких Android экранов - более агрессивные настройки */
+@media (max-width: 480px) and (min-height: 700px) {
+    .game-container { 
+        min-height: calc(75vh - 50px) !important;
+        max-height: none !important;
+    }
+    
+    .playground-container { 
+        min-height: 200px !important;
+        max-height: none !important;
+    }
+    
+    .equipment-panel-container { 
+        min-height: 200px !important;
+        max-height: none !important;
+    }
+}
+
+/* Отключаем максимальные высоты для мобильных */
+@media (max-width: 768px) {
+    .game-container,
+    .playground-container,
+    .equipment-panel-container {
+        max-height: none !important;
     }
 }
