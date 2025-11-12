@@ -1183,33 +1183,7 @@ body {
         padding: 8px 10px !important;
     }
 }
-/* === ФОНОВАЯ КАРТИНКА ОБОРУДОВАНИЯ === */
-.brewery-background {
-    position: absolute;
-    top: 450px; /* Опускаем ниже кнопок */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 95%;
-    height: 200px; /* Уменьшаем высоту */
-    z-index: 1;
-    pointer-events: none;
-    opacity: 0.9;
-}
 
-.brewery-background img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    opacity: 0.6;
-}
-
-/* Для мобильных */
-@media (max-width: 768px) {
-    .brewery-background {
-        top: 110px;
-        height: 250px;
-    }
-}
 /* === ИСПРАВЛЯЕМ СЛОИ === */
 .brewery-background {
     z-index: 0 !important; /* Под всеми элементами */
@@ -1225,29 +1199,7 @@ body {
     background: rgba(255, 255, 255, 0.95) !important; /* Более плотный фон */
     backdrop-filter: blur(5px);
 }
-/* === КАРТИНКА ДЛЯ МОБИЛЬНЫХ === */
-@media (max-width: 768px) {
-    .brewery-background {
-        top: 400px !important; /* Выше для мобильных */
-        height: 150px !important; /* Меньше высота */
-    }
-}
 
-/* Для очень маленьких экранов */
-@media (max-width: 480px) {
-    .brewery-background {
-        top: 380px !important;
-        height: 130px !important;
-    }
-}
-
-/* Для супер-маленьких */
-@media (max-width: 360px) {
-    .brewery-background {
-        top: 350px !important;
-        height: 120px !important;
-    }
-}
 /* === КАРТИНКА ЕЩЕ НИЖЕ === */
 .brewery-background {
     position: absolute;
