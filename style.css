@@ -1,4 +1,5 @@
-/* === ОПТИМИЗИРОВАННЫЙ CSS - УДАЛЕНЫ ДУБЛИКАТЫ === */
+/* === ПОЛНЫЙ ИСПРАВЛЕННЫЙ CSS === */
+
 /* Основные стили */
 * {
     margin: 0;
@@ -183,15 +184,19 @@ body {
     background-color: white;
     z-index: 80;
     justify-content: flex-start;
-    padding: 8px 12px 0;
+    padding: 8px 12px 5px;
+    display: flex !important;
+    flex-direction: column !important;
 }
 
 .game-header {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 3px;
+    margin-bottom: 2px !important;
     flex-wrap: wrap;
+    flex: none !important;
+    min-height: 30px !important;
 }
 
 .header-left, .header-right {
@@ -202,8 +207,20 @@ body {
     padding: 0 5px;
 }
 
-.level-name { font-size: 16px; font-weight: bold; color: #3b82f6; text-align: left; margin-bottom: 2px; }
-.timer { font-size: 22px; font-weight: bold; color: #10b981; }
+.level-name { 
+    font-size: 14px !important; 
+    font-weight: bold; 
+    color: #3b82f6; 
+    text-align: left; 
+    margin-bottom: 0 !important; 
+    line-height: 1.1 !important;
+}
+.timer { 
+    font-size: 18px !important; 
+    font-weight: bold; 
+    color: #10b981; 
+    margin-top: -2px !important;
+}
 .timer.low-time { color: #ef4444; animation: pulse 1s infinite; }
 
 @keyframes pulse { 
@@ -230,155 +247,89 @@ body {
     width: calc(100% - 10px);
     background-color: #e0f2fe;
     border-radius: 10px;
-    padding: 12px;
-    margin: 3px 0 8px;
-    font-size: 14px;
+    padding: 8px !important;
+    margin: 0 0 3px !important;
+    font-size: 12px !important;
     text-align: left;
-    max-height: 20vh;
-    min-height: 100px;
+    max-height: 60px !important;
+    min-height: 45px !important;
     overflow-y: auto;
-    line-height: 1.4;
+    line-height: 1.2 !important;
+    flex: none !important;
 }
 #level-desc-text { color: #0c4a6e; }
 
+/* ОСНОВНОЙ ИГРОВОЙ КОНТЕЙНЕР - ИСПРАВЛЕН */
 .game-container {
-    display: flex;
+    display: flex !important;
+    flex-direction: column !important;
     width: 100%;
-    height: 75vh;
-    max-height: 500px;
-    gap: 12px;
-    margin: 0 0 5px;
-    flex-direction: column;
+    flex: 1 !important;
+    min-height: 0 !important;
+    gap: 5px !important;
+    margin: 0 0 0px !important;
     padding: 0 5px;
+    overflow: hidden !important;
 }
 
+/* Блок слотов - ИСПРАВЛЕН */
 .playground-container {
-    flex: 1;
+    flex: none !important;
     background-color: #f3f4f6;
     border-radius: 10px;
-    overflow-x: auto;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    min-height: 40%;
+    min-height: 130px !important;
+    max-height: 140px !important;
     white-space: nowrap;
+    height: auto !important;
 }
 
 .playground {
     display: inline-flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 15px;
-    padding: 10px;
+    gap: 12px;
+    padding: 8px;
     height: 100%;
+    flex-wrap: nowrap !important;
 }
 
-.settings-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-    overflow-y: visible;
-    height: auto;
-    min-height: auto;
-    align-items: stretch;
-    width: 100%;
-    flex: 1;
-    justify-content: center;
-}
-
-.setting-item {
-    background: white;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex: 1;
-    min-height: 90px;
-    width: 100%;
-}
-
-.setting-item label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #1e293b;
-    font-size: 16px;
-    text-align: center;
-}
-
-.setting-controls { 
-    display: flex; 
-    align-items: center; 
-    gap: 12px; 
-    flex-direction: row;
-}
-
-.temp-slider {
-    flex: 1;
-    height: 25px;
-    -webkit-appearance: none;
-    background: #e2e8f0;
-    border-radius: 12px;
-    outline: none;
-}
-
-.temp-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 24px; 
-    height: 24px;
-    border-radius: 50%;
-    background: #3b82f6; 
-    cursor: pointer;
-}
-
-.temp-slider::-moz-range-thumb {
-    width: 22px; 
-    height: 22px; 
-    border-radius: 50%;
-    background: #3b82f6; 
-    cursor: pointer; 
-    border: none;
-}
-
-.temp-value { 
-    font-weight: bold; 
-    min-width: 45px;
-    text-align: center;
-    font-size: 14px;
-}
-
-/* Панель оборудования */
+/* Блок оборудования - ИСПРАВЛЕН */
 .equipment-panel-container {
-    flex: 2;
+    flex: none !important;
     background-color: #f3f4f6;
     border-radius: 10px;
-    padding: 10px;
+    padding: 8px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    overflow-x: auto;
-    min-height: 45%;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    min-height: 130px !important;
+    max-height: 140px !important;
     white-space: nowrap;
+    height: auto !important;
     scrollbar-width: thin;
     scrollbar-color: #3b82f6 #e5e7eb;
     -webkit-overflow-scrolling: touch;
 }
 
 .equipment-panel-container::-webkit-scrollbar {
-    height: 8px;
+    height: 6px;
 }
 
 .equipment-panel-container::-webkit-scrollbar-track {
     background: #e5e7eb;
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
 .equipment-panel-container::-webkit-scrollbar-thumb {
     background: #3b82f6;
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
 .equipment-panel-container::-webkit-scrollbar-thumb:hover {
@@ -387,30 +338,35 @@ body {
 
 .equipment-panel { 
     display: inline-flex; 
-    gap: 20px;
+    gap: 12px;
     height: 100%; 
     align-items: center;
     padding: 5px;
     min-width: min-content;
     flex-shrink: 0;
+    flex-wrap: nowrap !important;
 }
 
+/* СЛОТЫ И ОБОРУДОВАНИЕ - ИСПРАВЛЕНЫ РАЗМЕРЫ */
 .slot {
-    width: 180px; height: 180px;
+    width: 140px !important; 
+    height: 140px !important;
     background-color: #e5e7eb;
     border: 2px dashed #9ca3af;
     display: flex;
-    justify-content: center; align-items: center;
+    justify-content: center; 
+    align-items: center;
     border-radius: 10px;
     transition: all 0.3s;
-    position: relative; flex-shrink: 0;
+    position: relative; 
+    flex-shrink: 0 !important;
 }
 .slot-number {
     position: absolute; top: 5px; left: 5px;
     background-color: #3b82f6; color: white;
-    width: 24px; height: 24px; border-radius: 50%;
+    width: 22px; height: 22px; border-radius: 50%;
     display: flex; justify-content: center; align-items: center;
-    font-weight: bold; font-size: 14px; z-index: 5;
+    font-weight: bold; font-size: 12px; z-index: 5;
 }
 .slot.highlight-correct { animation: highlight-green 0.5s; }
 .slot.highlight-incorrect { animation: highlight-red 0.5s; }
@@ -437,44 +393,140 @@ body {
     flex-direction: column; 
     align-items: center; 
     justify-content: center;
-    padding: 12px;
+    padding: 10px;
     border-radius: 10px; 
     cursor: pointer; 
     transition: all 0.2s;
     background-color: #e5e7eb; 
-    width: 170px;
-    height: 170px;
-    flex-shrink: 0;
+    width: 140px !important;
+    height: 140px !important;
+    flex-shrink: 0 !important;
 }
 .equipment { 
-    width: 140px;
-    height: 140px;
+    width: 120px !important;
+    height: 120px !important;
     pointer-events: none; 
     object-fit: contain; 
 }
-.equipment-placed { width: 100%; height: 100%; object-fit: contain; z-index: 2; }
+.equipment-placed { 
+    width: 120px !important; 
+    height: 120px !important; 
+    object-fit: contain; 
+    z-index: 2; 
+}
 
-/* Кнопки управления */
+/* НАСТРОЙКИ - ИСПРАВЛЕНЫ */
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    overflow-y: visible;
+    height: auto;
+    min-height: auto;
+    align-items: stretch;
+    width: 100%;
+    flex: none !important;
+    justify-content: center;
+}
+
+.setting-item {
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-height: 70px !important;
+    width: 100%;
+}
+
+.setting-item label {
+    display: block;
+    margin-bottom: 8px !important;
+    font-weight: bold;
+    color: #1e293b;
+    font-size: 14px !important;
+    text-align: center;
+    line-height: 1.1 !important;
+}
+
+.setting-controls { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    flex-direction: row;
+}
+
+.temp-slider {
+    flex: 1;
+    height: 14px !important;
+    -webkit-appearance: none;
+    background: #e2e8f0;
+    border-radius: 10px;
+    outline: none;
+}
+
+.temp-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; 
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6; 
+    cursor: pointer;
+}
+
+.temp-slider::-moz-range-thumb {
+    width: 18px; 
+    height: 18px; 
+    border-radius: 50%;
+    background: #3b82f6; 
+    cursor: pointer; 
+    border: none;
+}
+
+.temp-value { 
+    font-weight: bold; 
+    min-width: 40px !important;
+    text-align: center;
+    font-size: 14px !important;
+}
+
+/* КНОПКИ УПРАВЛЕНИЯ - ПОЛНОСТЬЮ ИСПРАВЛЕНЫ */
 .game-controls {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 10px;
     width: 100%;
-    padding: 10px 5px;
-    margin-top: 10px;
+    padding: 8px 5px !important;
+    margin-top: 5px !important;
     flex-wrap: wrap;
+    flex: none !important;
+    height: 50px !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+    order: 100 !important;
 }
 
 #hint-btn, #launch-btn {
-    padding: 12px 20px; 
+    padding: 10px 15px !important; 
     border: none; 
     border-radius: 50px; 
-    font-size: 16px;
+    font-size: 14px !important;
     cursor: pointer; 
     transition: all 0.3s; 
-    min-width: 140px; 
-    flex: 1; 
-    max-width: 200px;
+    min-width: 150px !important; 
+    flex: 1 !important; 
+    max-width: 180px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 #hint-btn { 
@@ -489,7 +541,9 @@ body {
     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); 
     color: white; 
     box-shadow: 0 4px 15px rgba(59,130,246,.4); 
-    min-width: 160px; 
+    min-width: 160px !important; 
+    font-size: 13.5px !important;
+    letter-spacing: -0.2px !important;
 }
 #launch-btn:disabled { background: #9ca3af; box-shadow: none; cursor: not-allowed; }
 #launch-btn:not(:disabled):hover { transform: translateY(-3px); box-shadow: 0 7px 20px rgba(59,130,246,.6); }
@@ -770,650 +824,82 @@ body {
     background: black;
 }
 
-/* === ОПТИМИЗИРОВАННЫЕ МЕДИА-ЗАПРОСЫ (ОБЪЕДИНЕНЫ) === */
-
-/* Десктоп */
-@media (min-width: 769px) {
-    .slot, .equipment-btn { width: 170px; height: 170px; }
-    .equipment { width: 140px; height: 140px; }
-}
-
-/* Планшеты и мобильные */
+/* === АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ === */
 @media (max-width: 768px) {
-    .screen { height: 95vh; max-height: none; padding: 8px 10px 0; }
+    .screen { height: 95vh; max-height: none; padding: 8px 10px 5px; }
     .logo-container { width: 250px; height: 260px; margin: 5px auto 10px; }
     .game-title { font-size: 2.5rem; }
     .game-name { font-size: 2rem; }
     .welcome-text { font-size: 1.1rem; margin-bottom: 20px; }
     
-    /* УНИФИЦИРОВАННЫЕ НАСТРОЙКИ ДЛЯ ВСЕХ МОБИЛЬНЫХ */
-    .game-container { 
-        height: calc(75vh - 100px) !important;
-        min-height: 300px !important;
-        gap: 6px !important;
-        margin-bottom: 5px !important;
+    /* Уменьшаем верхние блоки еще больше для мобильных */
+    .level-description {
+        min-height: 40px !important;
+        max-height: 50px !important;
+        font-size: 11px !important;
+        padding: 6px !important;
     }
     
-    /* ФИКС ВЕРХНЕЙ ЧАСТИ */
     .game-header {
-        margin-bottom: 3px !important;
-        padding: 0 5px !important;
-        min-height: 35px !important;
+        min-height: 25px !important;
     }
     
     .level-name {
-        font-size: 13px !important;
-        line-height: 1.1 !important;
-        margin-bottom: 1px !important;
+        font-size: 12px !important;
     }
     
     .timer {
         font-size: 16px !important;
     }
     
-    /* ФИКС ОПИСАНИЯ */
-    .level-description {
-        min-height: 60px !important;
-        max-height: 60px !important;
-        padding: 6px !important;
-        margin: 1px 0 3px !important;
-        font-size: 12px !important;
-        line-height: 1.2 !important;
-    }
-    
-    /* ФИКС СЛОТОВ */
-    .playground-container {
-        min-height: 140px !important;
-        max-height: 140px !important;
-        flex: 0 0 auto !important;
-    }
-    
-    .playground {
-        gap: 10px !important;
-        padding: 8px !important;
-    }
-    
-    .slot {
-        width: 120px !important;
-        height: 120px !important;
-        min-width: 120px !important;
-        min-height: 120px !important;
-        flex-shrink: 0 !important;
-    }
-    
-    .equipment-placed {
-        width: 110px !important;
-        height: 110px !important;
-    }
-    
-    /* ФИКС ОБОРУДОВАНИЯ */
-    .equipment-panel-container {
-        min-height: 140px !important;
-        max-height: 140px !important;
-        flex: 0 0 auto !important;
-        padding: 6px !important;
-    }
-    
-    .equipment-panel {
-        gap: 10px !important;
-        padding: 5px !important;
-    }
-    
-    .equipment-btn {
-        width: 120px !important;
-        height: 120px !important;
-        min-width: 120px !important;
-        min-height: 120px !important;
-        flex-shrink: 0 !important;
-    }
-    
-    .equipment {
-        width: 110px !important;
-        height: 110px !important;
-    }
-    
-    /* ГОРИЗОНТАЛЬНЫЕ НАСТРОЙКИ В 2 РЯДА */
-    .settings-container {
-        flex-direction: column !important;
-        gap: 8px !important;
-        padding: 8px !important;
-        min-height: 160px !important;
-        max-height: 160px !important;
-    }
-    
+    /* Настройки для мобильных */
     .setting-item {
-        width: 100% !important;
-        min-height: 70px !important;
-        margin: 0 !important;
+        min-height: 65px !important;
         padding: 8px !important;
     }
     
     .setting-item label {
         font-size: 12px !important;
-        margin-bottom: 8px !important;
-        text-align: center !important;
-        line-height: 1.1 !important;
-    }
-    
-    .setting-controls {
-        flex-direction: row !important;
-        gap: 8px !important;
-        align-items: center !important;
-        width: 100% !important;
+        margin-bottom: 6px !important;
     }
     
     .temp-slider {
-        flex: 1 !important;
-        width: 100% !important;
-        height: 16px !important;
+        height: 12px !important;
     }
     
     .temp-value {
-        font-size: 14px !important;
-        min-width: 40px !important;
+        font-size: 13px !important;
+        min-width: 35px !important;
     }
     
-    /* ФИКС КНОПОК */
-    .game-controls {
-        position: static !important;
-        background: transparent !important;
-        padding: 8px 5px !important;
-        margin-top: 0 !important;
-        gap: 8px !important;
-        border-top: none !important;
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-        height: 60px !important;
-        min-height: 60px !important;
-        max-height: 60px !important;
-    }
-    
+    /* Кнопки для мобильных */
     #hint-btn, #launch-btn {
+        min-width: 140px !important;
+        max-width: 160px !important;
+        font-size: 13px !important;
         height: 40px !important;
         min-height: 40px !important;
         max-height: 40px !important;
-        flex: 1 !important;
-        max-width: 150px !important;
-        font-size: 14px !important;
-        margin: 0 !important;
-    }
-    
-    .level-cards { flex-direction: column; align-items: center; max-height: 60%; }
-    .level-card { width: 100%; max-width: 300px; margin-bottom: 10px; }
-}
-
-/* Маленькие мобильные */
-@media (max-width: 480px) {
-    .game-controls {
-        gap: 8px;
-        padding: 8px 3px;
-        margin-top: 5px;
-    }
-    
-    #hint-btn, #launch-btn {
-        padding: 10px 15px !important;
-        font-size: 14px !important;
-        min-width: 120px !important;
-        max-width: 150px !important;
-    }
-}
-
-/* Очень маленькие экраны */
-@media (max-width: 360px) {
-    .game-container {
-        height: calc(70vh - 90px) !important;
-        min-height: 280px !important;
-    }
-    
-    .slot, .equipment-btn {
-        width: 110px !important;
-        height: 110px !important;
-        min-width: 110px !important;
-        min-height: 110px !important;
-    }
-    
-    .equipment, .equipment-placed {
-        width: 100px !important;
-        height: 100px !important;
-    }
-    
-    .settings-container {
-        min-height: 150px !important;
-        max-height: 150px !important;
-    }
-    
-    .setting-item {
-        min-height: 65px !important;
-    }
-    
-    #hint-btn, #launch-btn {
-        height: 38px !important;
-        min-height: 38px !important;
-        max-height: 38px !important;
-        font-size: 13px !important;
-        max-width: 140px !important;
-    }
-    
-    .game-controls {
-        gap: 5px;
-        padding: 5px 2px;
-    }
-}
-
-/* Высокие экраны */
-@media (max-width: 768px) and (min-height: 700px) {
-    .game-container {
-        height: calc(80vh - 110px) !important;
-        min-height: 350px !important;
-    }
-    
-    .playground-container {
-        min-height: 150px !important;
-        max-height: 150px !important;
-    }
-    
-    .equipment-panel-container {
-        min-height: 150px !important;
-        max-height: 150px !important;
-    }
-    
-    .slot, .equipment-btn {
-        width: 150px !important;
-        height: 150px !important;
-        min-width: 150px !important;
-        min-height: 150px !important;
-    }
-    
-    .equipment, .equipment-placed {
-        width: 140px !important;
-        height: 140px !important;
-    }
-}
-
-/* Android высокие экраны */
-@media (max-width: 480px) and (min-height: 700px) {
-    .game-container { 
-        height: calc(80vh - 110px) !important; 
-        min-height: 380px !important; 
-    }
-    
-    .equipment-btn {
-        width: 160px !important;
-        height: 160px !important;
-        min-width: 160px !important;
-        min-height: 160px !important;
-    }
-    
-    .equipment {
-        width: 150px !important;
-        height: 150px !important;
-    }
-}
-
-/* Очень высокие Android экраны */
-@media (max-width: 480px) and (min-height: 800px) {
-    .game-container { 
-        height: calc(85vh - 130px) !important; 
-        min-height: 450px !important; 
-    }
-    
-    .slot, .equipment-btn {
-        width: 170px !important;
-        height: 170px !important;
-        min-width: 170px !important;
-        min-height: 170px !important;
-    }
-    
-    .equipment, .equipment-placed {
-        width: 160px !important;
-        height: 160px !important;
-    }
-}
-
-/* ФИКС ДЛЯ YANDEX БРАУЗЕРА И SAFARI */
-@supports (-webkit-touch-callout: none) {
-    @media (max-width: 768px) {
-        .game-controls {
-            padding-bottom: 20px !important;
-        }
-    }
-}
-/* === ИСПРАВЛЕНИЕ 1: Уменьшаем отступ между таймером и описанием уровня === */
-.game-header {
-    margin-bottom: 2px !important; /* УМЕНЬШИЛИ с 3px */
-    padding: 0 5px !important;
-    min-height: 30px !important; /* УМЕНЬШИЛИ с 35px */
-}
-
-.level-name {
-    font-size: 13px !important;
-    line-height: 1.1 !important;
-    margin-bottom: 0 !important; /* УБРАЛИ отступ */
-}
-
-.timer {
-    font-size: 16px !important;
-    margin-top: -2px !important; /* ПОДНЯЛИ выше */
-}
-
-/* Уменьшаем отступ над описанием */
-.level-description {
-    min-height: 60px !important;
-    max-height: 60px !important;
-    padding: 6px !important;
-    margin: 0 0 3px !important; /* УБРАЛИ верхний отступ */
-    font-size: 12px !important;
-    line-height: 1.2 !important;
-}
-
-/* === ИСПРАВЛЕНИЕ 2: Уменьшаем ползунки на 2% === */
-@media (max-width: 768px) {
-    .temp-slider {
-        flex: 1 !important;
-        width: 100% !important;
-        height: 14px !important; /* УМЕНЬШИЛИ с 16px */
-    }
-    
-    .setting-item {
-        min-height: 65px !important; /* УМЕНЬШИЛИ для компактности */
-        padding: 6px !important; /* УМЕНЬШИЛИ отступы */
-    }
-    
-    .setting-item label {
-        font-size: 12px !important;
-        margin-bottom: 6px !important; /* УМЕНЬШИЛИ */
-        line-height: 1.1 !important;
-    }
-    
-    .setting-controls {
-        gap: 6px !important; /* УМЕНЬШИЛИ расстояние */
-    }
-}
-
-/* === ИСПРАВЛЕНИЕ 3: Фиксируем кнопки статично === */
-.game-container {
-    height: calc(75vh - 80px) !important; /* УМЕНЬШИЛИ высоту для кнопок */
-    min-height: 300px !important;
-    gap: 6px !important;
-    margin-bottom: 0 !important; /* УБРАЛИ отступ снизу */
-}
-
-/* Кнопки всегда после контента */
-.game-controls {
-    position: static !important;
-    background: transparent !important;
-    padding: 5px !important; /* УМЕНЬШИЛИ отступы */
-    margin-top: 0 !important;
-    gap: 8px !important;
-    border-top: none !important;
-    width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
-    height: 50px !important; /* ФИКСИРОВАННАЯ высота */
-    min-height: 50px !important;
-    max-height: 50px !important;
-    flex-shrink: 0 !important; /* Не сжимаются */
-    order: 999 !important; /* Всегда в конце */
-}
-
-/* Пустой блок для гибкости */
-.flex-spacer {
-    flex: 1 1 auto !important;
-    min-height: 10px !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-/* === ИСПРАВЛЕНИЕ 4: Увеличиваем кнопки для текста === */
-#hint-btn, #launch-btn {
-    height: 44px !important; /* УВЕЛИЧИЛИ высоту */
-    min-height: 44px !important;
-    max-height: 44px !important;
-    flex: 1 !important;
-    max-width: 180px !important; /* УВЕЛИЧИЛИ ширину */
-    font-size: 14px !important;
-    margin: 0 !important;
-    padding: 8px 5px !important; /* Увеличили внутренние отступы */
-    white-space: nowrap !important; /* Текст в одну строку */
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-}
-
-/* Специально для кнопки "Запустить завод" */
-#launch-btn {
-    min-width: 170px !important; /* Шире для длинного текста */
-    font-size: 13.5px !important; /* Чуть меньше шрифт если нужно */
-    letter-spacing: -0.2px !important; /* Уплотняем буквы */
-}
-
-/* Для очень маленьких экранов - адаптируем текст */
-@media (max-width: 360px) {
-    #hint-btn, #launch-btn {
-        max-width: 160px !important;
-        font-size: 13px !important;
-        padding: 6px 3px !important;
     }
     
     #launch-btn {
-        min-width: 150px !important;
         font-size: 12.5px !important;
+        min-width: 150px !important;
     }
 }
 
-/* Перестраиваем структуру экрана для статичных кнопок */
-#game-screen {
-    display: flex !important;
-    flex-direction: column !important;
-    padding: 8px 12px 5px !important; /* Уменьшили нижний отступ */
-}
-
-/* Гарантируем что кнопки всегда видны */
-@media (max-width: 768px) {
-    #game-screen {
-        max-height: 95vh !important;
-        overflow: hidden !important;
-    }
-    
-    .game-container {
-        flex: 1 1 auto !important;
-        overflow-y: auto !important;
-    }
-    
+@media (max-width: 480px) {
     .game-controls {
-        flex-shrink: 0 !important;
-        position: sticky !important;
-        bottom: 0 !important;
-        background: white !important;
-        z-index: 100 !important;
-        border-top: 1px solid #e5e7eb !important;
-        padding: 8px 5px !important;
+        gap: 8px;
+        padding: 6px 3px !important;
     }
 }
 
-/* Увеличиваем блоки контента за счет уменьшенных отступов */
-.playground-container, 
-.equipment-panel-container {
-    flex-shrink: 0 !important;
-}
-
-/* Для уровней с настройками (1 и 3) */
-.settings-container {
-    flex-shrink: 0 !important;
-}
-/* === ИСПРАВЛЕНИЕ ПУСТОГО ПРОСТРАНСТВА ПЕРЕД КНОПКАМИ === */
-
-/* Убираем растягивание у основных блоков */
-.playground-container,
-.equipment-panel-container,
-.settings-container {
-    flex: none !important; /* УБИРАЕМ растягивание */
-    flex-shrink: 0 !important;
-}
-
-/* Фиксируем высоту блоков */
-.playground-container {
-    height: 140px !important;
-    min-height: 140px !important;
-    max-height: 140px !important;
-}
-
-.equipment-panel-container {
-    height: 140px !important;
-    min-height: 140px !important;
-    max-height: 140px !important;
-}
-
-.settings-container {
-    height: auto !important;
-    min-height: auto !important;
-    max-height: none !important;
-}
-
-/* Основной игровой контейнер - убираем лишнюю высоту */
-.game-container {
-    height: auto !important; /* УБИРАЕМ фиксированную высоту */
-    min-height: auto !important;
-    max-height: none !important;
-    gap: 8px !important;
-    margin-bottom: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important; /* Прижимаем к верху */
-}
-
-/* Делаем кнопки сразу после контента */
-.game-controls {
-    order: 100 !important;
-    margin-top: auto !important; /* Прижимаем к низу контейнера */
-    padding: 8px 5px !important;
-}
-
-/* Убираем лишние отступы в самом игровом экране */
-#game-screen {
-    padding-bottom: 5px !important;
-    justify-content: flex-start !important;
-}
-
-/* Для мобильных - дополнительная оптимизация */
-@media (max-width: 768px) {
-    .game-container {
-        gap: 6px !important;
-    }
-    
-    .playground-container {
-        height: 130px !important;
-        min-height: 130px !important;
-        max-height: 130px !important;
-    }
-    
-    .equipment-panel-container {
-        height: 130px !important;
-        min-height: 130px !important;
-        max-height: 130px !important;
-    }
-    
-    .game-controls {
-        margin-top: 10px !important; /* Небольшой отступ сверху */
-    }
-}
-
-/* Для очень маленьких экранов */
 @media (max-width: 360px) {
     .playground-container,
     .equipment-panel-container {
-        height: 120px !important;
         min-height: 120px !important;
-        max-height: 120px !important;
-    }
-}
-/* === ИСПРАВЛЕНИЕ РАЗМЕРОВ - ЧТОБЫ ВСЕ ВЛАЗИЛО === */
-
-/* Блок слотов - увеличиваем высоту чтобы все влазило */
-.playground-container {
-    height: 160px !important;       /* УВЕЛИЧИЛИ высоту */
-    min-height: 160px !important;
-    max-height: 160px !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-}
-
-/* Блок оборудования - увеличиваем высоту */
-.equipment-panel-container {
-    height: 160px !important;       /* УВЕЛИЧИЛИ высоту */
-    min-height: 160px !important;
-    max-height: 160px !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-}
-
-/* Увеличиваем сами слоты и кнопки оборудования */
-.slot,
-.equipment-btn {
-    width: 150px !important;
-    height: 150px !important;       /* УВЕЛИЧИЛИ */
-    flex-shrink: 0 !important;
-}
-
-/* Увеличиваем изображения внутри */
-.equipment,
-.equipment-placed {
-    width: 140px !important;
-    height: 140px !important;       /* УВЕЛИЧИЛИ */
-    object-fit: contain !important;
-}
-
-/* Уменьшаем верхние блоки чтобы освободить место */
-.level-description {
-    min-height: 50px !important;    /* УМЕНЬШИЛИ */
-    max-height: 50px !important;
-    padding: 5px !important;
-    margin: 0 0 2px !important;
-    font-size: 11px !important;     /* УМЕНЬШИЛИ шрифт */
-    line-height: 1.2 !important;
-}
-
-.game-header {
-    min-height: 25px !important;    /* УМЕНЬШИЛИ */
-    margin-bottom: 1px !important;
-}
-
-/* Для мобильных - адаптируем размеры */
-@media (max-width: 768px) {
-    .playground-container,
-    .equipment-panel-container {
-        height: 150px !important;   /* УВЕЛИЧИЛИ для мобильных */
-        min-height: 150px !important;
-        max-height: 150px !important;
-    }
-    
-    .slot,
-    .equipment-btn {
-        width: 140px !important;
-        height: 140px !important;
-    }
-    
-    .equipment,
-    .equipment-placed {
-        width: 130px !important;
-        height: 130px !important;
-    }
-    
-    /* Еще уменьшаем верхние блоки для мобильных */
-    .level-description {
-        min-height: 45px !important;
-        max-height: 45px !important;
-        font-size: 10px !important;
-    }
-}
-
-/* Для очень маленьких экранов */
-@media (max-width: 360px) {
-    .playground-container,
-    .equipment-panel-container {
-        height: 140px !important;
-        min-height: 140px !important;
-        max-height: 140px !important;
+        max-height: 130px !important;
     }
     
     .slot,
@@ -1424,24 +910,24 @@ body {
     
     .equipment,
     .equipment-placed {
-        width: 120px !important;
-        height: 120px !important;
+        width: 110px !important;
+        height: 110px !important;
+    }
+    
+    #hint-btn, #launch-btn {
+        min-width: 130px !important;
+        max-width: 140px !important;
+        font-size: 12px !important;
+    }
+    
+    #launch-btn {
+        font-size: 11.5px !important;
+        min-width: 140px !important;
     }
 }
 
-/* Гарантируем что все блоки правильно распределят пространство */
-.game-container {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    gap: 5px !important;
-}
-
-/* Кнопки - фиксированная высота внизу */
-.game-controls {
-    height: 50px !important;
-    min-height: 50px !important;
-    max-height: 50px !important;
-    flex-shrink: 0 !important;
-    margin-top: 5px !important;
+@media (min-width: 769px) {
+    .slot, .equipment-btn { width: 160px; height: 160px; }
+    .equipment { width: 140px; height: 140px; }
+    .equipment-placed { width: 140px; height: 140px; }
 }
