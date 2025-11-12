@@ -1508,3 +1508,54 @@ body {
         padding: 12px !important;
     }
 }
+#win-screen,
+#lose-screen {
+    background: url('assets/images/win-background.png') center/cover no-repeat !important;
+}
+/* === ИСПРАВЛЕНИЕ ЦВЕТА ТЕКСТА ДЛЯ ФОНА С КАРТИНКОЙ === */
+#win-screen,
+#lose-screen {
+    color: #1f2937 !important; /* Темно-серый текст */
+}
+
+#win-screen h1,
+#lose-screen h1 {
+    color: #1f2937 !important;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+#win-screen p,
+#lose-screen p {
+    color: #374151 !important;
+    font-weight: 500;
+}
+
+.win-content {
+    background: rgba(255, 255, 255, 0.95) !important; /* Белый полупрозрачный фон */
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.email-form {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.level-results {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Убедимся что все тексты видны */
+.win-text {
+    color: #1f2937 !important;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.email-form p,
+.email-note {
+    color: #374151 !important;
+}
