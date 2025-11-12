@@ -1079,3 +1079,165 @@ body {
         }
     }
 }
+/* === ИСПРАВЛЕНИЕ 1: Уменьшаем отступ между таймером и описанием уровня === */
+.game-header {
+    margin-bottom: 2px !important; /* УМЕНЬШИЛИ с 3px */
+    padding: 0 5px !important;
+    min-height: 30px !important; /* УМЕНЬШИЛИ с 35px */
+}
+
+.level-name {
+    font-size: 13px !important;
+    line-height: 1.1 !important;
+    margin-bottom: 0 !important; /* УБРАЛИ отступ */
+}
+
+.timer {
+    font-size: 16px !important;
+    margin-top: -2px !important; /* ПОДНЯЛИ выше */
+}
+
+/* Уменьшаем отступ над описанием */
+.level-description {
+    min-height: 60px !important;
+    max-height: 60px !important;
+    padding: 6px !important;
+    margin: 0 0 3px !important; /* УБРАЛИ верхний отступ */
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+}
+
+/* === ИСПРАВЛЕНИЕ 2: Уменьшаем ползунки на 2% === */
+@media (max-width: 768px) {
+    .temp-slider {
+        flex: 1 !important;
+        width: 100% !important;
+        height: 14px !important; /* УМЕНЬШИЛИ с 16px */
+    }
+    
+    .setting-item {
+        min-height: 65px !important; /* УМЕНЬШИЛИ для компактности */
+        padding: 6px !important; /* УМЕНЬШИЛИ отступы */
+    }
+    
+    .setting-item label {
+        font-size: 12px !important;
+        margin-bottom: 6px !important; /* УМЕНЬШИЛИ */
+        line-height: 1.1 !important;
+    }
+    
+    .setting-controls {
+        gap: 6px !important; /* УМЕНЬШИЛИ расстояние */
+    }
+}
+
+/* === ИСПРАВЛЕНИЕ 3: Фиксируем кнопки статично === */
+.game-container {
+    height: calc(75vh - 80px) !important; /* УМЕНЬШИЛИ высоту для кнопок */
+    min-height: 300px !important;
+    gap: 6px !important;
+    margin-bottom: 0 !important; /* УБРАЛИ отступ снизу */
+}
+
+/* Кнопки всегда после контента */
+.game-controls {
+    position: static !important;
+    background: transparent !important;
+    padding: 5px !important; /* УМЕНЬШИЛИ отступы */
+    margin-top: 0 !important;
+    gap: 8px !important;
+    border-top: none !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    height: 50px !important; /* ФИКСИРОВАННАЯ высота */
+    min-height: 50px !important;
+    max-height: 50px !important;
+    flex-shrink: 0 !important; /* Не сжимаются */
+    order: 999 !important; /* Всегда в конце */
+}
+
+/* Пустой блок для гибкости */
+.flex-spacer {
+    flex: 1 1 auto !important;
+    min-height: 10px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* === ИСПРАВЛЕНИЕ 4: Увеличиваем кнопки для текста === */
+#hint-btn, #launch-btn {
+    height: 44px !important; /* УВЕЛИЧИЛИ высоту */
+    min-height: 44px !important;
+    max-height: 44px !important;
+    flex: 1 !important;
+    max-width: 180px !important; /* УВЕЛИЧИЛИ ширину */
+    font-size: 14px !important;
+    margin: 0 !important;
+    padding: 8px 5px !important; /* Увеличили внутренние отступы */
+    white-space: nowrap !important; /* Текст в одну строку */
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Специально для кнопки "Запустить завод" */
+#launch-btn {
+    min-width: 170px !important; /* Шире для длинного текста */
+    font-size: 13.5px !important; /* Чуть меньше шрифт если нужно */
+    letter-spacing: -0.2px !important; /* Уплотняем буквы */
+}
+
+/* Для очень маленьких экранов - адаптируем текст */
+@media (max-width: 360px) {
+    #hint-btn, #launch-btn {
+        max-width: 160px !important;
+        font-size: 13px !important;
+        padding: 6px 3px !important;
+    }
+    
+    #launch-btn {
+        min-width: 150px !important;
+        font-size: 12.5px !important;
+    }
+}
+
+/* Перестраиваем структуру экрана для статичных кнопок */
+#game-screen {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 8px 12px 5px !important; /* Уменьшили нижний отступ */
+}
+
+/* Гарантируем что кнопки всегда видны */
+@media (max-width: 768px) {
+    #game-screen {
+        max-height: 95vh !important;
+        overflow: hidden !important;
+    }
+    
+    .game-container {
+        flex: 1 1 auto !important;
+        overflow-y: auto !important;
+    }
+    
+    .game-controls {
+        flex-shrink: 0 !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        background: white !important;
+        z-index: 100 !important;
+        border-top: 1px solid #e5e7eb !important;
+        padding: 8px 5px !important;
+    }
+}
+
+/* Увеличиваем блоки контента за счет уменьшенных отступов */
+.playground-container, 
+.equipment-panel-container {
+    flex-shrink: 0 !important;
+}
+
+/* Для уровней с настройками (1 и 3) */
+.settings-container {
+    flex-shrink: 0 !important;
+}
