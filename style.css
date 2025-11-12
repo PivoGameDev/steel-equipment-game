@@ -1616,3 +1616,66 @@ body {
 .level-summary strong {
     color: #047857 !important; /* Темнее зеленый для жирного текста */
 }
+/* === ИСПРАВЛЕНИЯ ДЛЯ МОБИЛЬНЫХ === */
+
+/* Гарантируем прокрутку на мобильных */
+#win-screen,
+#lose-screen {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important; /* Плавная прокрутка на iOS */
+}
+
+/* Улучшаем поле email для мобильных */
+.email-input {
+    border: 2px solid #3b82f6 !important; /* Синяя рамка */
+    border-radius: 10px !important;
+    padding: 12px 15px !important;
+    font-size: 16px !important; /* Увеличиваем для мобильных */
+    background: white !important;
+    width: 90% !important;
+    max-width: 300px !important;
+    margin: 10px 0 !important;
+}
+
+/* Особые стили для очень маленьких экранов */
+@media (max-width: 480px) {
+    .win-content {
+        margin: 5px !important;
+        padding: 20px 15px !important;
+        min-height: auto !important;
+    }
+    
+    .level-results {
+        margin: 15px 0 !important;
+        padding: 15px !important;
+    }
+    
+    /* Убедимся что все элементы видны */
+    .level-result h3 {
+        font-size: 1.3rem !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .level-summary {
+        margin-top: 15px !important;
+        padding-top: 15px !important;
+    }
+}
+
+/* Для горизонтальной ориентации на мобильных */
+@media (max-width: 768px) and (orientation: landscape) {
+    #win-screen,
+    #lose-screen {
+        padding: 10px 5px !important;
+    }
+    
+    .win-content {
+        padding: 15px 10px !important;
+    }
+}
+
+/* Убедимся что контент не обрезается */
+.win-content {
+    min-height: min-content !important;
+    overflow: visible !important;
+}
