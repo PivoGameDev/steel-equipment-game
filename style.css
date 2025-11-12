@@ -1426,7 +1426,7 @@ body {
 }
 
 .parameter-comment {
-  font-size: 14px;
+  font-size: 15px;
   color: #4b5563;
   margin: 4px 0;
   font-style: italic;
@@ -1454,4 +1454,57 @@ body {
 
 .level-summary strong {
   color: #ffd700;
+}
+/* === ИСПРАВЛЕНИЕ ЭКРАНА ПОБЕДЫ ДЛЯ МОБИЛЬНЫХ === */
+#win-screen {
+    overflow-y: auto !important; /* Разрешаем прокрутку */
+    height: 95vh !important;
+    max-height: none !important;
+    padding: 15px 10px !important;
+    justify-content: flex-start !important; /* Выравнивание сверху */
+}
+
+.win-text {
+    font-size: 2rem !important; /* Еще уменьшаем */
+    margin-bottom: 10px !important;
+    line-height: 1.2 !important;
+}
+
+/* Контейнер для контента экрана победы */
+.win-content {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Уменьшаем отступы для мобильных */
+@media (max-width: 480px) {
+    #win-screen {
+        padding: 10px 8px !important;
+    }
+    
+    .win-text {
+        font-size: 1.8rem !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .level-results {
+        padding: 15px !important;
+        margin: 10px 0 !important;
+    }
+    
+    .parameter {
+        padding: 12px !important;
+        margin: 8px 0 !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .win-text {
+        font-size: 1.6rem !important;
+    }
+    
+    .level-results {
+        padding: 12px !important;
+    }
 }

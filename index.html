@@ -81,7 +81,8 @@
     </div>
 
     <!-- Экран победы -->
-    <div id="win-screen" class="screen hidden">
+<div id="win-screen" class="screen hidden">
+    <div class="win-content">
         <h1 class="win-text">Поздравляем!</h1>
         <p>Вы справились за <span id="time-spent">00:00</span>!</p>
         <p>Ваш счет: <span id="score-earned">100</span> баллов</p>
@@ -107,17 +108,20 @@
         </form>
         
         <div id="level-details"></div>
-        <div class="confetti"></div>
     </div>
+    <div class="confetti"></div>
+</div>
 
-    <!-- Экран проигрыша -->
-    <div id="lose-screen" class="screen hidden">
+<!-- Экран проигрыша -->
+<div id="lose-screen" class="screen hidden">
+    <div class="win-content">
         <h1>Время вышло!</h1>
         <p>Производство не было настроено вовремя.</p>
         <p>Ваш счет: <span id="score-earned-lose">0</span> баллов</p>
         <div id="level-details-lose"></div>
         <button class="restart-btn">Попробовать снова</button>
     </div>
+</div>
 
     <!-- Модальное окно для подсказок -->
     <div id="hint-modal" class="modal hidden">
