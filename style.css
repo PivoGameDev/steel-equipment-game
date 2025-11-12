@@ -1340,3 +1340,118 @@ body {
 #level-select-screen {
     background: url('assets/images/level-select-bg.png') center/cover no-repeat !important;
 }
+.parameter-results {
+  margin: 15px 0;
+}
+
+.parameter {
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border-left: 4px solid #e5e7eb;
+}
+
+.parameter.correct {
+  background: #f0f9ff;
+  border-left-color: #10b981;
+}
+
+.parameter.incorrect {
+  background: #fef2f2;
+  border-left-color: #ef4444;
+}
+
+.parameter-comment {
+  font-size: 14px;
+  color: #1f2937;
+  margin: 6px 0 4px 0;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.parameter-range {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.level-summary {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #e5e7eb;
+}
+/* === СТИЛИ ДЛЯ РАЗВЕРНУТЫХ РЕЗУЛЬТАТОВ === */
+.level-results {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  width: 100%;
+  max-width: 600px;
+}
+
+.level-result h3 {
+  color: white;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.parameter-results {
+  margin: 15px 0;
+}
+
+.parameter {
+  padding: 12px 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border-left: 4px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.parameter.correct {
+  border-left-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.parameter.incorrect {
+  border-left-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.parameter strong {
+  color: #1f2937;
+  font-size: 16px;
+}
+
+.parameter-comment {
+  font-size: 14px;
+  color: #4b5563;
+  margin: 4px 0;
+  font-style: italic;
+}
+
+.parameter-range {
+  font-size: 13px;
+  color: #4b5563;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.level-summary {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  text-align: center;
+}
+
+.level-summary p {
+  color: white;
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+.level-summary strong {
+  color: #ffd700;
+}

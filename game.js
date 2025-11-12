@@ -26,7 +26,7 @@ this.levels = {
     threshold3: 30,
     threshold2: 60,
     description: "Добро пожаловать в пивоварню! Начнем с основ - расчета сырья и температурного режима. От точности этих параметров зависит качество будущего пива.",
-    hint: "Расход солода: 170-200 кг на 1000 литров. Температура варки сусла должна достигать точки кипения..."
+    hint: "Расход солода: 170-200 кг на 1000 литров. Температура варки .. подберите опытным путем"
   },
   2: {
     name: "Основы заторного процесса",
@@ -713,7 +713,7 @@ if (this.state.currentLevel === 3) {
     this.openInfoModal(text, [{label: buttonText, variant:'primary', onClick:()=>this.nextLevel()}]);
   }
 
-  checkSettingsSolution() {
+      checkSettingsSolution() {
     const level = this.levels[this.state.currentLevel];
     let correctCount = 0;
 
@@ -724,7 +724,9 @@ if (this.state.currentLevel === 3) {
 
       let allowedDeviation = 3;
       
-      if (setting.id === "wort-brewing-time") {
+      if (setting.id === "malt-consumption") {
+        allowedDeviation = 15;
+      } else if (setting.id === "wort-brewing-time") {
         allowedDeviation = 1;
       } else if (setting.id === "maturation-time") {
         allowedDeviation = 2;
@@ -746,7 +748,17 @@ if (this.state.currentLevel === 3) {
     level.settings.forEach(s => {
       const val = parseInt(document.getElementById(s.id).value);
       const diff = Math.abs(val - s.correct);
-      if (diff > (s.id === "wort-brewing-time" ? 1 : s.id === "maturation-time" ? 2 : 3)) {
+      
+      let allowedDeviation = 3;
+      if (s.id === "malt-consumption") {
+        allowedDeviation = 15;
+      } else if (s.id === "wort-brewing-time") {
+        allowedDeviation = 1;
+      } else if (s.id === "maturation-time") {
+        allowedDeviation = 2;
+      }
+      
+      if (diff > allowedDeviation) {
         tips.push(s.label);
       }
     });
@@ -761,11 +773,11 @@ if (this.state.currentLevel === 3) {
     }
     
     let buttonLabel = 'К варочной линии →';
-if (this.state.currentLevel === 2) {
-  buttonLabel = 'К варочной линии →';
-} else if (this.state.currentLevel === 4) {
-  buttonLabel = 'К финальной сборке →';
-}
+    if (this.state.currentLevel === 2) {
+      buttonLabel = 'К варочной линии →';
+    } else if (this.state.currentLevel === 4) {
+      buttonLabel = 'К финальной сборке →';
+    }
 
     this.openInfoModal(text, [{label: buttonLabel, variant:'primary', onClick:()=>this.nextLevel()}]);
   }
@@ -802,27 +814,86 @@ if (this.state.currentLevel === 2) {
     this.elements.scoreDisplay.textContent = totalScore;
     this.elements.scoreDisplayLose.textContent = totalScore;
 
-    const detailsHTML = (where) => {
-      let html = '<div class="level-results">';
-      const level = 1;
-      const result = this.state.levelResults[level];
-      const review = this.levelReview[level] || {right:[], wrong:[]};
-      const errors = result.total - result.correct;
-      html += `
-        <div class="level-result">
-          <h3>Уровень ${level}: ${this.levels[level].name}</h3>
-          <p>Правильно: ${result.correct} из ${result.total}</p>
-          <p>Ошибки: ${errors} (${errors * 5} баллов)</p>
-          ${review.right?.length || review.wrong?.length ?
-            `<p><strong>Верные позиции:</strong> ${review.right.join(', ') || '—'}</p>
-             <p><strong>Пересмотрите позиции:</strong> ${review.wrong.join(', ') || '—'}</p>`
-            : ''}
-        </div>`;
-      html += '</div>';
-      where.innerHTML = html;
-    };
-    detailsHTML(this.elements.levelDetails);
-    detailsHTML(this.elements.levelDetailsLose);
+    // ПРОСТОЙ И РАБОЧИЙ ВАРИАНТ - сразу вставляем HTML
+const createDetailedResults = () => {
+  const level = 1;
+  const result = this.state.levelResults[level];
+  
+  // Получаем реальные значения игрока
+  const maltInput = document.getElementById('malt-consumption');
+  const tempInput = document.getElementById('wort-boiling-temp');
+  const maltValue = maltInput ? parseInt(maltInput.value) : 0;
+  const tempValue = tempInput ? parseInt(tempInput.value) : 0;
+  
+  console.log('Real values:', { maltValue, tempValue }); // Для отладки
+  
+  // Проверяем правильность с учетом допустимых отклонений
+  const maltCorrect = (maltValue >= 170 && maltValue <= 200);
+  const tempCorrect = (tempValue >= 88 && tempValue <= 92);
+  
+  const maltIcon = maltCorrect ? '✅' : '❌';
+  const tempIcon = tempCorrect ? '✅' : '❌';
+  
+  // Определяем пояснения
+  let maltComment = '';
+  let tempComment = '';
+  
+  if (maltCorrect) {
+    maltComment = 'оптимальный для светлого лагера';
+  } else if (maltValue < 170) {
+    maltComment = 'недостаточно солода, будет слабое тело пива';
+  } else {
+    maltComment = 'избыток солода, возможна высокая плотность';
+  }
+  
+  if (tempCorrect) {
+    tempComment = 'идеальная температура затора';
+  } else if (tempValue < 88) {
+    tempComment = 'недостаточная для правильного затора';
+  } else {
+    tempComment = 'превышение, возможна избыточная карамелизация';
+  }
+
+  return `
+    <div class="level-results">
+      <div class="level-result">
+        <h3>Уровень ${level}: ${this.levels[level].name}</h3>
+        <div class="parameter-results">
+          <div class="parameter ${maltCorrect ? 'correct' : 'incorrect'}">
+            ${maltIcon} <strong>Расход солода:</strong> ${maltValue} кг
+            <div class="parameter-comment">${maltComment}</div>
+            <div class="parameter-range">Оптимально: 170-200 кг</div>
+          </div>
+          <div class="parameter ${tempCorrect ? 'correct' : 'incorrect'}">
+            ${tempIcon} <strong>Температура варки:</strong> ${tempValue}°C
+            <div class="parameter-comment">${tempComment}</div>
+            <div class="parameter-range">Целевая: 88-92°C</div>
+          </div>
+        </div>
+        <div class="level-summary">
+          <p><strong>Итог:</strong> ${result.correct} из ${result.total} параметров настроено верно</p>
+          ${result.correct === 2 ? 
+            '<p>Отличный старт! Параметры обеспечат сбалансированное сусло.</p>' : 
+            '<p>Обратите внимание на рекомендации выше для улучшения качества.</p>'
+          }
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+// НЕМЕДЛЕННО устанавливаем HTML в оба места
+setTimeout(() => {
+  const detailedHTML = createDetailedResults();
+  
+  if (this.elements.levelDetails) {
+    this.elements.levelDetails.innerHTML = detailedHTML;
+  }
+  
+  if (this.elements.levelDetailsLose) {
+    this.elements.levelDetailsLose.innerHTML = detailedHTML;
+  }
+}, 100);
 
     if (isWin) {
       this.updateProgress(totalScore);
@@ -1392,3 +1463,48 @@ for (let lvl = 1; lvl <= 5; lvl++) {
     console.error('RESULTS FIX PATCH init error:', e);
   }
 })();
+// ТЕСТОВЫЙ КОД - удалите после проверки
+document.addEventListener('DOMContentLoaded', function() {
+  // Принудительно обновляем детали при загрузке экрана победы
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.target.id === 'win-screen' && !mutation.target.classList.contains('hidden')) {
+        setTimeout(function() {
+          const details = document.getElementById('level-details');
+          if (details) {
+            details.innerHTML = `
+              <div class="level-results">
+                <div class="level-result">
+                  <h3>Уровень 1: Подготовка сырья</h3>
+                  <div class="parameter-results">
+                    <div class="parameter incorrect">
+                      ❌ <strong>Расход солода:</strong> 250 кг
+                      <div class="parameter-comment">избыток солода, возможна высокая плотность</div>
+                      <div class="parameter-range">Оптимально: 170-200 кг</div>
+                    </div>
+                    <div class="parameter incorrect">
+                      ❌ <strong>Температура варки:</strong> 95°C
+                      <div class="parameter-comment">превышение, возможна избыточная карамелизация</div>
+                      <div class="parameter-range">Целевая: 88-92°C</div>
+                    </div>
+                  </div>
+                  <div class="level-summary">
+                    <p><strong>Итог:</strong> 0 из 2 параметров настроено верно</p>
+                    <p>Обратите внимание на рекомендации выше для улучшения качества.</p>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+        }, 100);
+      }
+    });
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class']
+  });
+});
