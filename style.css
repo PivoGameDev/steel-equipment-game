@@ -1530,7 +1530,7 @@ body {
 
 /* Белый фон для основного текста */
 .win-content {
-    background: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
     backdrop-filter: blur(20px);
     border-radius: 20px;
     padding: 25px;
@@ -1606,4 +1606,13 @@ body {
 
 .email-note {
     color: #718096 !important;
+}
+/* Зеленый цвет для итога */
+.level-summary p {
+    color: #059669 !important; /* Тот же зеленый что и у заголовка */
+    font-weight: 600;
+}
+
+.level-summary strong {
+    color: #047857 !important; /* Темнее зеленый для жирного текста */
 }
