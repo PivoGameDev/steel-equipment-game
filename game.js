@@ -125,10 +125,10 @@ class BreweryGame {
       return;
     }
     
-    setTimeout(() => {
-      overlay.style.display = 'none';
-      mainContent.classList.remove('hidden');
-    }, 3000);
+setTimeout(() => {
+  overlay.style.display = 'none';
+  mainContent.classList.remove('hidden');
+}, 500); // ← Уменьшите до 0.5 секунды
   }
 
   setSmartImage(imgEl, equipId) {
