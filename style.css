@@ -1180,3 +1180,81 @@ body {
         max-height: none !important;
     }
 }
+/* ФИКС ДЛЯ БЛОКА ОБОРУДОВАНИЯ - СТАТИЧНЫЙ РАЗМЕР */
+@media (max-width: 480px) {
+    .equipment-panel-container {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .equipment-panel {
+        width: auto !important;
+        min-width: min-content !important;
+        max-width: none !important;
+        justify-content: flex-start !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    .equipment-btn {
+        width: 150px !important;
+        height: 150px !important;
+        min-width: 150px !important;
+        min-height: 150px !important;
+        max-width: 150px !important;
+        max-height: 150px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .equipment {
+        width: 140px !important;
+        height: 140px !important;
+        min-width: 140px !important;
+        min-height: 140px !important;
+        max-width: 140px !important;
+        max-height: 140px !important;
+    }
+}
+
+/* Для высоких Android экранов */
+@media (max-width: 480px) and (min-height: 700px) {
+    .equipment-btn {
+        width: 160px !important;
+        height: 160px !important;
+        min-width: 160px !important;
+        min-height: 160px !important;
+        max-width: 160px !important;
+        max-height: 160px !important;
+    }
+    
+    .equipment {
+        width: 150px !important;
+        height: 150px !important;
+        min-width: 150px !important;
+        min-height: 150px !important;
+        max-width: 150px !important;
+        max-height: 150px !important;
+    }
+}
+
+/* Для очень высоких Android экранов */
+@media (max-width: 480px) and (min-height: 800px) {
+    .equipment-btn {
+        width: 170px !important;
+        height: 170px !important;
+        min-width: 170px !important;
+        min-height: 170px !important;
+        max-width: 170px !important;
+        max-height: 170px !important;
+    }
+    
+    .equipment {
+        width: 160px !important;
+        height: 160px !important;
+        min-width: 160px !important;
+        min-height: 160px !important;
+        max-width: 160px !important;
+        max-height: 160px !important;
+    }
+}
