@@ -1258,3 +1258,78 @@ body {
         max-height: 160px !important;
     }
 }
+/* ФИКС ДЛЯ МОБИЛЬНЫХ - ОПТИМАЛЬНОЕ ИСПОЛЬЗОВАНИЕ ПРОСТРАНСТВА */
+@media (max-width: 480px) {
+    /* Уменьшаем описание уровня чтобы освободить место */
+    .level-description {
+        min-height: 60px !important;    /* УМЕНЬШИЛИ */
+        max-height: 60px !important;    /* УМЕНЬШИЛИ */
+        padding: 6px 8px !important;    /* УМЕНЬШИЛИ */
+        margin: 2px 0 4px !important;   /* УМЕНЬШИЛИ */
+        font-size: 12px !important;     /* УМЕНЬШИЛИ */
+        line-height: 1.2 !important;    /* УМЕНЬШИЛИ */
+    }
+    
+    /* Увеличиваем основной игровой блок */
+    .game-container {
+        height: calc(90vh - 120px) !important;  /* УВЕЛИЧИЛИ */
+        min-height: 480px !important;           /* УВЕЛИЧИЛИ */
+        gap: 12px !important;
+    }
+    
+    /* Блок слотов */
+    .playground-container {
+        min-height: 190px !important;
+        max-height: 190px !important;
+    }
+    
+    .slot {
+        width: 150px !important;
+        height: 150px !important;
+    }
+    
+    .equipment-placed {
+        width: 140px !important;
+        height: 140px !important;
+    }
+    
+    /* Блок оборудования - используем освободившееся место */
+    .equipment-panel-container {
+        min-height: 210px !important;   /* УВЕЛИЧИЛИ */
+        max-height: 210px !important;   /* УВЕЛИЧИЛИ */
+    }
+    
+    .equipment-btn {
+        width: 160px !important;
+        height: 160px !important;
+    }
+    
+    .equipment {
+        width: 150px !important;
+        height: 150px !important;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    .level-description {
+        min-height: 50px !important;    /* ЕЩЕ МЕНЬШЕ */
+        max-height: 50px !important;
+        font-size: 11px !important;
+    }
+    
+    .game-container {
+        height: calc(85vh - 100px) !important;
+        min-height: 400px !important;
+    }
+    
+    .slot, .equipment-btn {
+        width: 140px !important;
+        height: 140px !important;
+    }
+    
+    .equipment, .equipment-placed {
+        width: 130px !important;
+        height: 130px !important;
+    }
+}
