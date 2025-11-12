@@ -1098,3 +1098,11 @@ body {
     min-height: 40px !important;
     height: auto !important;
 }
+/* === БОЛЬШОЙ БЛОК ОПИСАНИЯ === */
+.level-description {
+    min-height: 70px !important;
+    max-height: 90px !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    padding: 12px !important;
+}
