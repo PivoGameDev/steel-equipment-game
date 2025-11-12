@@ -1241,3 +1241,207 @@ body {
 .settings-container {
     flex-shrink: 0 !important;
 }
+/* === ИСПРАВЛЕНИЕ ПУСТОГО ПРОСТРАНСТВА ПЕРЕД КНОПКАМИ === */
+
+/* Убираем растягивание у основных блоков */
+.playground-container,
+.equipment-panel-container,
+.settings-container {
+    flex: none !important; /* УБИРАЕМ растягивание */
+    flex-shrink: 0 !important;
+}
+
+/* Фиксируем высоту блоков */
+.playground-container {
+    height: 140px !important;
+    min-height: 140px !important;
+    max-height: 140px !important;
+}
+
+.equipment-panel-container {
+    height: 140px !important;
+    min-height: 140px !important;
+    max-height: 140px !important;
+}
+
+.settings-container {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+}
+
+/* Основной игровой контейнер - убираем лишнюю высоту */
+.game-container {
+    height: auto !important; /* УБИРАЕМ фиксированную высоту */
+    min-height: auto !important;
+    max-height: none !important;
+    gap: 8px !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important; /* Прижимаем к верху */
+}
+
+/* Делаем кнопки сразу после контента */
+.game-controls {
+    order: 100 !important;
+    margin-top: auto !important; /* Прижимаем к низу контейнера */
+    padding: 8px 5px !important;
+}
+
+/* Убираем лишние отступы в самом игровом экране */
+#game-screen {
+    padding-bottom: 5px !important;
+    justify-content: flex-start !important;
+}
+
+/* Для мобильных - дополнительная оптимизация */
+@media (max-width: 768px) {
+    .game-container {
+        gap: 6px !important;
+    }
+    
+    .playground-container {
+        height: 130px !important;
+        min-height: 130px !important;
+        max-height: 130px !important;
+    }
+    
+    .equipment-panel-container {
+        height: 130px !important;
+        min-height: 130px !important;
+        max-height: 130px !important;
+    }
+    
+    .game-controls {
+        margin-top: 10px !important; /* Небольшой отступ сверху */
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    .playground-container,
+    .equipment-panel-container {
+        height: 120px !important;
+        min-height: 120px !important;
+        max-height: 120px !important;
+    }
+}
+/* === ИСПРАВЛЕНИЕ РАЗМЕРОВ - ЧТОБЫ ВСЕ ВЛАЗИЛО === */
+
+/* Блок слотов - увеличиваем высоту чтобы все влазило */
+.playground-container {
+    height: 160px !important;       /* УВЕЛИЧИЛИ высоту */
+    min-height: 160px !important;
+    max-height: 160px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+}
+
+/* Блок оборудования - увеличиваем высоту */
+.equipment-panel-container {
+    height: 160px !important;       /* УВЕЛИЧИЛИ высоту */
+    min-height: 160px !important;
+    max-height: 160px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+}
+
+/* Увеличиваем сами слоты и кнопки оборудования */
+.slot,
+.equipment-btn {
+    width: 150px !important;
+    height: 150px !important;       /* УВЕЛИЧИЛИ */
+    flex-shrink: 0 !important;
+}
+
+/* Увеличиваем изображения внутри */
+.equipment,
+.equipment-placed {
+    width: 140px !important;
+    height: 140px !important;       /* УВЕЛИЧИЛИ */
+    object-fit: contain !important;
+}
+
+/* Уменьшаем верхние блоки чтобы освободить место */
+.level-description {
+    min-height: 50px !important;    /* УМЕНЬШИЛИ */
+    max-height: 50px !important;
+    padding: 5px !important;
+    margin: 0 0 2px !important;
+    font-size: 11px !important;     /* УМЕНЬШИЛИ шрифт */
+    line-height: 1.2 !important;
+}
+
+.game-header {
+    min-height: 25px !important;    /* УМЕНЬШИЛИ */
+    margin-bottom: 1px !important;
+}
+
+/* Для мобильных - адаптируем размеры */
+@media (max-width: 768px) {
+    .playground-container,
+    .equipment-panel-container {
+        height: 150px !important;   /* УВЕЛИЧИЛИ для мобильных */
+        min-height: 150px !important;
+        max-height: 150px !important;
+    }
+    
+    .slot,
+    .equipment-btn {
+        width: 140px !important;
+        height: 140px !important;
+    }
+    
+    .equipment,
+    .equipment-placed {
+        width: 130px !important;
+        height: 130px !important;
+    }
+    
+    /* Еще уменьшаем верхние блоки для мобильных */
+    .level-description {
+        min-height: 45px !important;
+        max-height: 45px !important;
+        font-size: 10px !important;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    .playground-container,
+    .equipment-panel-container {
+        height: 140px !important;
+        min-height: 140px !important;
+        max-height: 140px !important;
+    }
+    
+    .slot,
+    .equipment-btn {
+        width: 130px !important;
+        height: 130px !important;
+    }
+    
+    .equipment,
+    .equipment-placed {
+        width: 120px !important;
+        height: 120px !important;
+    }
+}
+
+/* Гарантируем что все блоки правильно распределят пространство */
+.game-container {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    gap: 5px !important;
+}
+
+/* Кнопки - фиксированная высота внизу */
+.game-controls {
+    height: 50px !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+    flex-shrink: 0 !important;
+    margin-top: 5px !important;
+}
