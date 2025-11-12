@@ -1327,3 +1327,16 @@ body {
         max-height: 75px !important;
     }
 }
+/* === СКРЫТЬ ЛОГОТИП ТОЛЬКО В ОСНОВНОМ КОНТЕНТЕ СТАРТОВОГО ЭКРАНА === */
+#main-content .logo-container {
+    display: none !important;
+}
+
+/* Анимационная заставка остается нетронутой */
+.animation-overlay .logo-animated {
+    /* остается как есть */
+}
+/* === ФОН ДЛЯ ЭКРАНА ВЫБОРА УРОВНЯ === */
+#level-select-screen {
+    background: url('assets/images/level-select-bg.png') center/cover no-repeat !important;
+}

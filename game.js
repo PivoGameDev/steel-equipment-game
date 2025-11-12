@@ -1,20 +1,46 @@
 // Улучшенный основной класс игры с «умным» поиском картинок
 class BreweryGame {
   constructor() {
-    this.levels = {
-      1: {
-        name: "Основы заторного процесса",
-        time: 180,
-        settings: [
-          { id: "hot-water-temp", correct: 80, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
-          { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время от затирания до перекачки в ЦКТ" }
-        ],
-        threshold3: 30,
-        threshold2: 60,
-        description: "Добро пожаловать в варочный цех, ученик пивовара! Прежде чем начать варку, нужно правильно подготовить затор. От точности начальных настроек зависит всё - от прозрачности сусла до будущего вкуса пива. Настрой температуру воды и время затирания.",
-        hint: "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём..."
+this.levels = {
+  1: {
+    name: "Подготовка сырья",
+    time: 180,
+    settings: [
+      { 
+        id: "malt-consumption", 
+        correct: 185, 
+        min: 100, 
+        max: 500, 
+        step: 5, 
+        label: "Расход солода на 1000 л пива (кг)" 
       },
-      2: {
+      { 
+        id: "wort-boiling-temp", 
+        correct: 90, 
+        min: 70, 
+        max: 110, 
+        step: 1, 
+        label: "Температура варки сусла (°C)" 
+      }
+    ],
+    threshold3: 30,
+    threshold2: 60,
+    description: "Добро пожаловать в пивоварню! Начнем с основ - расчета сырья и температурного режима. От точности этих параметров зависит качество будущего пива.",
+    hint: "Расход солода: 170-200 кг на 1000 литров. Температура варки сусла должна достигать точки кипения..."
+  },
+  2: {
+    name: "Основы заторного процесса",
+    time: 180,
+    settings: [
+      { id: "hot-water-temp", correct: 80, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
+      { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время от затирания до перекачки в ЦКТ" }
+    ],
+    threshold3: 30,
+    threshold2: 60,
+    description: "Добро пожаловать в варочный цех, ученик пивовара! Прежде чем начать варку, нужно правильно подготовить затор. От точности начальных настроек зависит всё - от прозрачности сусла до будущего вкуса пива.",
+    hint: "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём..."
+  },
+      3: {
         name: "Сборка варочной линии",
         time: 300,
         slots: [
@@ -37,7 +63,7 @@ class BreweryGame {
         description: "Отличная работа с настройками! Теперь собери технологическую цепочку варочного цеха. Расставь оборудование в правильной последовательности - от подготовки сырья до получения сусла. Каждое звено цепи критически важно!",
         hint: "Правильный порядок: Дробилка солода → Парогенератор → .. → .. → Бак горячей воды → .. → .."
       },
-      3: {
+      4: {
         name: "Настройки брожения",
         time: 180,
         settings: [
@@ -49,7 +75,7 @@ class BreweryGame {
         description: "Сусло готово! Теперь самый деликатный этап - брожение. Дрожжи - живые организмы, требующие идеальных условий. Установи температуру созревания и продолжительность ферментации. Один неверный параметр - и весь результат под угрозой.",
         hint: "Температура в ЦКТ .. , время созревания: 21 день"
       },
-      4: {
+      5: {
         name: "Финальная сборка",
         time: 180,
         slots: [
@@ -78,13 +104,14 @@ class BreweryGame {
       hintUsed: false,
       draggedItem: null,
       selectedEquipment: null,
-      savedLayouts: {1:{settings:{}}, 2:{}, 3:{settings:{}}, 4:{}},
-      levelResults: {
-        1: { correct: 0, total: 2 },
-        2: { correct: 0, total: 7 },
-        3: { correct: 0, total: 2 },
-        4: { correct: 0, total: 3 }
-      }
+      savedLayouts: {1:{settings:{}}, 2:{settings:{}}, 3:{}, 4:{settings:{}}, 5:{}},
+levelResults: {
+  1: { correct: 0, total: 2 },
+  2: { correct: 0, total: 2 },
+  3: { correct: 0, total: 7 },
+  4: { correct: 0, total: 2 },
+  5: { correct: 0, total: 3 }
+}
     };
 
     this.progress = { unlockedLevels: [1], bestScores: {} };
@@ -99,7 +126,7 @@ class BreweryGame {
     this.CUSTOM_IMAGE_MAP = {};
     this.IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.gif'];
     this.selectionMode = true;
-    this.levelReview = {1:{}, 2:{}, 3:{}, 4:{}};
+    this.levelReview = {1:{}, 2:{}, 3:{}, 4:{}, 5:{}};
 
     this.initEventListeners();
     this.loadProgress();
@@ -209,16 +236,19 @@ initElements() {
     Object.values(this.sounds).forEach(a => { try { a.preload = 'auto'; } catch(_){} });
   }
 
-  buildPartialHint(levelNum) {
-    if (levelNum === 1) {
-      return "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём...";
-    }
-    if (levelNum === 2) {
-      const map = {
-        1: this.getEquipmentName(this.levels[2].slots[0].correct),
-        2: this.getEquipmentName(this.levels[2].slots[1].correct),
-        5: this.getEquipmentName(this.levels[2].slots[4].correct),
-      };
+buildPartialHint(levelNum) {
+  if (levelNum === 1) {
+    return "Расход солода: 170-200 кг на 1000 литров. Температура варки сусла должна достигать точки кипения...";
+  }
+  if (levelNum === 2) {
+    return "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём...";
+  }
+    if (levelNum === 3) {
+  const map = {
+    1: this.getEquipmentName(this.levels[3].slots[0].correct),
+    2: this.getEquipmentName(this.levels[3].slots[1].correct),
+    5: this.getEquipmentName(this.levels[3].slots[4].correct),
+  };
       let lines = [];
       for (let i = 1; i <= 7; i++) {
         if (map[i]) {
@@ -229,16 +259,14 @@ initElements() {
       }
       return lines.join('\n');
     }
-    if (levelNum === 3) {
+    if (levelNum === 4) {
       return "Подсказка: температура в ЦКТ .. , время созревания 21 день (±2 дня)";
     }
-    if (levelNum === 4) {
-      const name = this.getEquipmentName(this.levels[4].slots[1].correct);
-      return `1) •••\n2) ${name}\n3) •••`;
-    }
-    return "";
-  }
-
+    if (levelNum === 5) {
+  const name = this.getEquipmentName(this.levels[5].slots[1].correct);
+  return `1) •••\n2) ${name}\n3) •••`;
+}
+}
   openInfoModal(text, buttons = []) {
     this.elements.hintText.textContent = "";
     this.elements.hintText.innerText = text;
@@ -498,9 +526,9 @@ initElements() {
     this.state.equipmentPlaced = 0;
     this.state.hintUsed = false;
 
-    if (this.state.currentLevel <= 4) {
-      this.state.levelResults[this.state.currentLevel].correct = 0;
-    }
+    if (this.state.currentLevel <= 5) {
+  this.state.levelResults[this.state.currentLevel].correct = 0;
+}
 
     const level = this.levels[this.state.currentLevel];
     this.state.timeLeft = level.time;
@@ -516,19 +544,19 @@ initElements() {
     this.elements.hintBtn.disabled = false;
     this.elements.hintBtn.style.opacity = '';
 
-    if (this.state.currentLevel === 1) {
-      this.elements.launchBtn.textContent = 'Запустить заторный процесс';
-      this.elements.launchBtn.disabled = false;
-    } else if (this.state.currentLevel === 3) {
-      this.elements.launchBtn.textContent = 'Запустить брожение';
-      this.elements.launchBtn.disabled = false;
-    } else if (this.state.currentLevel === 4) {
-      this.elements.launchBtn.textContent = 'Завершить производство';
-      this.elements.launchBtn.disabled = true;
-    } else {
-      this.elements.launchBtn.textContent = 'Далее →';
-      this.elements.launchBtn.disabled = true;
-    }
+    if (this.state.currentLevel === 1 || this.state.currentLevel === 2) {
+  this.elements.launchBtn.textContent = 'Запустить заторный процесс';
+  this.elements.launchBtn.disabled = false;
+} else if (this.state.currentLevel === 4) {
+  this.elements.launchBtn.textContent = 'Запустить брожение';
+  this.elements.launchBtn.disabled = false;
+} else if (this.state.currentLevel === 5) {
+  this.elements.launchBtn.textContent = 'Завершить производство';
+  this.elements.launchBtn.disabled = true;
+} else {
+  this.elements.launchBtn.textContent = 'Далее →';
+  this.elements.launchBtn.disabled = true;
+}
 
     this.startHintPulse();
   }
@@ -634,7 +662,7 @@ initElements() {
   }
 
   checkSolution() {
-    if (this.state.currentLevel === 1 || this.state.currentLevel === 3) { 
+    if (this.state.currentLevel === 1 || this.state.currentLevel === 2 || this.state.currentLevel === 4) { 
       this.checkSettingsSolution(); 
       return; 
     }
@@ -676,11 +704,11 @@ initElements() {
     if (wrong.length) text += `Требуют внимания позиции: ${wrong.join(', ')}. Попробуйте переосмыслить поток процесса (от подготовки к варке и далее).`;
 
     let buttonText = 'Далее →';
-    if (this.state.currentLevel === 2) {
-      buttonText = 'К брожению →';
-    } else if (this.state.currentLevel === 4) {
-      buttonText = 'Посмотреть результаты';
-    }
+if (this.state.currentLevel === 3) {
+  buttonText = 'К брожению →';
+} else if (this.state.currentLevel === 5) {
+  buttonText = 'Посмотреть результаты';
+}
 
     this.openInfoModal(text, [{label: buttonText, variant:'primary', onClick:()=>this.nextLevel()}]);
   }
@@ -733,9 +761,11 @@ initElements() {
     }
     
     let buttonLabel = 'К варочной линии →';
-    if (this.state.currentLevel === 3) {
-      buttonLabel = 'К финальной сборке →';
-    }
+if (this.state.currentLevel === 2) {
+  buttonLabel = 'К варочной линии →';
+} else if (this.state.currentLevel === 4) {
+  buttonLabel = 'К финальной сборке →';
+}
 
     this.openInfoModal(text, [{label: buttonLabel, variant:'primary', onClick:()=>this.nextLevel()}]);
   }
@@ -807,13 +837,13 @@ initElements() {
   }
 
   calculateTotalScore() {
-    let score = 100;
-    for (let level = 1; level <= 4; level++) {
-      const errors = this.state.levelResults[level].total - this.state.levelResults[level].correct;
-      score -= errors * 5;
-    }
-    return Math.max(0, score);
+  let score = 100;
+  for (let level = 1; level <= 5; level++) {
+    const errors = this.state.levelResults[level].total - this.state.levelResults[level].correct;
+    score -= errors * 5;
   }
+  return Math.max(0, score);
+}
 
   updateProgress(score) {
     if (!this.progress.bestScores[this.state.currentLevel] || score > this.progress.bestScores[this.state.currentLevel]) {
@@ -897,7 +927,7 @@ initElements() {
         this.elements.settingsContainer.classList.remove('compact', 'super-compact');
     }
 
-    if (levelNum === 1 || levelNum === 3) {
+    if (levelNum === 1 || levelNum === 2 || levelNum === 4) {
         this.createSettingsInterface(level);
         this.elements.hintBtn.classList.remove('hidden');
         // Скрываем playground и equipment, показываем settings и картинку
@@ -924,6 +954,7 @@ initElements() {
 createSettingsInterface(level) {
     const settingsHTML = level.settings.map(setting => {
       let unit = '°C';
+      if (setting.id === "malt-consumption") unit = 'кг';  // ← ДОБАВИТЬ
       if (setting.id === "wort-brewing-time") unit = 'ч';
       if (setting.id === "maturation-time") unit = 'дн';
       
@@ -941,18 +972,12 @@ createSettingsInterface(level) {
 
     this.elements.settingsContainer.innerHTML = settingsHTML;
     
-    // На мобильных добавляем класс для горизонтального расположения
-    if (this.isMobile()) {
-        this.elements.settingsContainer.classList.add('mobile-horizontal');
-    } else {
-        this.elements.settingsContainer.classList.remove('mobile-horizontal');
-    }
-
     level.settings.forEach(setting => {
       const slider = document.getElementById(setting.id);
       const valueDisplay = slider.nextElementSibling;
       
       let unit = '°C';
+      if (setting.id === "malt-consumption") unit = 'кг';  // ← ДОБАВИТЬ
       if (setting.id === "wort-brewing-time") unit = 'ч';
       if (setting.id === "maturation-time") unit = 'дн';
       
@@ -1297,16 +1322,16 @@ document.addEventListener('DOMContentLoaded', () => { new BreweryGame(); });
     if (window.__RESULTS_FIX_PATCH__) return;
     window.__RESULTS_FIX_PATCH__ = true;
 
-    const WEIGHTS = {1:{ok:10}, 2:{ok:15}, 3:{ok:20}, 4:{ok:15}};
+    const WEIGHTS = {1:{ok:10}, 2:{ok:10}, 3:{ok:15}, 4:{ok:20}, 5:{ok:15}};
 
     if (!BreweryGame.prototype.calculateTotalScore || BreweryGame.prototype.calculateTotalScore.__patched__ !== true) {
       const calc = function(){
         try{
           let total = 0;
-          for (let lvl = 1; lvl <= 4; lvl++) {
-            const res = (this.state && this.state.levelResults && this.state.levelResults[lvl]) || {correct:0};
-            total += (res.correct || 0) * WEIGHTS[lvl].ok;
-          }
+for (let lvl = 1; lvl <= 5; lvl++) {
+  const res = (this.state && this.state.levelResults && this.state.levelResults[lvl]) || {correct:0};
+  total += (res.correct || 0) * WEIGHTS[lvl].ok;
+}
           return total;
         } catch(e){ return 0; }
       };
