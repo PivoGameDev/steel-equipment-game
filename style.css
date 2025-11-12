@@ -1248,3 +1248,31 @@ body {
         height: 120px !important;
     }
 }
+/* === КАРТИНКА ЕЩЕ НИЖЕ === */
+.brewery-background {
+    position: absolute;
+    bottom: 10px !important; /* Еще ближе к низу */
+    top: auto !important;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    height: 150px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 1 !important;
+}
+
+/* Мобильные */
+@media (max-width: 768px) {
+    .brewery-background {
+        height: 130px !important;
+        bottom: 5px !important; /* Минимальный отступ */
+    }
+}
+
+@media (max-width: 480px) {
+    .brewery-background {
+        height: 110px !important;
+        bottom: 2px !important; /* Почти впритык */
+    }
+}
