@@ -893,28 +893,43 @@ body {
     .game-title { font-size: 2.5rem; }
     .game-name { font-size: 2rem; }
     .welcome-text { font-size: 1.1rem; margin-bottom: 20px; }
+    
+    /* УНИВЕРСАЛЬНЫЕ НАСТРОЙКИ ДЛЯ ВСЕХ МОБИЛЬНЫХ */
     .game-container { 
-        height: calc(65vh - 50px) !important; 
-        max-height: 320px !important; 
+        height: calc(70vh - 50px) !important; 
+        max-height: 350px !important; 
         margin-bottom: 0 !important; 
         gap: 8px !important; 
     }
-    .playground-container { min-height: 35% !important; max-height: 140px !important; }
-    .equipment-panel-container { min-height: 40% !important; max-height: 150px !important; width: 100% !important; padding: 5px !important; }
+    
+    .playground-container { 
+        min-height: 45% !important; 
+        max-height: 160px !important; 
+    }
+    
+    .equipment-panel-container { 
+        min-height: 50% !important; 
+        max-height: 180px !important; 
+        width: 100% !important; 
+        padding: 5px !important; 
+    }
+    
     .settings-container { max-height: 100px !important; min-height: 80px !important; }
     .level-cards { flex-direction: column; align-items: center; max-height: 60%; }
     .level-card { width: 100%; max-width: 300px; margin-bottom: 10px; }
     .level-description { font-size: 14px; padding: 10px; min-height: 100px; max-height: 100px; }
-.slot, .equipment-btn {
-    width: 140px !important;
-    height: 140px !important;
-    flex-shrink: 0 !important;
-    margin: 0 5px !important;
-}
+    
+    /* РАЗМЕРЫ СЛОТОВ И ОБОРУДОВАНИЯ */
+    .slot, .equipment-btn {
+        width: 150px !important;
+        height: 150px !important;
+        flex-shrink: 0 !important;
+        margin: 0 5px !important;
+    }
 
     .equipment {
-        width: 130px !important;
-        height: 130px !important;
+        width: 140px !important;
+        height: 140px !important;
     }
     
     .equipment-panel {
@@ -1020,5 +1035,82 @@ body {
     .equipment-panel-container { 
         min-height: 45% !important; 
         max-height: 160px !important; 
+    }
+}
+/* ← ЗДЕСЬ ЗАКРЫВАЕМ БЛОК 360px и НАЧИНАЕМ НОВЫЙ */
+
+/* АДАПТИВНОСТЬ ДЛЯ ANDROID ЭКРАНОВ */
+@media (max-width: 480px) and (min-height: 700px) {
+    /* Android экраны с большей высотой */
+    .game-container { 
+        height: calc(70vh - 50px) !important; 
+        max-height: 380px !important; 
+    }
+    
+    .playground-container { 
+        min-height: 45% !important; 
+        max-height: 200px !important; 
+    }
+    
+    .equipment-panel-container { 
+        min-height: 50% !important; 
+        max-height: 200px !important; 
+    }
+    
+    .slot, .equipment-btn {
+        width: 160px !important;
+        height: 160px !important;
+    }
+    
+    .equipment {
+        width: 150px !important;
+        height: 150px !important;
+    }
+}
+
+/* Для очень высоких Android экранов */
+@media (max-width: 480px) and (min-height: 800px) {
+    .game-container { 
+        height: calc(75vh - 60px) !important; 
+        max-height: 450px !important; 
+    }
+    
+    .playground-container { 
+        min-height: 48% !important; 
+        max-height: 220px !important; 
+    }
+    
+    .equipment-panel-container { 
+        min-height: 52% !important; 
+        max-height: 230px !important; 
+    }
+    
+    .slot, .equipment-btn {
+        width: 170px !important;
+        height: 170px !important;
+    }
+    
+    .equipment {
+        width: 160px !important;
+        height: 160px !important;
+    }
+}
+
+/* Универсальные настройки для всех Android */
+@media (max-width: 480px) {
+    .playground, .equipment-panel {
+        gap: 15px !important;
+        padding: 10px !important;
+    }
+    
+    /* Гарантируем, что контейнеры будут прокручиваться */
+    .playground-container, .equipment-panel-container {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Увеличиваем минимальную ширину для контента */
+    .playground, .equipment-panel {
+        min-width: min-content !important;
     }
 }
