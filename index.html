@@ -55,17 +55,20 @@
             <p id="level-desc-text">Описание уровня загружается...</p>
         </div>
         
-        <div class="game-container">
-            <div class="playground-container">
-                <div class="playground"></div>
-                <div class="settings-container"></div>
-            </div>
-            
-            <div class="equipment-panel-container">
-                <img src="assets/images/construction.png" alt="Оборудование недоступно" class="placeholder-image">
-                <div class="equipment-panel"></div>
-            </div>
-        </div>
+<div class="game-container">
+    <!-- Для уровней 1 и 3: ТОЛЬКО настройки -->
+    <div class="playground-container hidden">
+        <div class="playground"></div>
+    </div>
+    
+    <div class="settings-container"></div>
+    
+    <!-- Для уровней 2 и 4: ТОЛЬКО оборудование -->
+    <div class="equipment-panel-container hidden">
+        <img src="assets/images/construction.png" alt="Оборудование недоступно" class="placeholder-image">
+        <div class="equipment-panel"></div>
+    </div>
+</div>
         
         <!-- ПРОСТЫЕ КНОПКИ БЕЗ ФИКСИРОВАННОГО КОНТЕЙНЕРА -->
         <div class="game-controls">

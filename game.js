@@ -171,32 +171,34 @@ class BreweryGame {
 
   initElements() {
     this.elements = {
-      startScreen: document.getElementById('start-screen'),
-      levelSelectScreen: document.getElementById('level-select-screen'),
-      gameScreen: document.getElementById('game-screen'),
-      winScreen: document.getElementById('win-screen'),
-      loseScreen: document.getElementById('lose-screen'),
-      startBtn: document.getElementById('start-btn'),
-      backToMenuBtn: document.getElementById('back-to-menu'),
-      levelCardsContainer: document.querySelector('.level-cards'),
-      launchBtn: document.getElementById('launch-btn'),
-      hintBtn: document.getElementById('hint-btn'),
-      timerDisplay: document.querySelector('.timer'),
-      feedbackMessage: document.querySelector('.feedback-message'),
-      timeSpentDisplay: document.getElementById('time-spent'),
-      scoreDisplay: document.getElementById('score-earned'),
-      scoreDisplayLose: document.getElementById('score-earned-lose'),
-      levelNameDisplay: document.querySelector('.level-name'),
-      levelDescText: document.getElementById('level-desc-text'),
-      playground: document.querySelector('.playground'),
-      equipmentPanel: document.querySelector('.equipment-panel'),
-      equipmentPanelContainer: document.querySelector('.equipment-panel-container'),
-      hintModal: document.getElementById('hint-modal'),
-      hintText: document.getElementById('hint-text'),
-      closeModal: document.querySelector('.close-modal'),
-      settingsContainer: document.querySelector('.settings-container'),
-      levelDetails: document.getElementById('level-details'),
-      levelDetailsLose: document.getElementById('level-details-lose')
+        startScreen: document.getElementById('start-screen'),
+        levelSelectScreen: document.getElementById('level-select-screen'),
+        gameScreen: document.getElementById('game-screen'),
+        winScreen: document.getElementById('win-screen'),
+        loseScreen: document.getElementById('lose-screen'),
+        startBtn: document.getElementById('start-btn'),
+        backToMenuBtn: document.getElementById('back-to-menu'),
+        levelCardsContainer: document.querySelector('.level-cards'),
+        launchBtn: document.getElementById('launch-btn'),
+        hintBtn: document.getElementById('hint-btn'),
+        timerDisplay: document.querySelector('.timer'),
+        feedbackMessage: document.querySelector('.feedback-message'),
+        timeSpentDisplay: document.getElementById('time-spent'),
+        scoreDisplay: document.getElementById('score-earned'),
+        scoreDisplayLose: document.getElementById('score-earned-lose'),
+        levelNameDisplay: document.querySelector('.level-name'),
+        levelDescText: document.getElementById('level-desc-text'),
+        playground: document.querySelector('.playground'),
+        equipmentPanel: document.querySelector('.equipment-panel'),
+        equipmentPanelContainer: document.querySelector('.equipment-panel-container'),
+        hintModal: document.getElementById('hint-modal'),
+        hintText: document.getElementById('hint-text'),
+        closeModal: document.querySelector('.close-modal'),
+        settingsContainer: document.querySelector('.settings-container'),
+        levelDetails: document.getElementById('level-details'),
+        levelDetailsLose: document.getElementById('level-details-lose'),
+        // ДОБАВЬ ЭТУ СТРОКУ ↓
+        playgroundContainer: document.querySelector('.playground-container')
     };
 
     this.sounds = {
@@ -898,12 +900,18 @@ class BreweryGame {
     if (levelNum === 1 || levelNum === 3) {
         this.createSettingsInterface(level);
         this.elements.hintBtn.classList.remove('hidden');
-        this.elements.equipmentPanelContainer.classList.add('placeholder-shown');
+        // Скрываем playground и equipment, показываем settings
+        this.elements.playgroundContainer.classList.add('hidden');
+        this.elements.equipmentPanelContainer.classList.add('hidden');
+        this.elements.settingsContainer.classList.remove('hidden');
     } else {
         this.createEquipmentSlots(level);
         this.createEquipmentPanel(level);
         this.elements.hintBtn.classList.remove('hidden');
-        this.elements.equipmentPanelContainer.classList.remove('placeholder-shown');
+        // Скрываем settings, показываем playground и equipment
+        this.elements.settingsContainer.classList.add('hidden');
+        this.elements.playgroundContainer.classList.remove('hidden');
+        this.elements.equipmentPanelContainer.classList.remove('hidden');
     }
 
     this.elements.levelSelectScreen.classList.add('hidden');
