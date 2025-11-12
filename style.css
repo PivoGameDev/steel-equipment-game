@@ -1384,23 +1384,126 @@ body {
     }
 }
 
+/* ФИКС КНОПОК ДЛЯ ВСЕХ БРАУЗЕРОВ */
+@media (max-width: 480px) {
+    /* Основной контейнер с отступом для кнопок */
+    .game-container {
+        height: calc(85vh - 100px) !important;
+        min-height: 400px !important;
+        margin-bottom: 70px !important; /* Отступ для кнопок */
+    }
+    
+    /* Контейнер кнопок - статичный в потоке */
+    .game-controls {
+        position: static !important;
+        width: 100% !important;
+        max-width: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 10px 5px !important;
+        margin-top: 0 !important;
+        gap: 10px !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+    
+    /* Сами кнопки */
+    #hint-btn, #launch-btn {
+        height: 50px !important;
+        min-height: 50px !important;
+        flex: 1 !important;
+        max-width: 200px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        margin: 0 !important;
+    }
+}
+
 /* Для очень маленьких экранов */
 @media (max-width: 360px) {
-    .game-controls {
-        width: 92% !important;
-        padding: 8px !important;
-        bottom: 8px !important;
+    .game-container {
+        margin-bottom: 65px !important;
     }
     
     #hint-btn, #launch-btn {
         height: 45px !important;
-        min-height: 45px !important;
-        max-height: 45px !important;
         font-size: 14px !important;
+        max-width: 180px !important;
+    }
+}
+
+/* ФИКС НАСТРОЕК ДЛЯ УРОВНЕЙ 1 И 3 - 2 РЯДА */
+@media (max-width: 480px) {
+    .settings-container {
+        flex-direction: column !important;
+        flex-wrap: nowrap !important;
+        gap: 15px !important;
+        padding: 15px !important;
+        max-height: none !important;
+        min-height: auto !important;
     }
     
-    .game-container {
-        height: calc(85vh - 90px) !important;
-        margin-bottom: 55px !important;
+    .setting-item {
+        flex: 0 0 auto !important;
+        width: 100% !important;
+        min-width: 100% !important;
+        min-height: 90px !important;
+        margin: 0 !important;
+    }
+    
+    .setting-item label {
+        font-size: 14px !important;
+        margin-bottom: 12px !important;
+        text-align: center !important;
+        white-space: normal !important;
+        line-height: 1.3 !important;
+        display: block !important;
+    }
+    
+    .setting-controls {
+        flex-direction: row !important;
+        gap: 15px !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+    
+    .temp-slider {
+        flex: 1 !important;
+        width: 100% !important;
+        min-width: auto !important;
+        height: 20px !important;
+    }
+    
+    .temp-value {
+        font-size: 16px !important;
+        font-weight: bold !important;
+        min-width: 50px !important;
+        text-align: center !important;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    .settings-container {
+        gap: 12px !important;
+        padding: 12px !important;
+    }
+    
+    .setting-item {
+        min-height: 85px !important;
+    }
+    
+    .setting-item label {
+        font-size: 13px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .temp-slider {
+        height: 18px !important;
+    }
+    
+    .temp-value {
+        font-size: 14px !important;
+        min-width: 45px !important;
     }
 }
