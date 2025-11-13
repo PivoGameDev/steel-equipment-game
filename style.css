@@ -129,7 +129,20 @@ body {
     justify-content: flex-start;
     padding-top: 15px;
 }
-.level-select-title { font-size: 24px; margin-bottom: 20px; padding: 0 10px; }
+.level-select-title { 
+    font-size: 24px; 
+    margin-bottom: 20px; 
+    padding: 15px 25px;
+    color: #1f2937;
+    background-color: rgba(255, 255, 255, 0.9); /* Более плотный белый */
+    border-radius: 12px;
+    width: 80%;
+    max-width: 400px;
+    backdrop-filter: blur(10px); /* Размытие для красивого эффекта */
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+}
 
 .level-cards {
     display: flex;
@@ -1678,4 +1691,22 @@ body {
 .win-content {
     min-height: min-content !important;
     overflow: visible !important;
+}
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .level-select-title { 
+        font-size: 20px; 
+        padding: 12px 20px;
+        width: 85%;
+        margin-bottom: 15px;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .level-select-title { 
+        font-size: 18px; 
+        padding: 10px 15px;
+        width: 90%;
+    }
 }
