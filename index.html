@@ -123,8 +123,67 @@
     </div>
 </div>
 
-    <!-- Модальное окно для подсказок -->
-    <div id="hint-modal" class="modal hidden">
+<!-- НОВЫЙ ЭКРАН: Начало бизнеса -->
+<div id="business-start-screen" class="screen hidden">
+    <div class="win-content">
+        <h1>Поздравляем с успешным обучением!</h1>
+        <p class="business-description">
+            Отличная работа! Теперь ты знаешь основы ремесла. Но теория — это одно, а своё дело — совсем другое. 
+            Твой стартовый капитал — <strong id="current-balance">100</strong> Brewery Points.
+        </p>
+        <p class="business-description">
+            Все великие пивоварни начинали с малого. Вот твои варианты на старте:
+        </p>
+        
+        <div class="business-options">
+            <!-- Карточка гаража (единственная доступная) -->
+            <div class="business-card available" data-type="garage">
+                <div class="business-image garage-image"></div>
+                <h3>Гаражная пивоварня</h3>
+                <p class="business-card-desc">Старый гараж на окраине. Базовые условия, зато полная свобода и никаких проверок. Идеально, чтобы сделать первые шаги и заявить о себе.</p>
+                <div class="business-price">Стоимость: 50 BP</div>
+                <div class="business-balance">Ваш баланс: <span id="balance-display">100</span> BP</div>
+                <button id="rent-garage-btn" class="business-action-btn">Арендовать гараж</button>
+            </div>
+            
+            <!-- Заблокированные карточки (просто для показа) -->
+            <div class="business-card locked">
+                <div class="business-image pub-image"></div>
+                <h3>Пивоварня-паб 🔒</h3>
+                <p class="business-card-desc">Станет доступно после успешного запуска гаражной пивоварни.</p>
+                <div class="business-price">Стоимость: 200 BP</div>
+            </div>
+            
+            <div class="business-card locked">
+                <div class="business-image factory-image"></div>
+                <h3>Производственный цех 🔒</h3>
+                <p class="business-card-desc">Станет доступно после развития пивоварни-паба.</p>
+                <div class="business-price">Стоимость: 500 BP</div>
+            </div>
+            
+            <div class="business-card locked">
+                <div class="business-image complex-image"></div>
+                <h3>Пивоваренный комплекс 🔒</h3>
+                <p class="business-card-desc">Финальная цель — стать лидером рынка!</p>
+                <div class="business-price">Стоимость: 1000 BP</div>
+            </div>
+        </div>
+        
+        <div class="development-roadmap">
+            <h3>Ваш план развития:</h3>
+            <div class="roadmap-steps">
+                <div class="roadmap-step completed">✅ Ученик пивовара</div>
+                <div class="roadmap-step current">🔜 Владелец гаражной пивоварни</div>
+                <div class="roadmap-step locked">🔒 Хозяин пивоварни-паба</div>
+                <div class="roadmap-step locked">🔒 Владелец производственного цеха</div>
+                <div class="roadmap-step locked">🔒 Глава пивоваренного комплекса</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для подсказок -->
+<div id="hint-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <p id="hint-text"></p>

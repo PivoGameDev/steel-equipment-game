@@ -1,45 +1,46 @@
+// @ts-nocheck
 // Улучшенный основной класс игры с «умным» поиском картинок
 class BreweryGame {
   constructor() {
-this.levels = {
-  1: {
-    name: "Подготовка сырья",
-    time: 180,
-    settings: [
-      { 
-        id: "malt-consumption", 
-        correct: 185, 
-        min: 100, 
-        max: 500, 
-        step: 5, 
-        label: "Расход солода на 1000 л пива (кг)" 
+    this.levels = {
+      1: {
+        name: "Подготовка сырья",
+        time: 180,
+        settings: [
+          { 
+            id: "malt-consumption", 
+            correct: 185, 
+            min: 100, 
+            max: 500, 
+            step: 5, 
+            label: "Расход солода на 1000 л пива (кг)" 
+          },
+          { 
+            id: "wort-boiling-temp", 
+            correct: 90, 
+            min: 70, 
+            max: 110, 
+            step: 1, 
+            label: "Температура варки сусла (°C)" 
+          }
+        ],
+        threshold3: 30,
+        threshold2: 60,
+        description: "Добро пожаловать в пивоварню! Начнем с основ - расчета сырья и температурного режима. От точности этих параметров зависит качество будущего пива.",
+        hint: "Расход солода: 170-200 кг на 1000 литров. Температура варки .. подберите опытным путем"
       },
-      { 
-        id: "wort-boiling-temp", 
-        correct: 90, 
-        min: 70, 
-        max: 110, 
-        step: 1, 
-        label: "Температура варки сусла (°C)" 
-      }
-    ],
-    threshold3: 30,
-    threshold2: 60,
-    description: "Добро пожаловать в пивоварню! Начнем с основ - расчета сырья и температурного режима. От точности этих параметров зависит качество будущего пива.",
-    hint: "Расход солода: 170-200 кг на 1000 литров. Температура варки .. подберите опытным путем"
-  },
-  2: {
-    name: "Основы заторного процесса",
-    time: 180,
-    settings: [
-      { id: "hot-water-temp", correct: 80, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
-      { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время от затирания до перекачки в ЦКТ" }
-    ],
-    threshold3: 30,
-    threshold2: 60,
-    description: "Добро пожаловать в варочный цех, ученик пивовара! Прежде чем начать варку, нужно правильно подготовить затор. От точности начальных настроек зависит всё - от прозрачности сусла до будущего вкуса пива.",
-    hint: "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём..."
-  },
+      2: {
+        name: "Основы заторного процесса",
+        time: 180,
+        settings: [
+          { id: "hot-water-temp", correct: 80, min: 0, max: 100, step: 1, label: "Температура в баке горячей воды (°C)" },
+          { id: "wort-brewing-time", correct: 7, min: 1, max: 24, step: 1, label: "Время от затирания до перекачки в ЦКТ" }
+        ],
+        threshold3: 30,
+        threshold2: 60,
+        description: "Добро пожаловать в варочный цех, ученик пивовара! Прежде чем начать варку, нужно правильно подготовить затор. От точности начальных настроек зависит всё - от прозрачности сусла до будущего вкуса пива.",
+        hint: "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём..."
+      },
       3: {
         name: "Сборка варочной линии",
         time: 300,
@@ -105,13 +106,17 @@ this.levels = {
       draggedItem: null,
       selectedEquipment: null,
       savedLayouts: {1:{settings:{}}, 2:{settings:{}}, 3:{}, 4:{settings:{}}, 5:{}},
-levelResults: {
-  1: { correct: 0, total: 2 },
-  2: { correct: 0, total: 2 },
-  3: { correct: 0, total: 7 },
-  4: { correct: 0, total: 2 },
-  5: { correct: 0, total: 3 }
-}
+      levelResults: {
+        1: { correct: 0, total: 2 },
+        2: { correct: 0, total: 2 },
+        3: { correct: 0, total: 7 },
+        4: { correct: 0, total: 2 },
+        5: { correct: 0, total: 3 }
+      },
+      business: {
+        balance: 100,
+        purchasedGarage: false
+      }
     };
 
     this.progress = { unlockedLevels: [1], bestScores: {} };
@@ -120,6 +125,7 @@ levelResults: {
 
     this.initElements();
     this.initEmailForm();
+    this.initBusinessScreen();
 
     this.IMAGE_BASE = 'assets/images/';
     this.PLACEHOLDER = this.IMAGE_BASE + 'placeholder.png';
@@ -152,10 +158,10 @@ levelResults: {
       return;
     }
     
-setTimeout(() => {
-  overlay.style.display = 'none';
-  mainContent.classList.remove('hidden');
-}, 500); // ← Уменьшите до 0.5 секунды
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      mainContent.classList.remove('hidden');
+    }, 500);
   }
 
   setSmartImage(imgEl, equipId) {
@@ -189,43 +195,51 @@ setTimeout(() => {
     };
 
     imgEl.onerror = () => {
+      console.log(`Image not found for: ${equipId}, tried: ${imgEl.src}`);
+      
       if (imgEl.src.endsWith(this.PLACEHOLDER)) return;
-      tryNext();
+      
+      if (idx < candidates.length) {
+        tryNext();
+      } else {
+        imgEl.src = this.PLACEHOLDER;
+      }
     };
 
     tryNext();
   }
 
-initElements() {
+  initElements() {
     this.elements = {
-        startScreen: document.getElementById('start-screen'),
-        levelSelectScreen: document.getElementById('level-select-screen'),
-        gameScreen: document.getElementById('game-screen'),
-        winScreen: document.getElementById('win-screen'),
-        loseScreen: document.getElementById('lose-screen'),
-        startBtn: document.getElementById('start-btn'),
-        backToMenuBtn: document.getElementById('back-to-menu'),
-        levelCardsContainer: document.querySelector('.level-cards'),
-        launchBtn: document.getElementById('launch-btn'),
-        hintBtn: document.getElementById('hint-btn'),
-        timerDisplay: document.querySelector('.timer'),
-        feedbackMessage: document.querySelector('.feedback-message'),
-        timeSpentDisplay: document.getElementById('time-spent'),
-        scoreDisplay: document.getElementById('score-earned'),
-        scoreDisplayLose: document.getElementById('score-earned-lose'),
-        levelNameDisplay: document.querySelector('.level-name'),
-        levelDescText: document.getElementById('level-desc-text'),
-        playground: document.querySelector('.playground'),
-        equipmentPanel: document.querySelector('.equipment-panel'),
-        equipmentPanelContainer: document.querySelector('.equipment-panel-container'),
-        hintModal: document.getElementById('hint-modal'),
-        hintText: document.getElementById('hint-text'),
-        closeModal: document.querySelector('.close-modal'),
-        settingsContainer: document.querySelector('.settings-container'),
-        levelDetails: document.getElementById('level-details'),
-        levelDetailsLose: document.getElementById('level-details-lose'),
-        breweryBackground: document.querySelector('.brewery-background'), // ← ЗАПЯТАЯ вместо точки с запятой
-        playgroundContainer: document.querySelector('.playground-container') // ← БЕЗ точки с запятой в конце
+      startScreen: document.getElementById('start-screen'),
+      levelSelectScreen: document.getElementById('level-select-screen'),
+      gameScreen: document.getElementById('game-screen'),
+      winScreen: document.getElementById('win-screen'),
+      loseScreen: document.getElementById('lose-screen'),
+      businessStartScreen: document.getElementById('business-start-screen'),
+      startBtn: document.getElementById('start-btn'),
+      backToMenuBtn: document.getElementById('back-to-menu'),
+      levelCardsContainer: document.querySelector('.level-cards'),
+      launchBtn: document.getElementById('launch-btn'),
+      hintBtn: document.getElementById('hint-btn'),
+      timerDisplay: document.querySelector('.timer'),
+      feedbackMessage: document.querySelector('.feedback-message'),
+      timeSpentDisplay: document.getElementById('time-spent'),
+      scoreDisplay: document.getElementById('score-earned'),
+      scoreDisplayLose: document.getElementById('score-earned-lose'),
+      levelNameDisplay: document.querySelector('.level-name'),
+      levelDescText: document.getElementById('level-desc-text'),
+      playground: document.querySelector('.playground'),
+      equipmentPanel: document.querySelector('.equipment-panel'),
+      equipmentPanelContainer: document.querySelector('.equipment-panel-container'),
+      hintModal: document.getElementById('hint-modal'),
+      hintText: document.getElementById('hint-text'),
+      closeModal: document.querySelector('.close-modal'),
+      settingsContainer: document.querySelector('.settings-container'),
+      levelDetails: document.getElementById('level-details'),
+      levelDetailsLose: document.getElementById('level-details-lose'),
+      breweryBackground: document.querySelector('.brewery-background'),
+      playgroundContainer: document.querySelector('.playground-container')
     };
 
     this.sounds = {
@@ -236,19 +250,89 @@ initElements() {
     Object.values(this.sounds).forEach(a => { try { a.preload = 'auto'; } catch(_){} });
   }
 
-buildPartialHint(levelNum) {
-  if (levelNum === 1) {
-    return "Расход солода: 170-200 кг на 1000 литров. Температура варки сусла должна достигать точки кипения...";
+  initBusinessScreen() {
+    const rentBtn = document.getElementById('rent-garage-btn');
+    if (rentBtn) {
+      rentBtn.addEventListener('click', () => this.rentGarage());
+    }
+    
+    const continueBtn = document.createElement('button');
+    continueBtn.id = 'continue-to-business';
+    continueBtn.textContent = 'Продолжить путь пивовара →';
+    continueBtn.className = 'restart-btn';
+    continueBtn.style.margin = '10px';
+    
+    const winContent = this.elements.winScreen.querySelector('.win-content');
+    if (winContent) {
+      const emailForm = winContent.querySelector('#email-form');
+      if (emailForm) {
+        winContent.insertBefore(continueBtn, emailForm.nextSibling);
+      } else {
+        winContent.appendChild(continueBtn);
+      }
+      
+      continueBtn.addEventListener('click', () => this.showBusinessStartScreen());
+    }
   }
-  if (levelNum === 2) {
-    return "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём...";
+
+  showBusinessStartScreen() {
+    this.playSound('click');
+    this.elements.winScreen.classList.add('hidden');
+    this.elements.loseScreen.classList.add('hidden');
+    this.elements.businessStartScreen.classList.remove('hidden');
+    this.updateBusinessDisplay();
   }
+
+  updateBusinessDisplay() {
+    const balanceDisplay = document.getElementById('balance-display');
+    const currentBalance = document.getElementById('current-balance');
+    
+    if (balanceDisplay) balanceDisplay.textContent = this.state.business.balance;
+    if (currentBalance) currentBalance.textContent = this.state.business.balance;
+  }
+
+  rentGarage() {
+    if (this.state.business.balance >= 50 && !this.state.business.purchasedGarage) {
+      this.state.business.balance -= 50;
+      this.state.business.purchasedGarage = true;
+      this.playSound('success');
+      this.updateBusinessDisplay();
+      
+      const rentBtn = document.getElementById('rent-garage-btn');
+      if (rentBtn) {
+        rentBtn.textContent = 'Закупить оборудование →';
+        rentBtn.style.background = 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)';
+        rentBtn.onclick = () => this.startGarageLevel();
+      }
+      
+      this.showFeedback('Гараж успешно арендован! Осталось 50 BP на оборудование.', 'correct');
+    }
+  }
+
+  startGarageLevel() {
+    if (this.state.business.purchasedGarage) {
+      this.playSound('click');
+      this.elements.businessStartScreen.classList.add('hidden');
+      this.showFeedback('Переход к гаражу... Уровень 6 в разработке!', 'correct');
+      setTimeout(() => {
+        this.showLevelSelect();
+      }, 2000);
+    }
+  }
+
+  buildPartialHint(levelNum) {
+    if (levelNum === 1) {
+      return "Расход солода: 170-200 кг на 1000 литров. Температура варки сусла должна достигать точки кипения...";
+    }
+    if (levelNum === 2) {
+      return "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём...";
+    }
     if (levelNum === 3) {
-  const map = {
-    1: this.getEquipmentName(this.levels[3].slots[0].correct),
-    2: this.getEquipmentName(this.levels[3].slots[1].correct),
-    5: this.getEquipmentName(this.levels[3].slots[4].correct),
-  };
+      const map = {
+        1: this.getEquipmentName(this.levels[3].slots[0].correct),
+        2: this.getEquipmentName(this.levels[3].slots[1].correct),
+        5: this.getEquipmentName(this.levels[3].slots[4].correct),
+      };
       let lines = [];
       for (let i = 1; i <= 7; i++) {
         if (map[i]) {
@@ -263,10 +347,11 @@ buildPartialHint(levelNum) {
       return "Подсказка: температура в ЦКТ .. , время созревания 21 день (±2 дня)";
     }
     if (levelNum === 5) {
-  const name = this.getEquipmentName(this.levels[5].slots[1].correct);
-  return `1) •••\n2) ${name}\n3) •••`;
-}
-}
+      const name = this.getEquipmentName(this.levels[5].slots[1].correct);
+      return `1) •••\n2) ${name}\n3) •••`;
+    }
+  }
+
   openInfoModal(text, buttons = []) {
     this.elements.hintText.textContent = "";
     this.elements.hintText.innerText = text;
@@ -305,13 +390,17 @@ buildPartialHint(levelNum) {
       if (e.target === this.elements.hintModal) this.closeHintModal();
     });
 
-    if (this.selectionMode) { this.initSelectionHandlers(); } else if (this.isMobile()) { this.initMobileHandlers(); } else { this.initDesktopHandlers(); }
+    if (this.selectionMode) { 
+      this.initSelectionHandlers(); 
+    } else if (this.isMobile()) { 
+      this.initMobileHandlers(); 
+    } else { 
+      this.initDesktopHandlers(); 
+    }
 
     document.querySelectorAll('.restart-btn').forEach(btn => {
       btn.addEventListener('click', () => this.restartLevel()); 
     });
-    const _nextBtn = document.querySelector('.next-level-btn');
-    if (_nextBtn) { _nextBtn.addEventListener('click', () => this.nextLevel()); }
   }
 
   initSelectionHandlers() {
@@ -342,7 +431,9 @@ buildPartialHint(levelNum) {
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.deselectEquipment(); });
   }
 
-  isMobile() { return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0); }
+  isMobile() { 
+    return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0); 
+  }
 
   initMobileHandlers() {
     document.addEventListener('touchstart', (e) => {
@@ -519,7 +610,9 @@ buildPartialHint(levelNum) {
     }
   }
 
-  saveProgress() { localStorage.setItem('breweryGameProgress', JSON.stringify(this.progress)); }
+  saveProgress() { 
+    localStorage.setItem('breweryGameProgress', JSON.stringify(this.progress)); 
+  }
 
   startGame() {
     this.state.gameStarted = true;
@@ -527,8 +620,8 @@ buildPartialHint(levelNum) {
     this.state.hintUsed = false;
 
     if (this.state.currentLevel <= 5) {
-  this.state.levelResults[this.state.currentLevel].correct = 0;
-}
+      this.state.levelResults[this.state.currentLevel].correct = 0;
+    }
 
     const level = this.levels[this.state.currentLevel];
     this.state.timeLeft = level.time;
@@ -545,18 +638,18 @@ buildPartialHint(levelNum) {
     this.elements.hintBtn.style.opacity = '';
 
     if (this.state.currentLevel === 1 || this.state.currentLevel === 2) {
-  this.elements.launchBtn.textContent = 'Запустить заторный процесс';
-  this.elements.launchBtn.disabled = false;
-} else if (this.state.currentLevel === 4) {
-  this.elements.launchBtn.textContent = 'Запустить брожение';
-  this.elements.launchBtn.disabled = false;
-} else if (this.state.currentLevel === 5) {
-  this.elements.launchBtn.textContent = 'Завершить производство';
-  this.elements.launchBtn.disabled = true;
-} else {
-  this.elements.launchBtn.textContent = 'Далее →';
-  this.elements.launchBtn.disabled = true;
-}
+      this.elements.launchBtn.textContent = 'Запустить заторный процесс';
+      this.elements.launchBtn.disabled = false;
+    } else if (this.state.currentLevel === 4) {
+      this.elements.launchBtn.textContent = 'Запустить брожение';
+      this.elements.launchBtn.disabled = false;
+    } else if (this.state.currentLevel === 5) {
+      this.elements.launchBtn.textContent = 'Завершить производство';
+      this.elements.launchBtn.disabled = true;
+    } else {
+      this.elements.launchBtn.textContent = 'Далее →';
+      this.elements.launchBtn.disabled = true;
+    }
 
     this.startHintPulse();
   }
@@ -578,12 +671,17 @@ buildPartialHint(levelNum) {
     return `${mins}:${secs}`;
   }
 
-  updateTimerDisplay() { this.elements.timerDisplay.textContent = this.formatTime(this.state.timeLeft); }
+  updateTimerDisplay() { 
+    this.elements.timerDisplay.textContent = this.formatTime(this.state.timeLeft); 
+  }
 
   selectEquipment(equipmentBtn) {
     this.playSound('click');
     this.state.selectedEquipment = equipmentBtn.dataset.equipment;
-    document.querySelectorAll('.equipment-btn').forEach(btn => { btn.classList.toggle('selected', btn === equipmentBtn); btn.style.opacity = '1'; });
+    document.querySelectorAll('.equipment-btn').forEach(btn => { 
+      btn.classList.toggle('selected', btn === equipmentBtn); 
+      btn.style.opacity = '1'; 
+    });
     this.elements.feedbackMessage.textContent = `Выбрано: ${this.getEquipmentName(this.state.selectedEquipment)}`;
     this.elements.feedbackMessage.className = 'feedback-message';
   }
@@ -606,7 +704,8 @@ buildPartialHint(levelNum) {
 
   deselectEquipment() {
     this.state.selectedEquipment = null;
-    document.querySelectorAll('.equipment-btn').forEach(btn => btn.classList.remove('selected')); this.elements.feedbackMessage.textContent = '';
+    document.querySelectorAll('.equipment-btn').forEach(btn => btn.classList.remove('selected')); 
+    this.elements.feedbackMessage.textContent = '';
   }
 
   placeEquipment(slot, equipmentId) {
@@ -704,24 +803,26 @@ buildPartialHint(levelNum) {
     if (wrong.length) text += `Требуют внимания позиции: ${wrong.join(', ')}. Попробуйте переосмыслить поток процесса (от подготовки к варке и далее).`;
 
     let buttonText = 'Далее →';
-if (this.state.currentLevel === 3) {
-  buttonText = 'К брожению →';
-} else if (this.state.currentLevel === 5) {
-  buttonText = 'Посмотреть результаты';
-}
+    if (this.state.currentLevel === 3) {
+      buttonText = 'К брожению →';
+    } else if (this.state.currentLevel === 5) {
+      buttonText = 'Посмотреть результаты';
+    }
 
     this.openInfoModal(text, [{label: buttonText, variant:'primary', onClick:()=>this.nextLevel()}]);
   }
 
-      checkSettingsSolution() {
+  checkSettingsSolution() {
     const level = this.levels[this.state.currentLevel];
     let correctCount = 0;
+    const userValues = {};
 
     level.settings.forEach(setting => {
       const input = document.getElementById(setting.id);
       const value = parseInt(input.value);
-      const diff = Math.abs(value - setting.correct);
+      userValues[setting.id] = value;
 
+      const diff = Math.abs(value - setting.correct);
       let allowedDeviation = 3;
       
       if (setting.id === "malt-consumption") {
@@ -741,6 +842,10 @@ if (this.state.currentLevel === 3) {
         setTimeout(() => input.classList.remove('incorrect-setting'), 1000);
       }
     });
+
+    this.levelReview[this.state.currentLevel] = this.levelReview[this.state.currentLevel] || {};
+    this.levelReview[this.state.currentLevel].userValues = userValues;
+    localStorage.setItem('lastUserValues', JSON.stringify(userValues));
 
     this.state.levelResults[this.state.currentLevel].correct = correctCount;
     
@@ -791,17 +896,17 @@ if (this.state.currentLevel === 3) {
     this.stopHintPulse();
 
     if (isWin) {
-        const emailForm = document.getElementById('email-form');
-        const sendBtn = document.getElementById('send-results-btn');
-        
-        if (emailForm) emailForm.reset();
-        if (sendBtn) {
-            sendBtn.disabled = true;
-            sendBtn.textContent = 'Отправить результаты';
-            sendBtn.style.background = '';
-        }
-        
-        this.prepareEmailData();
+      const emailForm = document.getElementById('email-form');
+      const sendBtn = document.getElementById('send-results-btn');
+      
+      if (emailForm) emailForm.reset();
+      if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Отправить результаты';
+        sendBtn.style.background = '';
+      }
+      
+      this.prepareEmailData();
     }
 
     clearInterval(this.timer);
@@ -814,86 +919,93 @@ if (this.state.currentLevel === 3) {
     this.elements.scoreDisplay.textContent = totalScore;
     this.elements.scoreDisplayLose.textContent = totalScore;
 
-    // ПРОСТОЙ И РАБОЧИЙ ВАРИАНТ - сразу вставляем HTML
-const createDetailedResults = () => {
-  const level = 1;
-  const result = this.state.levelResults[level];
-  
-  // Получаем реальные значения игрока
-  const maltInput = document.getElementById('malt-consumption');
-  const tempInput = document.getElementById('wort-boiling-temp');
-  const maltValue = maltInput ? parseInt(maltInput.value) : 0;
-  const tempValue = tempInput ? parseInt(tempInput.value) : 0;
-  
-  console.log('Real values:', { maltValue, tempValue }); // Для отладки
-  
-  // Проверяем правильность с учетом допустимых отклонений
-  const maltCorrect = (maltValue >= 170 && maltValue <= 200);
-  const tempCorrect = (tempValue >= 88 && tempValue <= 92);
-  
-  const maltIcon = maltCorrect ? '✅' : '❌';
-  const tempIcon = tempCorrect ? '✅' : '❌';
-  
-  // Определяем пояснения
-  let maltComment = '';
-  let tempComment = '';
-  
-  if (maltCorrect) {
-    maltComment = 'оптимальный для светлого лагера';
-  } else if (maltValue < 170) {
-    maltComment = 'недостаточно солода, будет слабое тело пива';
-  } else {
-    maltComment = 'избыток солода, возможна высокая плотность';
-  }
-  
-  if (tempCorrect) {
-    tempComment = 'идеальная температура затора';
-  } else if (tempValue < 88) {
-    tempComment = 'недостаточная для правильного затора';
-  } else {
-    tempComment = 'превышение, возможна избыточная карамелизация';
-  }
+    const createDetailedResults = () => {
+      const level = 1;
+      const result = this.state.levelResults[level];
+      
+      let maltValue = 0;
+      let tempValue = 0;
+      
+      const userValues = this.levelReview[level]?.userValues;
+      if (userValues) {
+        maltValue = userValues['malt-consumption'] || 0;
+        tempValue = userValues['wort-boiling-temp'] || 0;
+      } else {
+        const savedValues = localStorage.getItem('lastUserValues');
+        if (savedValues) {
+          const parsed = JSON.parse(savedValues);
+          maltValue = parsed['malt-consumption'] || 0;
+          tempValue = parsed['wort-boiling-temp'] || 0;
+        } else {
+          const maltInput = document.getElementById('malt-consumption');
+          const tempInput = document.getElementById('wort-boiling-temp');
+          if (maltInput) maltValue = parseInt(maltInput.value) || 0;
+          if (tempInput) tempValue = parseInt(tempInput.value) || 0;
+        }
+      }
 
-  return `
-    <div class="level-results">
-      <div class="level-result">
-        <h3>Уровень ${level}: ${this.levels[level].name}</h3>
-        <div class="parameter-results">
-          <div class="parameter ${maltCorrect ? 'correct' : 'incorrect'}">
-            ${maltIcon} <strong>Расход солода:</strong> ${maltValue} кг
-            <div class="parameter-comment">${maltComment}</div>
-            <div class="parameter-range">Оптимально: 170-200 кг</div>
-          </div>
-          <div class="parameter ${tempCorrect ? 'correct' : 'incorrect'}">
-            ${tempIcon} <strong>Температура варки:</strong> ${tempValue}°C
-            <div class="parameter-comment">${tempComment}</div>
-            <div class="parameter-range">Целевая: 88-92°C</div>
+      const maltCorrect = Math.abs(maltValue - 185) <= 15;
+      const tempCorrect = Math.abs(tempValue - 90) <= 2;
+      
+      const maltIcon = maltCorrect ? '✅' : '❌';
+      const tempIcon = tempCorrect ? '✅' : '❌';
+      
+      let maltComment = '';
+      let tempComment = '';
+      
+      if (maltCorrect) {
+        maltComment = 'оптимальный расход солода';
+      } else if (maltValue < 170) {
+        maltComment = 'недостаточно солода, будет слабое тело пива';
+      } else {
+        maltComment = 'избыток солода, возможна высокая плотность';
+      }
+      
+      if (tempCorrect) {
+        tempComment = 'идеальная температура затора';
+      } else if (tempValue < 88) {
+        tempComment = 'недостаточная для правильного затора';
+      } else {
+        tempComment = 'превышение, возможна избыточная карамелизация';
+      }
+
+      return `
+        <div class="level-results">
+          <div class="level-result">
+            <h3>Уровень ${level}: ${this.levels[level].name}</h3>
+            <div class="parameter-results">
+              <div class="parameter ${maltCorrect ? 'correct' : 'incorrect'}">
+                ${maltIcon} <strong>Расход солода:</strong> ${maltValue} кг
+                <div class="parameter-comment">${maltComment}</div>
+                <div class="parameter-range">Оптимально: 170-200 кг</div>
+              </div>
+              <div class="parameter ${tempCorrect ? 'correct' : 'incorrect'}">
+                ${tempIcon} <strong>Температура варки:</strong> ${tempValue}°C
+                <div class="parameter-comment">${tempComment}</div>
+                <div class="parameter-range">Целевая: 88-92°C</div>
+              </div>
+            </div>
+            <div class="level-summary">
+              <p><strong>Итог:</strong> ${result.correct} из ${result.total} параметров настроено верно</p>
+              ${result.correct === 2 ? 
+                '<p>Отличный старт! Параметры обеспечат сбалансированное сусло.</p>' : 
+                '<p>Обратите внимание на рекомендации выше для улучшения качества.</p>'
+              }
+            </div>
           </div>
         </div>
-        <div class="level-summary">
-          <p><strong>Итог:</strong> ${result.correct} из ${result.total} параметров настроено верно</p>
-          ${result.correct === 2 ? 
-            '<p>Отличный старт! Параметры обеспечат сбалансированное сусло.</p>' : 
-            '<p>Обратите внимание на рекомендации выше для улучшения качества.</p>'
-          }
-        </div>
-      </div>
-    </div>
-  `;
-};
+      `;
+    };
 
-// НЕМЕДЛЕННО устанавливаем HTML в оба места
-setTimeout(() => {
-  const detailedHTML = createDetailedResults();
-  
-  if (this.elements.levelDetails) {
-    this.elements.levelDetails.innerHTML = detailedHTML;
-  }
-  
-  if (this.elements.levelDetailsLose) {
-    this.elements.levelDetailsLose.innerHTML = detailedHTML;
-  }
-}, 100);
+    setTimeout(() => {
+      const detailedHTML = createDetailedResults();
+      if (this.elements.levelDetails) {
+        this.elements.levelDetails.innerHTML = detailedHTML;
+      }
+      if (this.elements.levelDetailsLose) {
+        this.elements.levelDetailsLose.innerHTML = detailedHTML;
+      }
+    }, 100);
 
     if (isWin) {
       this.updateProgress(totalScore);
@@ -908,13 +1020,14 @@ setTimeout(() => {
   }
 
   calculateTotalScore() {
-  let score = 100;
-  for (let level = 1; level <= 5; level++) {
-    const errors = this.state.levelResults[level].total - this.state.levelResults[level].correct;
-    score -= errors * 5;
+    let score = 100;
+    for (let level = 1; level <= 5; level++) {
+      const result = this.state.levelResults[level];
+      const correctCount = result.correct || 0;
+      score += correctCount * 20;
+    }
+    return Math.min(score, 500);
   }
-  return Math.max(0, score);
-}
 
   updateProgress(score) {
     if (!this.progress.bestScores[this.state.currentLevel] || score > this.progress.bestScores[this.state.currentLevel]) {
@@ -986,39 +1099,33 @@ setTimeout(() => {
     this.elements.levelNameDisplay.textContent = `Уровень: ${level.name}`;
     this.elements.levelDescText.textContent = level.description;
 
-    // АВТОМАТИЧЕСКИ ПРИМЕНЯЕМ КОМПАКТНЫЙ СТИЛЬ ДЛЯ МОБИЛЬНЫХ
     if ((levelNum === 1 || levelNum === 3) && this.isMobile()) {
-        this.elements.settingsContainer.classList.add('compact');
-        if (this.isVerySmallScreen()) {
-            this.elements.settingsContainer.classList.add('super-compact');
-        } else {
-            this.elements.settingsContainer.classList.remove('super-compact');
-        }
+      this.elements.settingsContainer.classList.add('compact');
+      if (this.isVerySmallScreen()) {
+        this.elements.settingsContainer.classList.add('super-compact');
+      } else {
+        this.elements.settingsContainer.classList.remove('super-compact');
+      }
     } else {
-        this.elements.settingsContainer.classList.remove('compact', 'super-compact');
+      this.elements.settingsContainer.classList.remove('compact', 'super-compact');
     }
 
-        if (levelNum === 1 || levelNum === 2 || levelNum === 4) {
-        this.createSettingsInterface(level);
-        this.elements.hintBtn.classList.remove('hidden');
-        // Скрываем playground и equipment, показываем settings и картинку
-        this.elements.playgroundContainer.classList.add('hidden');
-        this.elements.equipmentPanelContainer.classList.add('hidden');
-        this.elements.settingsContainer.classList.remove('hidden');
-        this.elements.breweryBackground.classList.remove('hidden');
-        
-        // ★★★★ ВОТ ТУТ ДОБАВЛЯЕМ СТРОКУ ★★★★
-        this.updateBackgroundImage(levelNum);
-        
+    if (levelNum === 1 || levelNum === 2 || levelNum === 4) {
+      this.createSettingsInterface(level);
+      this.elements.hintBtn.classList.remove('hidden');
+      this.elements.playgroundContainer.classList.add('hidden');
+      this.elements.equipmentPanelContainer.classList.add('hidden');
+      this.elements.settingsContainer.classList.remove('hidden');
+      this.elements.breweryBackground.classList.remove('hidden');
+      this.updateBackgroundImage(levelNum);
     } else {
-        this.createEquipmentSlots(level);
-        this.createEquipmentPanel(level);
-        this.elements.hintBtn.classList.remove('hidden');
-        // Скрываем settings и картинку, показываем playground и equipment
-        this.elements.settingsContainer.classList.add('hidden');
-        this.elements.playgroundContainer.classList.remove('hidden');
-        this.elements.equipmentPanelContainer.classList.remove('hidden');
-        this.elements.breweryBackground.classList.add('hidden');
+      this.createEquipmentSlots(level);
+      this.createEquipmentPanel(level);
+      this.elements.hintBtn.classList.remove('hidden');
+      this.elements.settingsContainer.classList.add('hidden');
+      this.elements.playgroundContainer.classList.remove('hidden');
+      this.elements.equipmentPanelContainer.classList.remove('hidden');
+      this.elements.breweryBackground.classList.add('hidden');
     }
 
     this.elements.levelSelectScreen.classList.add('hidden');
@@ -1026,10 +1133,10 @@ setTimeout(() => {
     this.startGame();
   }
 
-createSettingsInterface(level) {
+  createSettingsInterface(level) {
     const settingsHTML = level.settings.map(setting => {
       let unit = '°C';
-      if (setting.id === "malt-consumption") unit = 'кг';  // ← ДОБАВИТЬ
+      if (setting.id === "malt-consumption") unit = 'кг';
       if (setting.id === "wort-brewing-time") unit = 'ч';
       if (setting.id === "maturation-time") unit = 'дн';
       
@@ -1052,7 +1159,7 @@ createSettingsInterface(level) {
       const valueDisplay = slider.nextElementSibling;
       
       let unit = '°C';
-      if (setting.id === "malt-consumption") unit = 'кг';  // ← ДОБАВИТЬ
+      if (setting.id === "malt-consumption") unit = 'кг';
       if (setting.id === "wort-brewing-time") unit = 'ч';
       if (setting.id === "maturation-time") unit = 'дн';
       
@@ -1287,45 +1394,45 @@ createSettingsInterface(level) {
     const sendBtn = document.getElementById('send-results-btn');
     
     if (emailForm && emailInput && sendBtn) {
-        emailInput.addEventListener('input', () => {
-            const isValid = this.isValidEmail(emailInput.value);
-            sendBtn.disabled = !isValid;
-            sendBtn.style.opacity = isValid ? '1' : '0.6';
-        });
+      emailInput.addEventListener('input', () => {
+        const isValid = this.isValidEmail(emailInput.value);
+        sendBtn.disabled = !isValid;
+        sendBtn.style.opacity = isValid ? '1' : '0.6';
+      });
+      
+      emailForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        emailForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            if (!this.isValidEmail(emailInput.value)) {
-                this.showFeedback('Пожалуйста, введите корректный email', 'incorrect');
-                return;
+        if (!this.isValidEmail(emailInput.value)) {
+          this.showFeedback('Пожалуйста, введите корректный email', 'incorrect');
+          return;
+        }
+        
+        this.prepareEmailData();
+        sendBtn.textContent = 'Отправляем...';
+        sendBtn.disabled = true;
+        
+        try {
+          const formData = new FormData(emailForm);
+          const response = await fetch(emailForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Accept': 'application/json'
             }
-            
-            this.prepareEmailData();
-            sendBtn.textContent = 'Отправляем...';
-            sendBtn.disabled = true;
-            
-            try {
-                const formData = new FormData(emailForm);
-                const response = await fetch(emailForm.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (response.ok) {
-                    this.showFormSuccess(sendBtn);
-                    this.showFeedback('✅ Результаты отправлены! Проверьте почту', 'correct');
-                } else {
-                    throw new Error('Formspree failed');
-                }
-            } catch (error) {
-                console.log('Formspree не работает, пробуем резервный метод...');
-                this.tryBackupEmailMethod(emailInput.value, sendBtn);
-            }
-        });
+          });
+          
+          if (response.ok) {
+            this.showFormSuccess(sendBtn);
+            this.showFeedback('✅ Результаты отправлены! Проверьте почту', 'correct');
+          } else {
+            throw new Error('Formspree failed');
+          }
+        } catch (error) {
+          console.log('Formspree не работает, пробуем резервный метод...');
+          this.tryBackupEmailMethod(emailInput.value, sendBtn);
+        }
+      });
     }
   }
 
@@ -1354,9 +1461,9 @@ createSettingsInterface(level) {
     sendBtn.style.opacity = '1';
     
     setTimeout(() => {
-        sendBtn.textContent = 'Отправить результаты';
-        sendBtn.disabled = false;
-        sendBtn.style.background = '';
+      sendBtn.textContent = 'Отправить результаты';
+      sendBtn.disabled = false;
+      sendBtn.style.background = '';
     }, 5000);
   }
 
@@ -1387,146 +1494,21 @@ createSettingsInterface(level) {
     if (level4El) level4El.value = `${this.state.levelResults[4].correct}/${this.state.levelResults[4].total}`;
     if (totalTimeEl) totalTimeEl.value = totalTime;
   }
-    // Меняем картинку фона для каждого уровня
+
   updateBackgroundImage(levelNum) {
-    // Находим элемент с картинкой фона
     const bgImage = this.elements.breweryBackground.querySelector('img');
     if (!bgImage) return;
     
-    // Список картинок для каждого уровня
     const levelImages = {
       1: 'assets/images/brewery-background-level1.png',
       2: 'assets/images/brewery-background-level2.png', 
       4: 'assets/images/brewery-background-level4.png'
     };
     
-    // Если для этого уровня есть своя картинка - меняем
     if (levelImages[levelNum]) {
       bgImage.src = levelImages[levelNum];
     }
   }
 }
-// ★★★★ КЛАСС ЗАКАНЧИВАЕТСЯ ЗДЕСЬ ★★★★
+
 document.addEventListener('DOMContentLoaded', () => { new BreweryGame(); });
-
-// === RESULTS DEDUP + HIDE NEXT BTN + TOTAL SCORE ===
-(function(){
-  try {
-    if (window.__RESULTS_FIX_PATCH__) return;
-    window.__RESULTS_FIX_PATCH__ = true;
-
-    const WEIGHTS = {1:{ok:10}, 2:{ok:10}, 3:{ok:15}, 4:{ok:20}, 5:{ok:15}};
-
-    if (!BreweryGame.prototype.calculateTotalScore || BreweryGame.prototype.calculateTotalScore.__patched__ !== true) {
-      const calc = function(){
-        try{
-          let total = 0;
-for (let lvl = 1; lvl <= 5; lvl++) {
-  const res = (this.state && this.state.levelResults && this.state.levelResults[lvl]) || {correct:0};
-  total += (res.correct || 0) * WEIGHTS[lvl].ok;
-}
-          return total;
-        } catch(e){ return 0; }
-      };
-      calc.__patched__ = true;
-      BreweryGame.prototype.calculateTotalScore = calc;
-    }
-
-    function buildDetailsHTML(self){
-      let html = '<div class="level-results">';
-      const lvl = 1;
-      const result = (self.state && self.state.levelResults && self.state.levelResults[lvl]) || {correct:0,total:0};
-      const review = (self.levelReview && self.levelReview[lvl]) || {rightNames:[], wrong:[]};
-      const lvlScore = (result.correct || 0) * WEIGHTS[lvl].ok;
-      html += `
-        <div class="level-result">
-          <h3>Уровень ${lvl}: ${self.levels[lvl].name}</h3>
-          <p>Очки за уровень: ${lvlScore}</p>
-          <p>Правильно: ${result.correct} из ${result.total}</p>
-          ${review.rightNames && review.rightNames.length ? `<p><strong>Верно расставлено:</strong> ${review.rightNames.join(', ')}</p>` : ''}
-          ${review.wrong && review.wrong.length ? `<p><strong>Проверьте слоты:</strong> ${review.wrong.join(', ')}</p>` : ''}
-        </div>`;
-      html += '</div>';
-      return html;
-    }
-
-    const _origEndGame = BreweryGame.prototype.endGame;
-    BreweryGame.prototype.endGame = function(isWin){
-      if (typeof _origEndGame === 'function') _origEndGame.call(this, isWin);
-
-      try {
-        const html = buildDetailsHTML(this);
-
-        const winDetails = document.getElementById('level-details');
-        if (winDetails) winDetails.innerHTML = html;
-
-        const loseDetails = document.getElementById('level-details-lose');
-        if (loseDetails) loseDetails.innerHTML = html;
-
-        const totalEl = document.getElementById('score-earned');
-        if (totalEl) totalEl.textContent = this.calculateTotalScore();
-
-        document.querySelectorAll('.next-level-btn').forEach(btn => btn.remove());
-      } catch(e){
-        console.error('RESULTS FIX normalize error:', e);
-      }
-    };
-
-    function removeNextButtons(root){
-      (root || document).querySelectorAll('.next-level-btn').forEach(b => b.remove());
-    }
-    removeNextButtons(document);
-    const mo = new MutationObserver(muts => muts.forEach(m => {
-      m.addedNodes && m.addedNodes.forEach(n => { if (n.nodeType === 1) removeNextButtons(n); });
-    }));
-    mo.observe(document.documentElement, { childList: true, subtree: true });
-    window.__NEXT_BTN_KILLER__ = mo;
-  } catch(e){
-    console.error('RESULTS FIX PATCH init error:', e);
-  }
-})();
-// ТЕСТОВЫЙ КОД - удалите после проверки
-document.addEventListener('DOMContentLoaded', function() {
-  // Принудительно обновляем детали при загрузке экрана победы
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      if (mutation.target.id === 'win-screen' && !mutation.target.classList.contains('hidden')) {
-        setTimeout(function() {
-          const details = document.getElementById('level-details');
-          if (details) {
-            details.innerHTML = `
-              <div class="level-results">
-                <div class="level-result">
-                  <h3>Уровень 1: Подготовка сырья</h3>
-                  <div class="parameter-results">
-                    <div class="parameter incorrect">
-                      ❌ <strong>Расход солода:</strong> 250 кг
-                      <div class="parameter-comment">избыток солода, возможна высокая плотность</div>
-                      <div class="parameter-range">Оптимально: 170-200 кг</div>
-                    </div>
-                    <div class="parameter incorrect">
-                      ❌ <strong>Температура варки:</strong> 95°C
-                      <div class="parameter-comment">превышение, возможна избыточная карамелизация</div>
-                      <div class="parameter-range">Целевая: 88-92°C</div>
-                    </div>
-                  </div>
-                  <div class="level-summary">
-                    <p><strong>Итог:</strong> 0 из 2 параметров настроено верно</p>
-                    <p>Обратите внимание на рекомендации выше для улучшения качества.</p>
-                  </div>
-                </div>
-              </div>
-            `;
-          }
-        }, 100);
-      }
-    });
-  });
-  
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['class']
-  });
-});
