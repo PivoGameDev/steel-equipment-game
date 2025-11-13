@@ -94,6 +94,36 @@ class BreweryGame {
         threshold2: 60,
         description: "Пиво почти готово! Осталось собрать линию охлаждения и дображивания. Выбери только необходимое оборудование для финального этапа. Помни - здесь важна не только последовательность, но и правильный выбор аппаратов.",
         hint: "Правильный порядок: .. → Чилер → .."
+      },
+      6: {
+        name: "Оборудование гаража",
+        time: 600,
+        type: "garage_setup", 
+        budget: 50,
+        equipment: {
+          brewKettles: [
+            { id: "kettle-500", name: "Варочник 500л", price: 15, volume: 500 },
+            { id: "kettle-1000", name: "Варочник 1000л", price: 25, volume: 1000 },
+            { id: "kettle-2000", name: "Варочник 2000л", price: 35, volume: 2000 },
+            { id: "kettle-3000", name: "Варочник 3000л", price: 45, volume: 3000 }
+          ],
+          cctTanks: [
+            { id: "cct-500", name: "ЦКТ 500л", price: 10, volume: 500 },
+            { id: "cct-1000", name: "ЦКТ 1000л", price: 15, volume: 1000 },
+            { id: "cct-1500", name: "ЦКТ 1500л", price: 20, volume: 1500 },
+            { id: "cct-2000", name: "ЦКТ 2000л", price: 25, volume: 2000 },
+            { id: "cct-3000", name: "ЦКТ 3000л", price: 30, volume: 3000 }
+          ],
+          required: [
+            { id: "crusher", name: "Дробилка солода", price: 3 },
+            { id: "steam-gen", name: "Парогенератор", price: 3 },
+            { id: "chiller", name: "Чиллер", price: 2 },
+            { id: "heat-ex", name: "Теплообменник", price: 2 },
+            { id: "chemical", name: "Химраствор для мойки", price: 2 }
+          ]
+        },
+        description: "Распределите 50 BP на оборудование для гаража. Выберите варочник, ЦКТ и обязательное оборудование. Помните: без химраствора производство невозможно!",
+        hint: "Оптимальный старт: варочник 500л + ЦКТ 1000л + все обязательное оборудование = 42 BP"
       }
     };
 
@@ -111,7 +141,8 @@ class BreweryGame {
         2: { correct: 0, total: 2 },
         3: { correct: 0, total: 7 },
         4: { correct: 0, total: 2 },
-        5: { correct: 0, total: 3 }
+        5: { correct: 0, total: 3 },
+        6: { correct: 0, total: 1 }
       },
       business: {
         balance: 100,
@@ -132,7 +163,7 @@ class BreweryGame {
     this.CUSTOM_IMAGE_MAP = {};
     this.IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.gif'];
     this.selectionMode = true;
-    this.levelReview = {1:{}, 2:{}, 3:{}, 4:{}, 5:{}};
+    this.levelReview = {1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}};
 
     this.initEventListeners();
     this.loadProgress();
@@ -277,15 +308,11 @@ class BreweryGame {
 
   showBusinessStartScreen() {
     this.playSound('click');
-    
-    // Останавливаем таймер если он запущен
-    clearInterval(this.timer);
-    
     this.elements.winScreen.classList.add('hidden');
     this.elements.loseScreen.classList.add('hidden');
     this.elements.businessStartScreen.classList.remove('hidden');
     this.updateBusinessDisplay();
-}
+  }
 
   updateBusinessDisplay() {
     const balanceDisplay = document.getElementById('balance-display');
@@ -317,10 +344,8 @@ class BreweryGame {
     if (this.state.business.purchasedGarage) {
       this.playSound('click');
       this.elements.businessStartScreen.classList.add('hidden');
-      this.showFeedback('Переход к гаражу... Уровень 6 в разработке!', 'correct');
-      setTimeout(() => {
-        this.showLevelSelect();
-      }, 2000);
+      // СРАЗУ запускаем уровень 6 без задержки
+      this.startLevel(6);
     }
   }
 
@@ -353,6 +378,9 @@ class BreweryGame {
     if (levelNum === 5) {
       const name = this.getEquipmentName(this.levels[5].slots[1].correct);
       return `1) •••\n2) ${name}\n3) •••`;
+    }
+    if (levelNum === 6) {
+      return "Оптимальный выбор: Варочник 500л (15 BP) + ЦКТ 1000л (15 BP) + обязательное оборудование (12 BP) = 42 BP";
     }
   }
 
@@ -650,6 +678,9 @@ class BreweryGame {
     } else if (this.state.currentLevel === 5) {
       this.elements.launchBtn.textContent = 'Завершить производство';
       this.elements.launchBtn.disabled = true;
+    } else if (this.state.currentLevel === 6) {
+      this.elements.launchBtn.textContent = 'Запустить производство';
+      this.elements.launchBtn.disabled = true;
     } else {
       this.elements.launchBtn.textContent = 'Далее →';
       this.elements.launchBtn.disabled = true;
@@ -672,7 +703,7 @@ class BreweryGame {
         this.playSound('error');
         this.endGame(false);
     }
-}
+  }
 
   formatTime(seconds) {
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -705,7 +736,7 @@ class BreweryGame {
       'wort-brewing-machine': 'Сусловарочный аппарат',
       'hydrocyclone-apparatus': 'Гидроциклонный аппарат',
       'heat-exchanger': 'Теплообменник',
-      'chiller': 'Чилер',
+      'chiller': 'Чиллер',
       'cylinder-conical-tank': 'Цилиндро-конический танк'
     };
     return names[id] || id;
@@ -770,40 +801,46 @@ class BreweryGame {
   }
 
   checkSolution() {
+    // ← ПРОВЕРКА ДЛЯ УРОВНЯ 6 ДОБАВЛЕНА
+    if (this.state.currentLevel === 6) {
+        this.checkGarageSolution();
+        return;
+    }
+
     if (this.state.currentLevel === 1 || this.state.currentLevel === 2 || this.state.currentLevel === 4) { 
-      this.checkSettingsSolution(); 
-      return; 
+        this.checkSettingsSolution(); 
+        return; 
     }
 
     const level = this.levels[this.state.currentLevel];
     let correctCount = 0;
 
     level.slots.forEach(slotConfig => {
-      const slot = document.getElementById(slotConfig.id);
-      if (slot.dataset.equipment === slotConfig.correct) {
-        correctCount++;
-        this.highlightSlot(slot, 'correct');
-      } else {
-        this.highlightSlot(slot, 'incorrect');
-      }
+        const slot = document.getElementById(slotConfig.id);
+        if (slot.dataset.equipment === slotConfig.correct) {
+            correctCount++;
+            this.highlightSlot(slot, 'correct');
+        } else {
+            this.highlightSlot(slot, 'incorrect');
+        }
     });
 
     this.state.levelResults[this.state.currentLevel].correct = correctCount;
 
     if (correctCount === level.slots.length) {
-      this.showFeedback('Правильно! Оборудование установлено верно!', 'correct');
-      this.playSound('success');
+        this.showFeedback('Правильно! Оборудование установлено верно!', 'correct');
+        this.playSound('success');
     } else {
-      this.showFeedback(`Правильно ${correctCount} из ${level.slots.length}`, 'incorrect');
-      this.playSound('error');
+        this.showFeedback(`Правильно ${correctCount} из ${level.slots.length}`, 'incorrect');
+        this.playSound('error');
     }
 
     const wrong = [];
     const right = [];
     level.slots.forEach((slotConfig, idx) => {
-      const slot = document.getElementById(slotConfig.id);
-      const placed = slot.dataset.equipment || '—';
-      if (placed === slotConfig.correct) right.push(idx+1); else wrong.push(idx+1);
+        const slot = document.getElementById(slotConfig.id);
+        const placed = slot.dataset.equipment || '—';
+        if (placed === slotConfig.correct) right.push(idx+1); else wrong.push(idx+1);
     });
     this.levelReview[this.state.currentLevel] = { right, wrong };
 
@@ -813,9 +850,9 @@ class BreweryGame {
 
     let buttonText = 'Далее →';
     if (this.state.currentLevel === 3) {
-      buttonText = 'К брожению →';
+        buttonText = 'К брожению →';
     } else if (this.state.currentLevel === 5) {
-      buttonText = 'Посмотреть результаты';
+        buttonText = 'Посмотреть результаты';
     }
 
     this.openInfoModal(text, [{label: buttonText, variant:'primary', onClick:()=>this.nextLevel()}]);
@@ -894,6 +931,18 @@ class BreweryGame {
     }
 
     this.openInfoModal(text, [{label: buttonLabel, variant:'primary', onClick:()=>this.nextLevel()}]);
+  }
+
+  checkGarageSolution() {
+    this.playSound('success');
+    this.showFeedback("Отличный выбор оборудования!", "correct");
+    
+    // Пока всегда успех, если дошли до проверки
+    this.state.levelResults[6].correct = 1;
+    
+    setTimeout(() => {
+        this.endGame(true);
+    }, 2000);
   }
 
   highlightSlot(slot, type) {
@@ -1042,8 +1091,10 @@ class BreweryGame {
     if (!this.progress.bestScores[this.state.currentLevel] || score > this.progress.bestScores[this.state.currentLevel]) {
       this.progress.bestScores[this.state.currentLevel] = score;
     }
+    
+    // Разблокируем следующий уровень только для обучения (1-5)
     const nextLevel = this.state.currentLevel + 1;
-    if (nextLevel <= Object.keys(this.levels).length && !this.progress.unlockedLevels.includes(nextLevel)) {
+    if (nextLevel <= 5 && !this.progress.unlockedLevels.includes(nextLevel)) {
       this.progress.unlockedLevels.push(nextLevel);
     }
     this.saveProgress();
@@ -1079,6 +1130,10 @@ class BreweryGame {
     this.elements.levelCardsContainer.innerHTML = '';
     for (const [id, level] of Object.entries(this.levels)) {
       const levelNum = parseInt(id);
+      
+      // Уровень 6 не показываем в списке - он доступен только через бизнес-экран
+      if (levelNum === 6) continue;
+      
       const isUnlocked = this.progress.unlockedLevels.includes(levelNum);
 
       const card = document.createElement('div');
@@ -1130,6 +1185,13 @@ class BreweryGame {
       this.elements.settingsContainer.classList.remove('hidden');
       this.elements.breweryBackground.classList.remove('hidden');
       this.updateBackgroundImage(levelNum);
+    } else if (levelNum === 6) {
+      this.createGarageSetupInterface(level);
+      this.elements.hintBtn.classList.remove('hidden');
+      this.elements.settingsContainer.classList.remove('hidden');
+      this.elements.playgroundContainer.classList.add('hidden');
+      this.elements.equipmentPanelContainer.classList.add('hidden');
+      this.elements.breweryBackground.classList.add('hidden');
     } else {
       this.createEquipmentSlots(level);
       this.createEquipmentPanel(level);
@@ -1180,6 +1242,216 @@ class BreweryGame {
         this.elements.launchBtn.disabled = false;
       });
     });
+  }
+
+  createGarageSetupInterface(level) {
+    console.log("Создаем интерфейс гаража для уровня", this.state.currentLevel);
+    
+    const equipment = level.equipment;
+    
+    const interfaceHTML = `
+        <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+            <div style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+                <h2>🎯 Оборудование гаража</h2>
+                <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+                    <p>Ваш бюджет: <strong>${level.budget} BP</strong></p>
+                    <p>Потрачено: <strong id="total-cost">0 BP</strong></p>
+                    <p>Осталось: <strong id="remaining-budget">50 BP</strong></p>
+                </div>
+            </div>
+
+            <div>
+                <!-- ВАРОЧНИКИ -->
+                <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #e5e7eb;">
+                    <h3 style="color: #1f2937; margin-bottom: 10px;">🔧 Выберите варочник (ОБЯЗАТЕЛЬНО):</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px;" id="brew-kettles">
+                        ${equipment.brewKettles.map(kettle => `
+                            <div style="border: 2px solid #e5e7eb; border-radius: 8px; padding: 10px; cursor: pointer; transition: all 0.3s;" 
+                                 class="equipment-option" data-type="kettle" data-id="${kettle.id}" data-price="${kettle.price}" data-volume="${kettle.volume}">
+                                <input type="radio" name="brewKettle" id="${kettle.id}" value="${kettle.id}">
+                                <label for="${kettle.id}" style="cursor: pointer; display: block;">
+                                    <strong>${kettle.name}</strong><br>
+                                    Объем: ${kettle.volume}л<br>
+                                    Цена: ${kettle.price} BP
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- ЦКТ -->
+                <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #e5e7eb;">
+                    <h3 style="color: #1f2937; margin-bottom: 10px;">🛢️ Выберите ЦКТ (можно несколько):</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px;" id="cct-tanks">
+                        ${equipment.cctTanks.map(tank => `
+                            <div style="border: 2px solid #e5e7eb; border-radius: 8px; padding: 10px; cursor: pointer; transition: all 0.3s;" 
+                                 class="equipment-option" data-type="cct" data-id="${tank.id}" data-price="${tank.price}" data-volume="${tank.volume}">
+                                <input type="checkbox" id="${tank.id}" value="${tank.id}">
+                                <label for="${tank.id}" style="cursor: pointer; display: block;">
+                                    <strong>${tank.name}</strong><br>
+                                    Объем: ${tank.volume}л<br>
+                                    Цена: ${tank.price} BP
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <p style="font-size: 12px; color: #6b7280; font-style: italic; margin-top: 5px;">
+                        💡 Можно выбрать несколько ЦКТ. Общий объем должен быть не меньше объема варочника.
+                    </p>
+                </div>
+
+                <!-- ОБЯЗАТЕЛЬНОЕ ОБОРУДОВАНИЕ -->
+                <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #e5e7eb;">
+                    <h3 style="color: #1f2937; margin-bottom: 10px;">⚙️ Обязательное оборудование:</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px;" id="required-equipment">
+                        ${equipment.required.map(item => `
+                            <div style="border: 2px solid #0ea5e9; border-radius: 8px; padding: 10px; background: #f0f9ff;" 
+                                 class="equipment-option required-item" data-type="required" data-id="${item.id}" data-price="${item.price}">
+                                <input type="checkbox" id="${item.id}" value="${item.id}" checked disabled>
+                                <label for="${item.id}" style="cursor: pointer; display: block;">
+                                    <strong>${item.name}</strong><br>
+                                    Цена: ${item.price} BP
+                                    ${item.id === 'chemical' ? '<br><span style="color: red;">⚠️ Без этого нельзя!</span>' : ''}
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <p style="font-size: 12px; color: #6b7280; font-style: italic; margin-top: 5px;">
+                        ✅ Это оборудование обязательно для работы пивоварни
+                    </p>
+                </div>
+
+                <!-- СВОДКА -->
+                <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border: 2px solid #e2e8f0;">
+                    <h3 style="color: #1f2937; margin-bottom: 10px;">📊 Ваш выбор:</h3>
+                    <div id="selected-equipment">
+                        <p>Выберите оборудование выше...</p>
+                    </div>
+                    <div id="volume-check" style="display: none; background: #fef2f2; color: #dc2626; padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid #fecaca;">
+                        <p>⚠️ <strong>Внимание:</strong> Объем ЦКТ меньше объема варочника!</p>
+                    </div>
+                    <div id="budget-warning" style="display: none; background: #fef2f2; color: #dc2626; padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid #fecaca;">
+                        <p>❌ <strong>Превышен бюджет!</strong> Уберите лишнее оборудование.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    this.elements.settingsContainer.innerHTML = interfaceHTML;
+    this.elements.settingsContainer.classList.remove('hidden');
+    this.elements.launchBtn.disabled = true;
+    this.elements.launchBtn.textContent = "Запустить производство";
+    
+    // Добавляем обработчики событий
+    this.initGarageEventListeners(level);
+  }
+
+  initGarageEventListeners(level) {
+    const equipmentOptions = document.querySelectorAll('.equipment-option input');
+    
+    equipmentOptions.forEach(option => {
+        option.addEventListener('change', () => {
+            this.updateGarageSelection(level);
+        });
+    });
+    
+    // Инициализируем первый расчет
+    this.updateGarageSelection(level);
+  }
+
+  updateGarageSelection(level) {
+    const selectedKettle = document.querySelector('input[name="brewKettle"]:checked');
+    const selectedCCTs = document.querySelectorAll('#cct-tanks input:checked');
+    const requiredItems = document.querySelectorAll('#required-equipment input:checked');
+    
+    let totalCost = 0;
+    let kettleVolume = 0;
+    let totalCCTVolume = 0;
+    
+    // Собираем выбранное оборудование
+    const selectedEquipment = [];
+    
+    // Варочник
+    if (selectedKettle) {
+        const kettleElement = selectedKettle.closest('.equipment-option');
+        const kettlePrice = parseInt(kettleElement.dataset.price);
+        const kettleVol = parseInt(kettleElement.dataset.volume);
+        totalCost += kettlePrice;
+        kettleVolume = kettleVol;
+        selectedEquipment.push({
+            name: kettleElement.querySelector('strong').textContent,
+            price: kettlePrice,
+            volume: kettleVol
+        });
+    }
+    
+    // ЦКТ
+    selectedCCTs.forEach(cct => {
+        const cctElement = cct.closest('.equipment-option');
+        const cctPrice = parseInt(cctElement.dataset.price);
+        const cctVol = parseInt(cctElement.dataset.volume);
+        totalCost += cctPrice;
+        totalCCTVolume += cctVol;
+        selectedEquipment.push({
+            name: cctElement.querySelector('strong').textContent,
+            price: cctPrice,
+            volume: cctVol
+        });
+    });
+    
+    // Обязательное оборудование
+    requiredItems.forEach(item => {
+        const itemElement = item.closest('.equipment-option');
+        const itemPrice = parseInt(itemElement.dataset.price);
+        totalCost += itemPrice;
+        selectedEquipment.push({
+            name: itemElement.querySelector('strong').textContent,
+            price: itemPrice
+        });
+    });
+    
+    // Обновляем интерфейс
+    this.updateGarageUI(totalCost, kettleVolume, totalCCTVolume, selectedEquipment, level.budget);
+  }
+
+  updateGarageUI(totalCost, kettleVolume, totalCCTVolume, selectedEquipment, budget) {
+    // Обновляем стоимость
+    document.getElementById('total-cost').textContent = totalCost + ' BP';
+    document.getElementById('remaining-budget').textContent = (budget - totalCost) + ' BP';
+    
+    // Показываем выбранное оборудование
+    const selectedList = document.getElementById('selected-equipment');
+    if (selectedEquipment.length > 0) {
+        selectedList.innerHTML = selectedEquipment.map(item => 
+            `<div style="padding: 5px 0; border-bottom: 1px solid #e5e7eb;">✅ ${item.name} - ${item.price} BP${item.volume ? ` (${item.volume}л)` : ''}</div>`
+        ).join('');
+    } else {
+        selectedList.innerHTML = '<p>Выберите оборудование выше...</p>';
+    }
+    
+    // Проверяем объемы
+    const volumeCheck = document.getElementById('volume-check');
+    if (kettleVolume > 0 && totalCCTVolume > 0 && kettleVolume > totalCCTVolume) {
+        volumeCheck.style.display = 'block';
+    } else {
+        volumeCheck.style.display = 'none';
+    }
+    
+    // Проверяем бюджет
+    const budgetWarning = document.getElementById('budget-warning');
+    if (totalCost > budget) {
+        budgetWarning.style.display = 'block';
+    } else {
+        budgetWarning.style.display = 'none';
+    }
+    
+    // Активируем кнопку если все ок
+    const selectedKettle = document.querySelector('input[name="brewKettle"]:checked');
+    const hasChemical = document.getElementById('chemical').checked;
+    const isValid = selectedKettle && hasChemical && totalCost <= budget && kettleVolume <= totalCCTVolume;
+    
+    this.elements.launchBtn.disabled = !isValid;
   }
 
   createEquipmentSlots(level) {
@@ -1310,10 +1582,14 @@ class BreweryGame {
     this.playSound('click');
     this.elements.gameScreen.classList.add('hidden');
     const nextLevel = this.state.currentLevel + 1;
-    if (nextLevel <= Object.keys(this.levels).length) {
-      this.startLevel(nextLevel);
+    
+    // Если закончили уровень 5 - переходим к результатам, а НЕ к уровню 6
+    if (this.state.currentLevel === 5) {
+        this.endGame(true); // ← ПЕРЕХОДИМ К РЕЗУЛЬТАТАМ
+    } else if (nextLevel <= 5) { // ← ТОЛЬКО уровни 1-5
+        this.startLevel(nextLevel);
     } else {
-      this.endGame(true);
+        this.endGame(true);
     }
   }
 
