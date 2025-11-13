@@ -119,7 +119,9 @@ class BreweryGame {
             { id: "steam-gen", name: "Парогенератор", price: 3 },
             { id: "chiller", name: "Чиллер", price: 2 },
             { id: "heat-ex", name: "Теплообменник", price: 2 },
-            { id: "chemical", name: "Химраствор для мойки", price: 2 }
+            { id: "chemical", name: "Химраствор для мойки", price: 2 },
+            { id: "pump-1", name: "Насос для сусла", price: 4 },
+            { id: "pump-2", name: "Насос для воды", price: 3 }
           ]
         },
         description: "Распределите 50 BP на оборудование для гаража. Выберите варочник, ЦКТ и обязательное оборудование. Помните: без химраствора производство невозможно!",
@@ -1250,29 +1252,36 @@ class BreweryGame {
     const equipment = level.equipment;
     
     const interfaceHTML = `
-        <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
-            <div style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+        <div class="garage-setup-container">
+            <div class="budget-display">
                 <h2>🎯 Оборудование гаража</h2>
-                <div style="display: flex; justify-content: space-around; margin-top: 10px;">
-                    <p>Ваш бюджет: <strong>${level.budget} BP</strong></p>
-                    <p>Потрачено: <strong id="total-cost">0 BP</strong></p>
-                    <p>Осталось: <strong id="remaining-budget">50 BP</strong></p>
+                <div class="budget-info">
+                    <div class="budget-item">
+                        <p>Бюджет: <strong>${level.budget} BP</strong></p>
+                    </div>
+                    <div class="budget-item">
+                        <p>Потрачено: <strong id="total-cost">0 BP</strong></p>
+                    </div>
+                    <div class="budget-item">
+                        <p>Осталось: <strong id="remaining-budget">50 BP</strong></p>
+                    </div>
                 </div>
             </div>
 
-            <div>
+            <div class="equipment-selection">
                 <!-- ВАРОЧНИКИ -->
-                <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #e5e7eb;">
-                    <h3 style="color: #1f2937; margin-bottom: 10px;">🔧 Выберите варочник (ОБЯЗАТЕЛЬНО):</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px;" id="brew-kettles">
+                <div class="equipment-category">
+                    <h3>🔧 Варочник (ОБЯЗАТЕЛЬНО):</h3>
+                    <div class="equipment-options" id="brew-kettles">
                         ${equipment.brewKettles.map(kettle => `
-                            <div style="border: 2px solid #e5e7eb; border-radius: 8px; padding: 10px; cursor: pointer; transition: all 0.3s;" 
-                                 class="equipment-option" data-type="kettle" data-id="${kettle.id}" data-price="${kettle.price}" data-volume="${kettle.volume}">
+                            <div class="equipment-option" data-type="kettle" data-id="${kettle.id}" data-price="${kettle.price}" data-volume="${kettle.volume}">
                                 <input type="radio" name="brewKettle" id="${kettle.id}" value="${kettle.id}">
-                                <label for="${kettle.id}" style="cursor: pointer; display: block;">
-                                    <strong>${kettle.name}</strong><br>
-                                    Объем: ${kettle.volume}л<br>
-                                    Цена: ${kettle.price} BP
+                                <label for="${kettle.id}">
+                                    <strong>${kettle.name}</strong>
+                                    <div class="equipment-details">
+                                        <span>Объем: ${kettle.volume}л</span>
+                                        <span class="price">Цена: ${kettle.price} BP</span>
+                                    </div>
                                 </label>
                             </div>
                         `).join('')}
@@ -1280,57 +1289,55 @@ class BreweryGame {
                 </div>
 
                 <!-- ЦКТ -->
-                <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #e5e7eb;">
-                    <h3 style="color: #1f2937; margin-bottom: 10px;">🛢️ Выберите ЦКТ (можно несколько):</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px;" id="cct-tanks">
+                <div class="equipment-category">
+                    <h3>🛢️ ЦКТ (можно несколько):</h3>
+                    <div class="equipment-options" id="cct-tanks">
                         ${equipment.cctTanks.map(tank => `
-                            <div style="border: 2px solid #e5e7eb; border-radius: 8px; padding: 10px; cursor: pointer; transition: all 0.3s;" 
-                                 class="equipment-option" data-type="cct" data-id="${tank.id}" data-price="${tank.price}" data-volume="${tank.volume}">
+                            <div class="equipment-option" data-type="cct" data-id="${tank.id}" data-price="${tank.price}" data-volume="${tank.volume}">
                                 <input type="checkbox" id="${tank.id}" value="${tank.id}">
-                                <label for="${tank.id}" style="cursor: pointer; display: block;">
-                                    <strong>${tank.name}</strong><br>
-                                    Объем: ${tank.volume}л<br>
-                                    Цена: ${tank.price} BP
+                                <label for="${tank.id}">
+                                    <strong>${tank.name}</strong>
+                                    <div class="equipment-details">
+                                        <span>Объем: ${tank.volume}л</span>
+                                        <span class="price">Цена: ${tank.price} BP</span>
+                                    </div>
                                 </label>
                             </div>
                         `).join('')}
                     </div>
-                    <p style="font-size: 12px; color: #6b7280; font-style: italic; margin-top: 5px;">
-                        💡 Можно выбрать несколько ЦКТ. Общий объем должен быть не меньше объема варочника.
-                    </p>
+                    <p class="hint-text">💡 Можно выбрать несколько ЦКТ. Общий объем должен быть не меньше объема варочника.</p>
                 </div>
 
                 <!-- ОБЯЗАТЕЛЬНОЕ ОБОРУДОВАНИЕ -->
-                <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #e5e7eb;">
-                    <h3 style="color: #1f2937; margin-bottom: 10px;">⚙️ Обязательное оборудование:</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px;" id="required-equipment">
+                <div class="equipment-category">
+                    <h3>⚙️ Обязательное оборудование:</h3>
+                    <div class="equipment-options" id="required-equipment">
                         ${equipment.required.map(item => `
-                            <div style="border: 2px solid #0ea5e9; border-radius: 8px; padding: 10px; background: #f0f9ff;" 
-                                 class="equipment-option required-item" data-type="required" data-id="${item.id}" data-price="${item.price}">
+                            <div class="equipment-option required-item" data-type="required" data-id="${item.id}" data-price="${item.price}">
                                 <input type="checkbox" id="${item.id}" value="${item.id}" checked disabled>
-                                <label for="${item.id}" style="cursor: pointer; display: block;">
-                                    <strong>${item.name}</strong><br>
-                                    Цена: ${item.price} BP
-                                    ${item.id === 'chemical' ? '<br><span style="color: red;">⚠️ Без этого нельзя!</span>' : ''}
+                                <label for="${item.id}">
+                                    <strong>${item.name}</strong>
+                                    <div class="equipment-details">
+                                        <span class="price">Цена: ${item.price} BP</span>
+                                        ${item.id === 'chemical' ? '<span class="warning">⚠️ Без этого нельзя!</span>' : ''}
+                                    </div>
                                 </label>
                             </div>
                         `).join('')}
                     </div>
-                    <p style="font-size: 12px; color: #6b7280; font-style: italic; margin-top: 5px;">
-                        ✅ Это оборудование обязательно для работы пивоварни
-                    </p>
+                    <p class="hint-text">✅ Это оборудование обязательно для работы пивоварни</p>
                 </div>
 
                 <!-- СВОДКА -->
-                <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border: 2px solid #e2e8f0;">
-                    <h3 style="color: #1f2937; margin-bottom: 10px;">📊 Ваш выбор:</h3>
+                <div class="summary-section">
+                    <h3>📊 Ваш выбор:</h3>
                     <div id="selected-equipment">
-                        <p>Выберите оборудование выше...</p>
+                        <p class="empty-selection">Выберите оборудование выше...</p>
                     </div>
-                    <div id="volume-check" style="display: none; background: #fef2f2; color: #dc2626; padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid #fecaca;">
+                    <div id="volume-check" class="warning-message hidden">
                         <p>⚠️ <strong>Внимание:</strong> Объем ЦКТ меньше объема варочника!</p>
                     </div>
-                    <div id="budget-warning" style="display: none; background: #fef2f2; color: #dc2626; padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid #fecaca;">
+                    <div id="budget-warning" class="warning-message hidden">
                         <p>❌ <strong>Превышен бюджет!</strong> Уберите лишнее оборудование.</p>
                     </div>
                 </div>
@@ -1345,7 +1352,7 @@ class BreweryGame {
     
     // Добавляем обработчики событий
     this.initGarageEventListeners(level);
-  }
+}
 
   initGarageEventListeners(level) {
     const equipmentOptions = document.querySelectorAll('.equipment-option input');
