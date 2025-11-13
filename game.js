@@ -998,14 +998,18 @@ setTimeout(() => {
         this.elements.settingsContainer.classList.remove('compact', 'super-compact');
     }
 
-    if (levelNum === 1 || levelNum === 2 || levelNum === 4) {
+        if (levelNum === 1 || levelNum === 2 || levelNum === 4) {
         this.createSettingsInterface(level);
         this.elements.hintBtn.classList.remove('hidden');
         // Скрываем playground и equipment, показываем settings и картинку
         this.elements.playgroundContainer.classList.add('hidden');
         this.elements.equipmentPanelContainer.classList.add('hidden');
         this.elements.settingsContainer.classList.remove('hidden');
-        this.elements.breweryBackground.classList.remove('hidden'); // ← ДОБАВЬ ЭТУ СТРОКУ
+        this.elements.breweryBackground.classList.remove('hidden');
+        
+        // ★★★★ ВОТ ТУТ ДОБАВЛЯЕМ СТРОКУ ★★★★
+        this.updateBackgroundImage(levelNum);
+        
     } else {
         this.createEquipmentSlots(level);
         this.createEquipmentPanel(level);
@@ -1014,7 +1018,7 @@ setTimeout(() => {
         this.elements.settingsContainer.classList.add('hidden');
         this.elements.playgroundContainer.classList.remove('hidden');
         this.elements.equipmentPanelContainer.classList.remove('hidden');
-        this.elements.breweryBackground.classList.add('hidden'); // ← ДОБАВЬ ЭТУ СТРОКУ
+        this.elements.breweryBackground.classList.add('hidden');
     }
 
     this.elements.levelSelectScreen.classList.add('hidden');
@@ -1382,6 +1386,24 @@ createSettingsInterface(level) {
     if (level3El) level3El.value = `${this.state.levelResults[3].correct}/${this.state.levelResults[3].total}`;
     if (level4El) level4El.value = `${this.state.levelResults[4].correct}/${this.state.levelResults[4].total}`;
     if (totalTimeEl) totalTimeEl.value = totalTime;
+  }
+    // Меняем картинку фона для каждого уровня
+  updateBackgroundImage(levelNum) {
+    // Находим элемент с картинкой фона
+    const bgImage = this.elements.breweryBackground.querySelector('img');
+    if (!bgImage) return;
+    
+    // Список картинок для каждого уровня
+    const levelImages = {
+      1: 'assets/images/brewery-background-level1.png',
+      2: 'assets/images/brewery-background-level2.png', 
+      4: 'assets/images/brewery-background-level4.png'
+    };
+    
+    // Если для этого уровня есть своя картинка - меняем
+    if (levelImages[levelNum]) {
+      bgImage.src = levelImages[levelNum];
+    }
   }
 }
 // ★★★★ КЛАСС ЗАКАНЧИВАЕТСЯ ЗДЕСЬ ★★★★
