@@ -1891,4 +1891,29 @@ body {
 
 .complex-image {
     background: url('assets/images/brewery-complex.png') center/cover no-repeat;
+}#continue-to-business {
+    background: linear-gradient(135deg, #ff8c00 0%, #ff4500 100%) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold;
+    animation: business-btn-pulse 5s infinite;
+}
+
+@keyframes business-btn-pulse {
+  0% { 
+    transform: scale(1); 
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4); 
+  }
+  10% { 
+    transform: scale(1.05); 
+    box-shadow: 0 0 20px 5px rgba(255, 140, 0, 0.8); 
+  }
+  20% { 
+    transform: scale(1); 
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4); 
+  }
+  100% { 
+    transform: scale(1); 
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4); 
+  }
 }

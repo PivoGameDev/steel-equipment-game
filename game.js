@@ -277,11 +277,15 @@ class BreweryGame {
 
   showBusinessStartScreen() {
     this.playSound('click');
+    
+    // Останавливаем таймер если он запущен
+    clearInterval(this.timer);
+    
     this.elements.winScreen.classList.add('hidden');
     this.elements.loseScreen.classList.add('hidden');
     this.elements.businessStartScreen.classList.remove('hidden');
     this.updateBusinessDisplay();
-  }
+}
 
   updateBusinessDisplay() {
     const balanceDisplay = document.getElementById('balance-display');
@@ -655,15 +659,20 @@ class BreweryGame {
   }
 
   updateTimer() {
+    // Если мы на экране бизнеса - не обновляем таймер
+    if (!this.elements.businessStartScreen.classList.contains('hidden')) {
+        return;
+    }
+    
     this.state.timeLeft--;
     this.updateTimerDisplay();
     if (this.state.timeLeft <= 10) this.elements.timerDisplay.classList.add('low-time');
     if (this.state.timeLeft <= 0) {
-      clearInterval(this.timer);
-      this.playSound('error');
-      this.endGame(false);
+        clearInterval(this.timer);
+        this.playSound('error');
+        this.endGame(false);
     }
-  }
+}
 
   formatTime(seconds) {
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -1090,6 +1099,9 @@ class BreweryGame {
   }
 
   startLevel(levelNum) {
+    // Останавливаем любой предыдущий таймер
+    clearInterval(this.timer);
+    
     this.playSound('click');
     this.state.currentLevel = levelNum;
     const level = this.levels[levelNum];
