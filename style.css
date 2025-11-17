@@ -3490,3 +3490,43 @@ body {
     padding-top: 0 !important;
     gap: 8px !important;
 }
+/* === СТАТИЧНЫЙ ФИКС === */
+#game-screen[data-level="1"] .game-container,
+#game-screen[data-level="2"] .game-container, 
+#game-screen[data-level="4"] .game-container {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 500px !important;
+}
+
+#game-screen[data-level="1"] .level-description,
+#game-screen[data-level="2"] .level-description,
+#game-screen[data-level="4"] .level-description {
+    height: 80px !important;
+    flex: none !important;
+}
+
+#game-screen[data-level="1"] .brewery-background,
+#game-screen[data-level="2"] .brewery-background,
+#game-screen[data-level="4"] .brewery-background {
+    height: 120px !important;
+    flex: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#game-screen[data-level="1"] .settings-container,
+#game-screen[data-level="2"] .settings-container,
+#game-screen[data-level="4"] .settings-container {
+    height: 200px !important;
+    flex: none !important;
+    margin: 0 !important;
+}
+
+#game-screen[data-level="1"] .game-controls,
+#game-screen[data-level="2"] .game-controls,
+#game-screen[data-level="4"] .game-controls {
+    height: 60px !important;
+    flex: none !important;
+    margin: 0 !important;
+}
