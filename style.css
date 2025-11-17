@@ -3530,3 +3530,36 @@ body {
     flex: none !important;
     margin: 0 !important;
 }
+/* === СТАТИЧНО БЕЗ СКРОЛЛА === */
+@media (max-width: 768px) {
+    #game-screen[data-level="1"] .game-container,
+    #game-screen[data-level="2"] .game-container, 
+    #game-screen[data-level="4"] .game-container {
+        height: 100vh !important;
+        overflow: hidden !important;
+    }
+    
+    #game-screen[data-level="1"] .level-description,
+    #game-screen[data-level="2"] .level-description,
+    #game-screen[data-level="4"] .level-description {
+        height: 60px !important;
+    }
+    
+    #game-screen[data-level="1"] .brewery-background,
+    #game-screen[data-level="2"] .brewery-background,
+    #game-screen[data-level="4"] .brewery-background {
+        height: 80px !important;
+    }
+    
+    #game-screen[data-level="1"] .settings-container,
+    #game-screen[data-level="2"] .settings-container,
+    #game-screen[data-level="4"] .settings-container {
+        height: 120px !important;
+    }
+    
+    #game-screen[data-level="1"] .game-controls,
+    #game-screen[data-level="2"] .game-controls,
+    #game-screen[data-level="4"] .game-controls {
+        height: 50px !important;
+    }
+}
