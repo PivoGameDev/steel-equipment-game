@@ -3665,3 +3665,212 @@ body {
 .selected-equipment-list {
     width: 100% !important;
 }
+/* === УБИРАЕМ ПУСТОТУ МЕЖДУ КОНТЕНТОМ И КНОПКАМИ НА УРОВНЯХ 1-5 === */
+
+/* Уменьшаем отступы в игровом контейнере */
+.game-container {
+    gap: 3px !important;
+    margin: 0 0 0px !important;
+    padding: 0 5px 0px !important; /* Убираем нижний padding */
+}
+
+/* Делаем контейнеры настроек и оборудования более компактными */
+.settings-container {
+    gap: 8px !important;
+    padding: 8px !important;
+    margin-bottom: 0 !important;
+}
+
+.playground-container,
+.equipment-panel-container {
+    margin-bottom: 0 !important;
+    min-height: 120px !important;
+    max-height: 130px !important;
+}
+
+/* Уменьшаем верхние блоки еще больше */
+.game-header {
+    margin-bottom: 0 !important;
+    min-height: 20px !important;
+}
+
+.level-description {
+    margin: 0 0 2px !important;
+    min-height: 35px !important;
+    max-height: 40px !important;
+    padding: 5px !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+}
+
+/* Делаем кнопки ближе к контенту */
+.game-controls {
+    margin-top: 2px !important;
+    padding: 5px 3px !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+
+/* Компактные настройки для уровней 1,2,4 */
+.setting-item {
+    min-height: 55px !important;
+    padding: 6px !important;
+}
+
+.setting-item label {
+    margin-bottom: 4px !important;
+    font-size: 11px !important;
+}
+
+.setting-controls {
+    gap: 8px !important;
+}
+
+.temp-slider {
+    height: 10px !important;
+}
+
+.temp-value {
+    font-size: 12px !important;
+    min-width: 30px !important;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .game-container {
+        gap: 2px !important;
+        padding: 0 3px 0px !important;
+    }
+    
+    .settings-container {
+        gap: 6px !important;
+        padding: 6px !important;
+    }
+    
+    .playground-container,
+    .equipment-panel-container {
+        min-height: 110px !important;
+        max-height: 120px !important;
+        padding: 5px !important;
+    }
+    
+    .level-description {
+        min-height: 30px !important;
+        max-height: 35px !important;
+        padding: 4px !important;
+        font-size: 10px !important;
+    }
+    
+    .game-controls {
+        margin-top: 1px !important;
+        padding: 4px 2px !important;
+        min-height: 45px !important;
+        max-height: 45px !important;
+    }
+    
+    /* Еще более компактные настройки */
+    .setting-item {
+        min-height: 50px !important;
+        padding: 5px !important;
+    }
+    
+    .setting-item label {
+        font-size: 10px !important;
+        margin-bottom: 3px !important;
+    }
+    
+    .temp-slider {
+        height: 8px !important;
+    }
+    
+    .temp-value {
+        font-size: 11px !important;
+        min-width: 25px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        gap: 1px !important;
+    }
+    
+    .settings-container {
+        gap: 4px !important;
+        padding: 4px !important;
+    }
+    
+    .playground-container,
+    .equipment-panel-container {
+        min-height: 100px !important;
+        max-height: 110px !important;
+        padding: 3px !important;
+    }
+    
+    .level-description {
+        min-height: 25px !important;
+        max-height: 30px !important;
+        padding: 3px !important;
+        font-size: 9px !important;
+    }
+    
+    .game-controls {
+        margin-top: 0 !important;
+        padding: 3px 1px !important;
+        min-height: 40px !important;
+        max-height: 40px !important;
+    }
+    
+    /* Супер-компактные кнопки */
+    #hint-btn, #launch-btn {
+        height: 30px !important;
+        min-height: 30px !important;
+        max-height: 30px !important;
+        font-size: 10px !important;
+        padding: 4px 8px !important;
+        min-width: 100px !important;
+        max-width: 120px !important;
+    }
+    
+    #launch-btn {
+        font-size: 9.5px !important;
+        min-width: 110px !important;
+    }
+}
+
+/* Для уровней с оборудованием (3,5) - делаем слоты и панель компактнее */
+.slot, .equipment-btn {
+    width: 120px !important;
+    height: 120px !important;
+}
+
+.equipment, .equipment-placed {
+    width: 100px !important;
+    height: 100px !important;
+}
+
+.slot-number {
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 10px !important;
+}
+
+/* Убираем лишние отступы в playground */
+.playground {
+    gap: 8px !important;
+    padding: 5px !important;
+}
+
+.equipment-panel {
+    gap: 8px !important;
+    padding: 3px !important;
+}
+
+/* Гарантируем что все влезает без скролла */
+#game-screen {
+    overflow: hidden !important;
+}
+
+.game-container {
+    overflow: hidden !important;
+}
