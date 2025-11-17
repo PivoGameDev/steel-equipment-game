@@ -1752,42 +1752,6 @@ class BreweryGame {
     setTimeout(() => {
         this.elements.gameScreen.style.height = '100vh';
     }, 50);
-    updateLevelDisplay(levelNum) 
-    {
-    // Сбрасываем все контейнеры
-    this.elements.playgroundContainer.classList.add('hidden');
-    this.elements.equipmentPanelContainer.classList.add('hidden');
-    this.elements.settingsContainer.classList.add('hidden');
-    this.elements.breweryBackground.classList.add('hidden');
-
-    const level = this.levels[levelNum];
-    
-    // Гарантируем верхний отступ для уровней 1-5
-    this.elements.gameScreen.style.paddingTop = '60px';
-    this.elements.gameScreen.style.justifyContent = 'flex-start';
-    
-    if (levelNum === 1 || levelNum === 2 || levelNum === 4) {
-        this.createSettingsInterface(level);
-        this.elements.settingsContainer.classList.remove('hidden');
-        this.elements.breweryBackground.classList.remove('hidden');
-        this.updateBackgroundImage(levelNum);
-    } else if (levelNum === 3 || levelNum === 5) {
-        this.createEquipmentSlots(level);
-        this.createEquipmentPanel(level);
-        this.elements.playgroundContainer.classList.remove('hidden');
-        this.elements.equipmentPanelContainer.classList.remove('hidden');
-    }
-    
-    this.elements.hintBtn.classList.remove('hidden');
-    
-    // Адаптация для мобильных
-    if (this.isMobile()) {
-        this.elements.gameScreen.style.paddingTop = '50px';
-        if (window.innerWidth <= 480) {
-            this.elements.gameScreen.style.paddingTop = '45px';
-        }
-    }
-}
 }
 
   // === МЕТОДЫ ДЛЯ ЭКРАНА ОБОРУДОВАНИЯ ===

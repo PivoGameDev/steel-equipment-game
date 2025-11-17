@@ -3454,3 +3454,29 @@ body {
         padding-top: 40px !important;
     }
 }
+/* === ФИКС ОТСТУПОВ ДЛЯ УРОВНЕЙ 1-5 === */
+#game-screen {
+    padding-top: 60px !important;
+    justify-content: flex-start !important;
+}
+
+/* Мобильные устройства */
+@media (max-width: 768px) {
+    #game-screen {
+        padding-top: 50px !important;
+    }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 480px) {
+    #game-screen {
+        padding-top: 45px !important;
+    }
+}
+
+/* Ландшафтная ориентация */
+@media (max-width: 768px) and (orientation: landscape) {
+    #game-screen {
+        padding-top: 40px !important;
+    }
+}
