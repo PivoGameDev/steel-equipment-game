@@ -2994,3 +2994,55 @@ body {
     gap: 15px !important;
     padding: 10px !important;
 }
+/* === ФИКС ОТСТУПОВ КНОПОК ДЛЯ ПК === */
+@media (min-width: 769px) {
+  .game-controls {
+    margin-bottom: 40px !important;
+    padding-bottom: 20px !important;
+  }
+  
+  #launch-btn, #hint-btn {
+    margin-bottom: 10px !important;
+  }
+}
+/* === АЛЬТЕРНАТИВНЫЙ ФИКС БЕЗ КЛАССОВ УРОВНЯ === */
+
+/* Когда виден brewery-background - скрываем другие контейнеры */
+.brewery-background:not(.hidden) ~ .playground-container.hidden,
+.brewery-background:not(.hidden) ~ .equipment-panel-container.hidden {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Когда виден playground-container - скрываем brewery-background и settings */
+.playground-container:not(.hidden) ~ .brewery-background.hidden,
+.playground-container:not(.hidden) ~ .settings-container.hidden {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Убираем отступы у скрытых элементов */
+.game-container .hidden {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+}
+
+/* Увеличиваем видимые изображения */
+.brewery-background:not(.hidden) {
+    min-height: 180px !important;
+    max-height: 220px !important;
+    margin: 10px 0 !important;
+}
+
+.brewery-background:not(.hidden) img {
+    max-width: 85% !important;
+    max-height: 200px !important;
+    width: auto !important;
+    height: auto !important;
+}
