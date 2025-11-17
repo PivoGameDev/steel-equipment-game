@@ -1304,6 +1304,7 @@ class BreweryGame {
     
     this.playSound('click');
     this.state.currentLevel = levelNum;
+    this.elements.gameScreen.setAttribute('data-level', levelNum);
     const level = this.levels[levelNum];
     this.elements.playground.innerHTML = '';
     this.elements.equipmentPanel.innerHTML = '';
@@ -1719,23 +1720,39 @@ class BreweryGame {
 
     const level = this.levels[levelNum];
     
+    // Принудительно убираем скролл у игрового экрана
+    this.elements.gameScreen.style.overflow = 'hidden';
+    
     if (levelNum === 1 || levelNum === 2 || levelNum === 4) {
-        // Уровни с настройками - показываем настройки и фон
+        // Уровни с настройками
         this.createSettingsInterface(level);
         this.elements.settingsContainer.classList.remove('hidden');
         this.elements.breweryBackground.classList.remove('hidden');
         this.updateBackgroundImage(levelNum);
+        
+        // Гарантируем что оборудование скрыто
+        this.elements.playgroundContainer.classList.add('hidden');
+        this.elements.equipmentPanelContainer.classList.add('hidden');
     } else if (levelNum === 3 || levelNum === 5) {
-        // Уровни с оборудованием - показываем слоты и панель оборудования
+        // Уровни с оборудованием
         this.createEquipmentSlots(level);
         this.createEquipmentPanel(level);
         this.elements.playgroundContainer.classList.remove('hidden');
         this.elements.equipmentPanelContainer.classList.remove('hidden');
+        
+        // Гарантируем что настройки и фон скрыты
+        this.elements.settingsContainer.classList.add('hidden');
+        this.elements.breweryBackground.classList.add('hidden');
     }
     
     // Всегда показываем кнопку подсказки
     this.elements.hintBtn.classList.remove('hidden');
-  }
+    
+    // Принудительный reflow для стабильности
+    setTimeout(() => {
+        this.elements.gameScreen.style.height = '100vh';
+    }, 50);
+}
 
   // === МЕТОДЫ ДЛЯ ЭКРАНА ОБОРУДОВАНИЯ ===
 
