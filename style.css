@@ -3038,3 +3038,86 @@ body {
         transform: translateY(0);
     }
 }
+/* === ПРОСТОЙ ФИКС ДЛЯ ВСТРАИВАНИЯ В САЙТ === */
+/* Добавьте этот код в самый конец style.css */
+
+body {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+.screen {
+    height: 90vh !important;
+    max-height: none !important;
+}
+
+#game-screen {
+    height: 90vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Делаем кнопки всегда видимыми внизу */
+.game-controls {
+    position: sticky !important;
+    bottom: 0 !important;
+    background: white !important;
+    padding: 10px 5px !important;
+    border-top: 2px solid #f3f4f6 !important;
+    margin-top: auto !important;
+    z-index: 100 !important;
+    min-height: 60px !important;
+}
+
+/* Гарантируем что основной контент прокручивается */
+.game-container {
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    padding-bottom: 5px !important;
+}
+
+/* Уменьшаем верхние блоки чтобы все влезало */
+.game-header {
+    min-height: 25px !important;
+    margin-bottom: 2px !important;
+}
+
+.level-description {
+    min-height: 35px !important;
+    max-height: 45px !important;
+    padding: 6px !important;
+    margin-bottom: 3px !important;
+    font-size: 11px !important;
+}
+
+/* Делаем кнопки более компактными на мобильных */
+@media (max-width: 768px) {
+    #hint-btn, #launch-btn {
+        height: 40px !important;
+        min-height: 40px !important;
+        max-height: 40px !important;
+        font-size: 13px !important;
+        padding: 8px 12px !important;
+    }
+    
+    .game-controls {
+        min-height: 55px !important;
+        padding: 8px 5px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #hint-btn, #launch-btn {
+        height: 36px !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
+        font-size: 12px !important;
+        padding: 6px 10px !important;
+    }
+    
+    .game-controls {
+        min-height: 50px !important;
+        padding: 6px 3px !important;
+    }
+}
