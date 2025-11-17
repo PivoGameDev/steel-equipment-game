@@ -3454,29 +3454,39 @@ body {
         padding-top: 40px !important;
     }
 }
-/* === ФИКС ОТСТУПОВ ДЛЯ УРОВНЕЙ 1-5 === */
-#game-screen {
-    padding-top: 60px !important;
-    justify-content: flex-start !important;
+/* === БАЛАНС: Картинка меньше, пустоты нет === */
+
+/* Убираем ВСЕ отступы вокруг картинки */
+.brewery-background {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100px !important;
+    min-height: 100px !important;
+    max-height: 100px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Мобильные устройства */
-@media (max-width: 768px) {
-    #game-screen {
-        padding-top: 50px !important;
-    }
+/* Делаем картинку компактной */
+.brewery-background img {
+    max-height: 90px !important;
+    max-width: 90% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    object-fit: contain;
 }
 
-/* Очень маленькие экраны */
-@media (max-width: 480px) {
-    #game-screen {
-        padding-top: 45px !important;
-    }
+/* Уменьшаем отступы между элементами */
+.level-description {
+    margin-bottom: 5px !important;
+    min-height: 60px !important;
+    max-height: 70px !important;
 }
 
-/* Ландшафтная ориентация */
-@media (max-width: 768px) and (orientation: landscape) {
-    #game-screen {
-        padding-top: 40px !important;
-    }
+/* Компактные настройки */
+.settings-container {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    gap: 8px !important;
 }
