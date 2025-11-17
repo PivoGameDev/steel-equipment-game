@@ -1936,17 +1936,21 @@ class BreweryGame {
     }
     
     if (selectedEquipment.length > 0) {
-        selectedList.innerHTML = selectedEquipment.map(item => 
-            `<div>
-                <span>✅ ${item.name}</span>
-                <span class="equipment-item-price">${item.price} BP</span>
-            </div>`
-        ).join('');
-        console.log('Сводка оборудования обновлена');
-    } else {
-        selectedList.innerHTML = '<p class="empty-selection-wide">Выберите оборудование выше...</p>';
-        console.log('Сводка оборудования пуста');
-    }
+    selectedList.innerHTML = selectedEquipment.map(item => 
+        `<div class="selected-equipment-item" data-id="${item.id}">
+            <span class="equipment-item-name">${item.name}</span>
+            <span class="equipment-item-price">${item.price} BP</span>
+        </div>`
+    ).join('') + 
+    `<div class="equipment-total">
+        <span>ИТОГО:</span>
+        <span>${totalCost} BP</span>
+    </div>`;
+    console.log('Сводка оборудования обновлена');
+} else {
+    selectedList.innerHTML = '<p class="empty-selection-wide">Выберите оборудование выше...</p>';
+    console.log('Сводка оборудования пуста');
+}
     
     // Проверяем совместимость
     const compatibilityCheck = document.getElementById('compatibility-check');
@@ -2078,20 +2082,6 @@ updateEquipmentUI(totalCost, selectedEquipment, budget, facilityType) {
     console.log('Кнопка запуска активна:', isValid);
 }
 
-// Добавьте метод для удаления оборудования из чека
-removeEquipment(equipmentId) {
-    this.playSound('click');
-    
-    // Находим соответствующий input и снимаем выбор
-    const input = document.getElementById(equipmentId);
-    if (input) {
-        input.checked = false;
-        
-        // Заново обновляем выбор оборудования
-        const facilityType = this.getCurrentFacilityType(); // Нужно будет добавить этот метод
-        this.updateEquipmentSelection(facilityType);
-    }
-}
 
 // Добавьте этот вспомогательный метод
 getCurrentFacilityType() {
