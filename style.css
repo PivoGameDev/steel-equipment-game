@@ -3182,30 +3182,85 @@ body {
     }
   }
 }
-/* === ОБЩИЕ УЛУЧШЕНИЯ УПРАВЛЕНИЯ ПРОСТРАНСТВОМ === */
-#game-screen {
-  position: relative !important;
-  overflow: hidden !important;
+/* ПРОСТОЙ ВАРИАНТ - убираем sticky полностью */
+.equipment-header {
+    margin-bottom: 20px;
+    position: relative;
 }
 
-/* Гарантируем что контент не выходит за границы */
-.game-container > * {
-  flex-shrink: 0 !important;
+.budget-display-wide {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    color: white;
+    padding: 15px 20px !important;
+    border-radius: 12px !important;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    margin: 0 auto 20px auto !important;
+    max-width: 100% !important;
+    /* Убираем sticky свойства */
+    position: relative;
+    top: auto;
+}
+.equipment-header {
+    margin-bottom: 20px;
+    position: relative;
+    width: 100%;
 }
 
-/* Фикс для предотвращения нежелательного скролла */
-body {
-  overflow: hidden !important;
+/* Бюджетный блок - статичный вверху */
+.budget-display-wide {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    color: white;
+    padding: 15px 20px !important;
+    border-radius: 12px !important;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    margin: 0 auto 15px auto !important; /* Уменьшаем отступ снизу */
+    max-width: 100% !important;
+    position: relative; /* Убираем sticky/fixed */
+    top: auto;
 }
 
-.screen {
-  overflow: hidden !important;
+/* Описание под бюджетом */
+.equipment-description {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0 0 10px 0; /* Убираем верхний отступ, добавляем снизу */
+    text-align: center;
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px 20px;
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Только разрешаем скролл где это необходимо */
-#level-select-screen,
-#business-start-screen,
-#facility-equipment-screen,
-#win-screen {
-  overflow-y: auto !important;
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .budget-display-wide {
+        padding: 12px 15px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .equipment-description {
+        font-size: 14px;
+        padding: 10px 15px;
+        margin-bottom: 5px;
+    }
+    
+    .budget-display-wide h2 {
+        font-size: 1.2rem !important;
+        margin-bottom: 8px !important;
+    }
+}
+
+/* Убираем все sticky/fixed стили которые были */
+.budget-display-wide.fixed-header,
+.wide-equipment-store.with-fixed-header {
+    /* Отменяем предыдущие стили */
+    position: relative !important;
+    top: auto !important;
+    padding-top: 0 !important;
 }
