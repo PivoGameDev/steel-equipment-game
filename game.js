@@ -1808,6 +1808,33 @@ class BreweryGame {
     
     // Инициализируем первый расчет
     this.updateEquipmentSelection(facilityType);
+
+    initMobileEquipmentBehavior() 
+    {
+    // Плавная прокрутка к категориям
+    const categoryHeaders = document.querySelectorAll('.equipment-category-wide h3');
+    categoryHeaders.forEach(header => {
+        header.style.cursor = 'pointer';
+        header.addEventListener('click', () => {
+            const category = header.closest('.equipment-category-wide');
+            category.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+    });
+
+    // Оптимизация для touch devices
+    if (this.isMobile()) {
+        const equipmentOptions = document.querySelectorAll('.equipment-option-wide');
+        equipmentOptions.forEach(option => {
+            option.addEventListener('touchstart', () => {
+                option.style.transform = 'scale(0.98)';
+            });
+            
+            option.addEventListener('touchend', () => {
+                option.style.transform = '';
+            });
+        });
+    }
+}
   }
 
   selectBasicEquipment(facilityType) {
