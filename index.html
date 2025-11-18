@@ -42,8 +42,8 @@
     </div>
 
     <!-- Игровой экран -->
-    <div id="game-screen" class="screen hidden">
-        <div class="game-header">
+    <div id="game-screen" class="screen hidden" style="height: auto; display: flex; flex-direction: column;">
+    <div class="game-header">
             <div class="header-left">
                 <p class="level-name">Уровень: Новичок</p>
                 <p class="timer">05:00</p>
@@ -75,11 +75,10 @@
             </div>
         </div>
         
-        <!-- ПРОСТЫЕ КНОПКИ БЕЗ ФИКСИРОВАННОГО КОНТЕЙНЕРА -->
-        <div class="game-controls">
-            <button id="hint-btn" class="hidden">Подсказка</button>
-            <button id="launch-btn" disabled>Далее →</button>
-        </div>
+        <div class="game-controls" style="margin-top: auto;">
+    <button id="hint-btn" class="hidden">Подсказка</button>
+    <button id="launch-btn" disabled>Далее →</button>
+</div>
         
     </div>
 

@@ -210,6 +210,7 @@ class BreweryGame {
     setTimeout(() => {
       this.initIntroAnimation();
     }, 500);
+    this.showStartScreen();
   }
 
   isVerySmallScreen() {
@@ -1243,8 +1244,11 @@ class BreweryGame {
   showStartScreen() {
     this.playSound('click');
     this.elements.levelSelectScreen.classList.add('hidden');
+    this.elements.gameScreen.classList.add('hidden'); // ← ДОБАВЬТЕ ЭТУ СТРОЧКУ
+    this.elements.winScreen.classList.add('hidden');
+    this.elements.loseScreen.classList.add('hidden');
+    this.elements.businessStartScreen.classList.add('hidden');
     this.elements.startScreen.classList.remove('hidden');
-    
     const overlay = document.getElementById('animation-overlay');
     const mainContent = document.getElementById('main-content');
     
