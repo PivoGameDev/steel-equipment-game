@@ -364,51 +364,46 @@ class BreweryGame {
   }
 
   renderBusinessCards() {
-    const businessOptions = document.querySelector('.business-options');
-    if (!businessOptions) return;
+  const businessOptions = document.querySelector('.business-options');
+  if (!businessOptions) return;
 
-    businessOptions.innerHTML = '';
+  businessOptions.innerHTML = '';
 
-    const facilityOrder = ['preparation', 'mashing', 'fermentation', 'bottling', 'production', 'advanced', 'complex'];
+  const facilityOrder = ['preparation', 'mashing', 'fermentation', 'bottling', 'production', 'advanced', 'complex'];
+  
+  facilityOrder.forEach((facilityType) => {
+    const facility = this.businessLevels[facilityType];
+    const isAvailable = this.isFacilityAvailable(facilityType);
+    const isPurchased = this.state.business.purchasedFacilities.includes(facilityType);
     
-    facilityOrder.forEach((facilityType, index) => {
-      const facility = this.businessLevels[facilityType];
-      const isAvailable = this.isFacilityAvailable(facilityType);
-      const isPurchased = this.state.business.purchasedFacilities.includes(facilityType);
-      
-      const card = document.createElement('div');
-      card.className = `business-card ${isAvailable ? 'available' : 'locked'}`;
-      card.dataset.type = facilityType;
-      
-      let buttonHTML = '';
-      if (isAvailable && !isPurchased) {
-        buttonHTML = `<button class="business-action-btn" data-price="${facility.price}">Арендовать за ${facility.price} BP</button>`;
-      } else if (isPurchased) {
-        buttonHTML = `<button class="business-action-btn equipped" onclick="game.startFacilityLevel('${facilityType}')">Оснастить оборудованием →</button>`;
-      }
-      
-      card.innerHTML = `
-  <div class="level-card-content">
-    <div class="level-card-info">
-      <h3>${level.name}</h3>
-      <p>${level.description || ''}</p>
-      <div class="level-card-meta">
-        <span class="meta-item">${level.slots ? '🔧 ' + level.slots.length + ' оборудования' : '⚙️ Настройки параметров'}</span>
-        <span class="meta-item">⏱️ ${level.time} сек</span>
-      </div>
-    </div>
-    <div class="level-card-stats">
-      <div class="level-score">
-        ${this.progress.bestScores[levelNum] ? '🏆 ' + this.progress.bestScores[levelNum] : 'Новый'}
-      </div>
-    </div>
-  </div>
-  <div class="lock-icon ${isUnlocked ? 'hidden' : ''}"></div>
-      `;
-      
-      businessOptions.appendChild(card);
-    });
-  }
+    const card = document.createElement('div');
+    card.className = `business-card ${isAvailable ? 'available' : 'locked'}`;
+    card.dataset.type = facilityType;
+    
+    let buttonHTML = '';
+    if (isAvailable && !isPurchased) {
+      buttonHTML = `<button class="business-action-btn" data-price="${facility.price}">Арендовать за ${facility.price} BP</button>`;
+    } else if (isPurchased) {
+      buttonHTML = `<button class="business-action-btn equipped" onclick="game.showFacilityEquipment('${facilityType}')">Оснастить оборудованием →</button>`;
+    }
+    
+    card.innerHTML = `
+      <div class="business-image ${facilityType}-image"></div>
+      <h3>${facility.name} ${!isAvailable ? '🔒' : ''}</h3>
+      <p class="business-card-desc">
+        <strong>Площадь:</strong> ${facility.area}<br>
+        <strong>Базовая производительность:</strong> ${facility.baseCapacity}<br>
+        <strong>Максимальная производительность:</strong> ${facility.maxCapacity}<br>
+        <strong>Оснащение:</strong> ${facility.equipment}
+      </p>
+      <div class="business-price">Стоимость аренды: ${facility.price} BP</div>
+      <div class="business-balance">Ваш баланс: <span>${this.state.business.balance}</span> BP</div>
+      ${buttonHTML}
+    `;
+    
+    businessOptions.appendChild(card);
+  });
+}
 
   isFacilityAvailable(facilityType) {
     const facilityOrder = ['preparation', 'mashing', 'fermentation', 'bottling', 'production', 'advanced', 'complex'];
