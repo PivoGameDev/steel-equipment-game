@@ -3563,3 +3563,124 @@ body {
         height: 50px !important;
     }
 }
+/* === СТАТИЧНО НА ВСЕХ 5 УРОВНЯХ === */
+#game-screen {
+    height: 100vh !important;
+    max-height: 100vh !important;
+    min-height: 100vh !important;
+    overflow: hidden !important;
+}
+
+#game-screen .game-container {
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#game-screen .game-header {
+    height: 8vh !important;
+    flex: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#game-screen .level-description {
+    height: 12vh !important;
+    flex: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#game-screen .brewery-background {
+    height: 15vh !important;
+    flex: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#game-screen .settings-container {
+    height: 40vh !important;
+    flex: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-y: auto !important;
+}
+
+#game-screen .playground-container,
+#game-screen .equipment-panel-container {
+    height: 35vh !important;
+    flex: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#game-screen .game-controls {
+    height: 10vh !important;
+    flex: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    background: white !important;
+    z-index: 1000 !important;
+}
+/* === ФИКС ВЫСОТЫ ДЛЯ УРОВНЕЙ 1-5 === */
+#game-screen {
+    height: 85vh !important;
+    max-height: 85vh !important;
+    min-height: 85vh !important;
+    overflow: hidden !important;
+}
+
+#game-screen .game-container {
+    flex: 1 !important;
+    min-height: 0 !important;
+    max-height: calc(85vh - 120px) !important;
+    overflow: hidden !important;
+}
+
+/* Фиксируем кнопки внизу */
+#game-screen .game-controls {
+    position: sticky !important;
+    bottom: 0 !important;
+    background: white !important;
+    border-top: 2px solid #e5e7eb !important;
+    z-index: 100 !important;
+    margin-top: auto !important;
+}
+
+/* Компактные размеры для мобильных */
+@media (max-width: 768px) {
+    #game-screen {
+        height: 90vh !important;
+        max-height: 90vh !important;
+    }
+    
+    #game-screen .game-container {
+        max-height: calc(90vh - 130px) !important;
+    }
+    
+    /* Уменьшаем высоту блоков */
+    .brewery-background:not(.hidden) {
+        max-height: 120px !important;
+        min-height: 100px !important;
+    }
+    
+    .settings-container:not(.hidden) {
+        max-height: 180px !important;
+        min-height: 150px !important;
+        overflow-y: auto !important;
+    }
+    
+    .playground-container:not(.hidden),
+    .equipment-panel-container:not(.hidden) {
+        max-height: 140px !important;
+        min-height: 120px !important;
+    }
+}
