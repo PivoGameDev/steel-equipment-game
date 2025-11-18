@@ -2658,3 +2658,482 @@ body {
         padding-bottom: 6px !important;
     }
 }
+/* Увеличиваем блок описания уровня и шрифт */
+.level-description {
+    min-height: 70px !important; /* Было 45px */
+    max-height: 80px !important; /* Было 60px */
+    font-size: 14px !important; /* Было 12px */
+    line-height: 1.4 !important; /* Было 1.2 */
+    padding: 10px !important; /* Было 8px */
+}
+
+#level-desc-text {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .level-description {
+        min-height: 65px !important;
+        max-height: 75px !important;
+        font-size: 13px !important;
+        padding: 8px !important;
+    }
+    
+    #level-desc-text {
+        font-size: 13px !important;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .level-description {
+        min-height: 60px !important;
+        max-height: 70px !important;
+        font-size: 12px !important;
+        padding: 7px !important;
+    }
+    
+    #level-desc-text {
+        font-size: 12px !important;
+    }
+}
+#business-start-screen {
+    background: url('assets/images/business-background.png') center/cover no-repeat !important;
+}
+/* Улучшение читаемости текста на экране бизнеса */
+#business-start-screen .win-content {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 25px;
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Убедимся, что весь текст белый */
+#business-start-screen h1,
+#business-start-screen .business-description,
+#business-start-screen .business-description strong {
+    color: white !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+/* Зеленый цвет для "100 Brewery Points" */
+.highlight-points {
+    color: #10b981 !important;
+    font-weight: bold;
+    font-size: 1.1em;
+    text-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
+/* === ЗЕЛЕНЫЙ ТЕКСТ С ЧЕРНОЙ ОБВОДКОЙ === */
+.business-description {
+    font-size: 20px !important;
+    line-height: 1.6 !important;
+    font-weight: 600;
+    color: #1f2937 !important; /* Темно-серый для обычного текста */
+    text-shadow: none;
+    margin: 15px 0 25px !important;
+    padding: 0 20px;
+}
+
+/* Обводка для "100 Brewery Points" */
+.highlight-points {
+    color: #10b981 !important; /* Зеленый цвет */
+    font-weight: 800;
+    text-shadow: 
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000 !important; /* Черная обводка */
+}
+
+/* === ФИРМЕННЫЙ ОРАНЖЕВЫЙ ДЛЯ ЗАГОЛОВКА === */
+#business-start-screen .win-content h1 {
+    color: #ff8c00 !important; /* Фирменный оранжевый */
+    font-size: 2.2rem !important;
+    margin-bottom: 10px !important;
+    font-weight: 800;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .business-description {
+        font-size: 18px !important;
+        padding: 0 15px;
+    }
+    
+    
+    .highlight-points {
+        text-shadow: 
+            -0.5px -0.5px 0 #000,
+            0.5px -0.5px 0 #000,
+            -0.5px 0.5px 0 #000,
+            0.5px 0.5px 0 #000 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .business-description {
+        font-size: 16px !important;
+        padding: 0 10px;
+    }
+    
+    
+    .highlight-points {
+        text-shadow: 
+            -0.5px -0.5px 0 #000,
+            0.5px -0.5px 0 #000,
+            -0.5px 0.5px 0 #000,
+            0.5px 0.5px 0 #000 !important;
+    }
+}
+/* === КРАСИВЫЕ ИКОНКИ ДЛЯ КАРТОЧЕК === */
+.business-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color1), var(--color2));
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    font-size: 40px;
+}
+
+/* Пивоварня ресторанного типа - бокал пива */
+.preparation-image::before {
+    content: "🍺";
+}
+
+/* Пивоварня с дистрибуцией - грузовик с пивом */
+.mashing-image::before {
+    content: "🚚";
+}
+
+/* Пивоваренный завод - промышленные танки */
+.fermentation-image::before {
+    content: "⚗️";
+}
+
+/* Пивоваренный комплекс - конвейер */
+.bottling-image::before {
+    content: "🏗️";
+}
+
+/* Пивоваренный концерн - сеть магазинов */
+.production-image::before {
+    content: "🌐";
+}
+
+/* Пивоваренная империя - ракета роста */
+.advanced-image::before {
+    content: "🚀";
+}
+
+/* Международный альянс - глобус с сетью */
+.complex-image::before {
+    content: "👑";
+}
+
+/* Градиенты для каждой иконки */
+.preparation-image { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.mashing-image { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.fermentation-image { background: linear-gradient(135deg, #10b981, #059669); }
+.bottling-image { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+.production-image { background: linear-gradient(135deg, #f97316, #ea580c); }
+.advanced-image { background: linear-gradient(135deg, #ec4899, #db2777); }
+.complex-image { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+/* === СТИЛЬ ДЛЯ ЗАГОЛОВКА ОСНАЩЕНИЯ === */
+#equipment-facility-name {
+    color: white !important; /* Белый цвет для "Оснащение:" */
+    font-weight: 800;
+    font-size: 2.2rem !important;
+    margin-bottom: 15px !important;
+    text-shadow: none;
+}
+
+.facility-name-orange {
+    color: #ff8c00 !important; /* Фирменный оранжевый для названия */
+    font-weight: 800;
+    text-shadow: none;
+}
+.budget-display-wide {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.budget-info-wide {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.budget-item-wide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.budget-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.budget-value {
+    font-size: 18px;
+    font-weight: bold;
+}
+.category-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    vertical-align: middle;
+    object-fit: contain;
+}
+/* === СТИЛИ ДЛЯ ШАПОК КАТЕГОРИЙ === */
+
+.equipment-category-wide h3 {
+    background: white !important;
+    color: #1f2937 !important;
+    margin-bottom: 15px;
+    font-size: 18px;
+    padding: 2px 20px !important; /* Минимальные отступы */
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid #ff8c00 !important;
+    box-shadow: 0 2px 8px rgba(255, 140, 0, 0.15) !important;
+    font-weight: bold;
+    height: 85px !important; /* Фиксированная высота 85px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+}
+
+.equipment-category-wide h3 .category-icon {
+    width: 80px !important; /* Картинка 80px */
+    height: 80px !important; /* Картинка 80px */
+    margin-right: 10px;
+    vertical-align: middle;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+/* === ХИМРАСТВОР В ПОДАРОК === */
+
+.equipment-option-wide[data-id="chemical"] {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe) !important;
+    border: 2px solid #0ea5e9 !important;
+    position: relative;
+}
+
+.equipment-option-wide[data-id="chemical"]::before {
+    content: "🎁 В ПОДАРОК!";
+    position: absolute;
+    top: -8px;
+    right: 10px;
+    background: #0ea5e9;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.equipment-option-wide[data-id="chemical"] .price-wide {
+    color: #0ea5e9 !important;
+    font-weight: bold;
+}
+
+.equipment-option-wide[data-id="chemical"] .price-wide::before {
+    content: "БЕСПЛАТНО";
+    color: #0ea5e9;
+    font-weight: 800;
+}
+
+.equipment-option-wide[data-id="chemical"] .price-wide::after {
+    content: ""; /* Убираем старую цену */
+}
+
+/* В HTML обновляем цену на 0 */
+/* === СВОДКА ОБОРУДОВАНИЯ В СТИЛЕ ЧЕРНО-БЕЛОГО ЧЕКА === */
+
+.summary-section-wide {
+    background: white !important;
+    padding: 25px;
+    border-radius: 0 !important; /* Убираем скругления */
+    border: 2px solid #000 !important;
+    margin: 30px 0 20px 0;
+    font-family: 'Courier New', monospace !important;
+    color: #000 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.summary-section-wide h3 {
+    color: #000 !important;
+    margin-bottom: 20px;
+    font-size: 20px;
+    text-align: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #000 !important;
+    font-family: 'Courier New', monospace !important;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    width: 100% !important;
+}
+
+.summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100% !important;
+}
+
+.selected-equipment-list {
+    background: white !important;
+    border: 1px solid #000 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    max-height: 300px;
+    overflow-y: auto;
+    width: 100% !important;
+}
+
+/* КАЖДАЯ СТРОЧКА ЧЕКА НА ВСЮ ШИРИНУ */
+.selected-equipment-list div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px !important;
+    border-bottom: 1px solid #000 !important;
+    font-size: 16px;
+    color: #000 !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+.selected-equipment-list div:last-child {
+    border-bottom: 2px solid #000 !important; /* Жирная линия перед итогом */
+    font-weight: bold;
+    font-size: 18px;
+    background: #f5f5f5 !important;
+}
+
+.equipment-item-price {
+    color: #000 !important;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.empty-selection-wide {
+    color: #666 !important;
+    font-style: italic;
+    text-align: center;
+    margin: 0;
+    padding: 40px !important;
+    width: 100% !important;
+    font-size: 16px;
+}
+
+/* ШАПКА И ПОДВАЛ ЧЕКА */
+.summary-section-wide::before {
+    content: "=== ПИВОВАРНЯ PRO === ";
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #000 !important;
+    letter-spacing: 3px;
+}
+
+.summary-section-wide::after {
+    content: "======================";
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 15px;
+    color: #000 !important;
+    letter-spacing: 3px;
+}
+
+/* ПРЕДУПРЕЖДЕНИЯ В СТИЛЕ ЧЕКА */
+.summary-warnings {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100% !important;
+}
+
+.warning-message-wide {
+    background: white !important;
+    color: #000 !important;
+    padding: 15px 20px !important;
+    border-radius: 0 !important;
+    border: 2px solid #000 !important;
+    font-size: 14px;
+    font-family: 'Courier New', monospace !important;
+    width: 100% !important;
+    text-align: center;
+}
+
+/* Кастомный скроллбар */
+.selected-equipment-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.selected-equipment-list::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+.selected-equipment-list::-webkit-scrollbar-thumb {
+    background: #000;
+    border: 1px solid #000;
+}
+
+.selected-equipment-list::-webkit-scrollbar-thumb:hover {
+    background: #333;
+}
+/* ЖЕСТКО МЕНЯЕМ ИКОНКУ ВСПОМОГАТЕЛЬНОГО ОБОРУДОВАНИЯ */
+.equipment-categories-wide .equipment-category-wide:last-child h3 img.category-icon {
+    src: url('assets/images/steam-generator.png') !important;
+    width: 80px !important;
+    height: 80px !important;
+    content: url('assets/images/steam-generator.png') !important;
+}
+/* Заменяем "ПИВОВАРНЯ PRO" на "ООО ОБОРУДОВАНИЕ КУБАНИ" */
+.summary-section-wide::before {
+    content: "=== ООО \"ОБОРУДОВАНИЕ КУБАНИ\" ===" !important;
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #000 !important;
+    letter-spacing: 1px;
+}
+
+.summary-section-wide::after {
+    content: "==============================" !important;
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 15px;
+    color: #000 !important;
+    letter-spacing: 1px;
+}

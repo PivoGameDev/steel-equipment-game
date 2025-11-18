@@ -100,63 +100,63 @@ class BreweryGame {
     // Бизнес-уровни (помещения)
     this.businessLevels = {
       'preparation': {
-        name: "Подготовительная",
+        name: "Пивоварня ресторанного типа",
         price: 50,
-        area: "250м²",
+        area: "50м²",
         baseCapacity: "1,500 л/мес",
         maxCapacity: "10,000 л/мес",
         equipment: "2-в-1 система, 1 сотрудник",
         description: "Базовое помещение для старта. Идеально для обучения и первых экспериментов."
       },
       'mashing': {
-        name: "Заторно-сусловарная", 
+        name: "Пивоварня с дистрибуцией", 
         price: 150,
-        area: "500м²",
+        area: "100м²",
         baseCapacity: "4,000 л/мес",
         maxCapacity: "25,000 л/мес", 
         equipment: "Автоматические системы, 4 сотрудника",
         description: "Профессиональное оборудование для качественного заторного процесса."
       },
       'fermentation': {
-        name: "Цех брожения",
+        name: "Пивоваренный завод",
         price: 300,
-        area: "1000м²", 
+        area: "200м²", 
         baseCapacity: "8,000 л/мес",
         maxCapacity: "50,000 л/мес",
         equipment: "Контролируемые танки, 5 сотрудников",
         description: "Современные ЦКТ с точным контролем температуры и давления."
       },
       'bottling': {
-        name: "Розливная",
+        name: "Пивоваренный комплекс",
         price: 500,
-        area: "1000м²",
+        area: "300м²",
         baseCapacity: "12,000 л/мес", 
         maxCapacity: "90,000 л/мес",
         equipment: "4-линейная система, +96% эффективности",
         description: "Автоматизированные линии розлива и упаковки."
       },
       'production': {
-        name: "Производственный цех",
+        name: "Пивоваренный концерн",
         price: 800, 
-        area: "3000м²",
+        area: "400м²",
         baseCapacity: "24,000 л/мес",
         maxCapacity: "180,000 л/мес",
         equipment: "Автоматизированная линия, x3 мощность",
         description: "Полноценное производство с высокой степенью автоматизации."
       },
       'advanced': {
-        name: "Продвинутый цех",
+        name: "Пивоваренная империя",
         price: 1200,
-        area: "3000м²",
+        area: "500м²",
         baseCapacity: "47,000 л/мес", 
         maxCapacity: "350,000 л/мес",
         equipment: "+96% эффективности, непрерывное производство",
         description: "Инновационные технологии для максимальной производительности."
       },
       'complex': {
-        name: "Пивоваренный комплекс", 
+        name: "Международный пивоваренный альянс", 
         price: 2000,
-        area: "5000м²",
+        area: "1000м²",
         baseCapacity: "160,000 л/мес",
         maxCapacity: "1,000,000 л/мес",
         equipment: "Полная автоматизация, премиум оборудование",
@@ -416,6 +416,11 @@ class BreweryGame {
   }
 
   rentFacility(facilityType, price) {
+    console.log('=== rentFacility called ===');
+    console.log('facilityType:', facilityType);
+    console.log('price:', price);
+    console.log('current balance:', this.state.business.balance);
+    
     if (this.state.business.balance >= price && 
         !this.state.business.purchasedFacilities.includes(facilityType)) {
         
@@ -429,7 +434,9 @@ class BreweryGame {
         const facilityName = this.businessLevels[facilityType].name;
         this.showFeedback(`Помещение "${facilityName}" успешно арендовано!`, 'correct');
         
-        // ВМЕСТО ТОГО ЧТОБЫ СРАЗУ ВОЗВРАЩАТЬ К ВЫБОРУ - ОТКРЫВАЕМ ЭКРАН ОБОРУДОВАНИЯ
+        console.log('=== Before showFacilityEquipment ===');
+        
+        // ВМЕСТО setTimeout используем немедленный вызов
         this.showFacilityEquipment(facilityType);
         
         // Разблокируем следующее помещение
@@ -1744,30 +1751,70 @@ class BreweryGame {
   // === МЕТОДЫ ДЛЯ ЭКРАНА ОБОРУДОВАНИЯ ===
 
   showFacilityEquipment(facilityType) {
+    console.log('=== showFacilityEquipment called ===');
+    console.log('facilityType:', facilityType);
+    clearInterval(this.timer);
+    this.state.gameStarted = false;
+    
+    
     this.playSound('click');
-    this.elements.businessStartScreen.classList.add('hidden');
     
-    const facility = this.businessLevels[facilityType];
+    // ЯВНО СКРЫВАЕМ ВСЕ ЭКРАНЫ
+    const allScreens = [
+        this.elements.businessStartScreen,
+        this.elements.winScreen, 
+        this.elements.loseScreen,
+        this.elements.gameScreen,
+        this.elements.levelSelectScreen,
+        this.elements.startScreen
+    ];
+    
+    allScreens.forEach(screen => {
+        if (screen) screen.classList.add('hidden');
+    });
+    
     const equipmentScreen = document.getElementById('facility-equipment-screen');
+    console.log('equipmentScreen found:', !!equipmentScreen);
     
-    // Обновляем информацию о помещении
-    document.getElementById('equipment-facility-name').textContent = `Оснащение ${facility.name}`;
-    document.getElementById('current-facility-name').textContent = facility.name;
+    if (equipmentScreen) {
+    equipmentScreen.classList.remove('hidden');
+    console.log('Equipment screen should be visible now');
     
-    // Устанавливаем бюджет в зависимости от помещения
+    // ТОЛЬКО ЕСЛИ equipmentScreen существует, ищем в нем таймер
+    const timerElement = equipmentScreen.querySelector('.timer');
+    if (timerElement) {
+        timerElement.style.display = 'none';
+    }
+}
+    
+    // Остальной код обновления интерфейса...
+    const facility = this.businessLevels[facilityType];
+    
+    // Обновляем заголовок
+    const facilityNameElement = document.getElementById('equipment-facility-name');
+    if (facilityNameElement) {
+        facilityNameElement.innerHTML = `Оснащение: <span class="facility-name-orange">${facility.name}</span>`;
+    }
+    
+    // Обновляем бюджет
     const budget = this.getFacilityBudget(facilityType);
-    document.getElementById('equipment-budget').textContent = budget;
+    const equipmentDescription = document.querySelector('.equipment-description');
+    if (equipmentDescription) {
+        equipmentDescription.innerHTML = `
+            Теперь нужно закупить оборудование для вашей пивоварни. 
+            У вас есть <strong style="color: #10b981; font-weight: bold;">${budget} BP</strong> на оборудование.
+        `;
+    }
+    
     document.getElementById('total-budget').textContent = budget + ' BP';
     document.getElementById('total-cost').textContent = '0 BP';
     document.getElementById('remaining-budget').textContent = budget + ' BP';
-    
-    equipmentScreen.classList.remove('hidden');
     
     // Инициализируем выбор оборудования
     setTimeout(() => {
         this.initEquipmentSelection(facilityType);
     }, 100);
-  }
+}
 
   getFacilityBudget(facilityType) {
     const budgets = {
@@ -1844,59 +1891,33 @@ class BreweryGame {
   updateEquipmentSelection(facilityType) {
     console.log('Обновление выбора оборудования');
     
-    const selectedMash = document.querySelector('input[name="mashTun"]:checked');
-    const selectedFilters = document.querySelectorAll('#filtration-equipment input:checked');
-    const selectedWaterTanks = document.querySelectorAll('#hot-water-tanks input:checked');
-    const selectedCCTs = document.querySelectorAll('#fermentation-tanks input:checked');
-    const selectedAuxiliary = document.querySelectorAll('#auxiliary-equipment input:checked');
-    
+    const selectedInputs = document.querySelectorAll('#facility-equipment-screen input:checked');
     let totalCost = 0;
     const selectedEquipment = [];
     
-    // Собираем выбранное оборудование
-    const collectEquipment = (element, category) => {
-        if (element) {
-            const equipElement = element.closest('.equipment-option-wide');
-            const price = parseInt(equipElement.dataset.price);
-            const name = equipElement.querySelector('strong').textContent;
-            totalCost += price;
-            selectedEquipment.push({ name, price, category });
-            console.log('Добавлено оборудование:', name, price, category);
-        }
-    };
+    // Собираем выбранное оборудование с ПРАВИЛЬНЫМИ ценами
+    selectedInputs.forEach(input => {
+    const equipElement = input.closest('.equipment-option-wide');
+    let price = parseInt(equipElement.dataset.price);
+    const name = equipElement.querySelector('strong').textContent;
+    const id = equipElement.dataset.id;
+    const type = equipElement.dataset.type;
     
-    const collectMultipleEquipment = (elements, category) => {
-        elements.forEach(element => {
-            const equipElement = element.closest('.equipment-option-wide');
-            const price = parseInt(equipElement.dataset.price);
-            const name = equipElement.querySelector('strong').textContent;
-            totalCost += price;
-            selectedEquipment.push({ name, price, category });
-            console.log('Добавлено оборудование:', name, price, category);
-        });
-    };
+    // ФИКС: Теплообменник всегда стоит 1 BP
+    if (id === 'heat-300') {
+        price = 1;
+    }
     
-    // Заторные аппараты
-    collectEquipment(selectedMash, 'Варочное');
-    
-    // Фильтрационные аппараты
-    collectMultipleEquipment(selectedFilters, 'Фильтрационное');
-    
-    // Баки горячей воды
-    collectMultipleEquipment(selectedWaterTanks, 'Водоподготовка');
-    
-    // ЦКТ
-    collectMultipleEquipment(selectedCCTs, 'Ферментационное');
-    
-    // Вспомогательное оборудование
-    collectMultipleEquipment(selectedAuxiliary, 'Вспомогательное');
+    totalCost += price;
+    selectedEquipment.push({ name, price, id, type });
+});
     
     console.log('Общая стоимость:', totalCost);
     console.log('Выбранное оборудование:', selectedEquipment);
     
     // Обновляем интерфейс
     this.updateEquipmentUI(totalCost, selectedEquipment, this.getFacilityBudget(facilityType), facilityType);
-  }
+}
 
   updateEquipmentUI(totalCost, selectedEquipment, budget, facilityType) {
     console.log('Обновление UI - стоимость:', totalCost, 'бюджет:', budget);
@@ -1905,7 +1926,7 @@ class BreweryGame {
     document.getElementById('total-cost').textContent = totalCost + ' BP';
     document.getElementById('remaining-budget').textContent = (budget - totalCost) + ' BP';
     
-    // Показываем выбранное оборудование - с проверкой существования элемента
+    // Показываем выбранное оборудование
     const selectedList = document.getElementById('selected-equipment-wide');
     if (!selectedList) {
         console.error('Элемент selected-equipment-wide не найден в DOM!');
@@ -1925,7 +1946,7 @@ class BreweryGame {
         console.log('Сводка оборудования пуста');
     }
     
-    // Проверяем совместимость
+    // ДА, ТАК - ПРОВЕРЯЕМ СОВМЕСТИМОСТЬ
     const compatibilityCheck = document.getElementById('compatibility-check');
     const isCompatible = this.checkEquipmentCompatibility(selectedEquipment, facilityType);
     
@@ -1953,48 +1974,231 @@ class BreweryGame {
     
     console.log('Кнопка запуска активна:', isValid);
 }
+checkEquipmentCompatibility(selectedEquipment, facilityType) {
+    // Базовая проверка - есть ли все обязательное оборудование
+    const hasMashTun = selectedEquipment.some(item => item.type === 'mash');
+    const hasFilter = selectedEquipment.some(item => item.type === 'filter');
+    const hasWaterTank = selectedEquipment.some(item => item.type === 'water');
+    const hasCCT = selectedEquipment.some(item => item.type === 'cct');
+    const hasChiller = selectedEquipment.some(item => item.type === 'chiller');
+    const hasSteam = selectedEquipment.some(item => item.type === 'steam');
+    const hasHeatExchanger = selectedEquipment.some(item => item.type === 'heat');
+    const hasChemical = selectedEquipment.some(item => item.id === 'chemical');
+    
+    console.log('Проверка совместимости:', {
+        hasMashTun, hasFilter, hasWaterTank, hasCCT, 
+        hasChiller, hasSteam, hasHeatExchanger, hasChemical
+    });
+    
+    return hasMashTun && hasFilter && hasWaterTank && hasCCT && 
+           hasChiller && hasSteam && hasHeatExchanger && hasChemical;
+}
 
-  checkEquipmentCompatibility(selectedEquipment, facilityType) {
-    // Базовая проверка совместимости оборудования с помещением
-    const hasMashTun = selectedEquipment.some(item => item.category === 'Варочное');
-    const hasChemical = selectedEquipment.some(item => item.name.includes('Химраствор'));
-    
-    console.log('Проверка совместимости - есть варочный:', hasMashTun, 'есть химраствор:', hasChemical);
-    
-    return hasMashTun && hasChemical;
-  }
 
   startProduction(facilityType) {
-    this.playSound('success');
-    const facility = this.businessLevels[facilityType];
+    console.log('Проверка оборудования для:', facilityType);
     
-    // Собираем информацию о выбранном оборудовании
-    const selectedMash = document.querySelector('input[name="mashTun"]:checked');
-    const selectedEquipment = [];
+    // Получаем выбранное оборудование
+    const selectedEquipment = this.getSelectedEquipment();
     
-    if (selectedMash) {
-        const mashElement = selectedMash.closest('.equipment-option-wide');
-        selectedEquipment.push(mashElement.querySelector('strong').textContent);
+    // Проверяем комплект
+    const validation = this.validateEquipmentSet(selectedEquipment, facilityType);
+    
+    if (validation.isValid) {
+        // ПРАВИЛЬНЫЙ КОМПЛЕКТ
+        this.showEquipmentSuccess(facilityType, selectedEquipment, validation.score);
+    } else {
+        // НЕПРАВИЛЬНЫЙ КОМПЛЕКТ
+        this.showEquipmentError(validation.warnings);
     }
+}
+
+// === ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ДЛЯ ПРОВЕРКИ ===
+
+getSelectedEquipment() {
+    const selected = [];
     
-    // Добавляем остальное выбранное оборудование
-    const allSelected = document.querySelectorAll('#facility-equipment-screen input:checked');
-    allSelected.forEach(input => {
-        if (input.name !== 'mashTun') {
-            const element = input.closest('.equipment-option-wide');
-            selectedEquipment.push(element.querySelector('strong').textContent);
+    const selectedInputs = document.querySelectorAll('#facility-equipment-screen input:checked');
+    selectedInputs.forEach(input => {
+        const option = input.closest('.equipment-option-wide');
+        if (option) {
+            const name = option.querySelector('strong').textContent;
+            const id = option.dataset.id;
+            let price = parseInt(option.dataset.price);
+            let type = option.dataset.type;
+            
+            // ФИКС: Если type не указан, определяем автоматически
+            if (!type) {
+                if (name.includes('Заторный') || name.includes('сусловарочный')) type = 'mash';
+                else if (name.includes('Фильтрационный')) type = 'filter';
+                else if (name.includes('Бак горячей воды')) type = 'water';
+                else if (name.includes('ЦКТ')) type = 'cct';
+                else if (name.includes('Холодильный')) type = 'chiller';
+                else if (name.includes('Парогенератор')) type = 'steam';
+                else if (name.includes('Теплообменник')) type = 'heat';
+                else if (name.includes('Дробилка')) type = 'crusher';
+                else if (name.includes('Насос')) type = 'pump';
+                else if (name.includes('Химраствор')) type = 'chemical';
+                else type = 'other';
+            }
+            
+            // ФИКС: Теплообменник всегда 1 BP
+            if (id === 'heat-300') {
+                price = 1;
+            }
+            
+            selected.push({ name, price, id, type });
+            console.log('Добавлено оборудование:', name, 'type:', type, 'price:', price);
         }
     });
     
-    this.showFeedback(`🎉 Производство на ${facility.name} запущено! Выбрано оборудование: ${selectedEquipment.join(', ')}`, "correct");
-    
-    // Закрываем экран оборудования и возвращаем к выбору помещений
-    setTimeout(() => {
-        document.getElementById('facility-equipment-screen').classList.add('hidden');
-        this.showBusinessStartScreen();
-    }, 3000);
-  }
+    return selected;
 }
+
+validateEquipmentSet(selectedEquipment, facilityType) {
+    console.log('=== ВАЛИДАЦИЯ КОМПЛЕКТА ===');
+    console.log('Оборудование для проверки:', selectedEquipment);
+    
+    let isValid = true;
+    let warnings = [];
+    let score = 100;
+    
+    // Проверяем обязательные элементы
+    const hasMashTun = selectedEquipment.some(item => item.type === 'mash');
+    const hasFilter = selectedEquipment.some(item => item.type === 'filter');
+    const hasWaterTank = selectedEquipment.some(item => item.type === 'water');
+    const hasCCT = selectedEquipment.some(item => item.type === 'cct');
+    const hasChiller = selectedEquipment.some(item => item.type === 'chiller');
+    const hasSteam = selectedEquipment.some(item => item.type === 'steam');
+    const hasHeatExchanger = selectedEquipment.some(item => item.type === 'heat');
+    const hasChemical = selectedEquipment.some(item => item.id === 'chemical');
+    
+    console.log('Результаты проверки:', {
+        hasMashTun, hasFilter, hasWaterTank, hasCCT, 
+        hasChiller, hasSteam, hasHeatExchanger, hasChemical
+    });
+    
+    if (!hasMashTun) {
+        warnings.push('Отсутствует заторный аппарат');
+        isValid = false;
+        score -= 15;
+    }
+    
+    if (!hasFilter) {
+        warnings.push('Отсутствует фильтрационный аппарат');
+        isValid = false;
+        score -= 15;
+    }
+    
+    if (!hasWaterTank) {
+        warnings.push('Отсутствует бак горячей воды');
+        isValid = false;
+        score -= 10;
+    }
+    
+    if (!hasCCT) {
+        warnings.push('Отсутствуют ЦКТ (ферментационные танки)');
+        isValid = false;
+        score -= 15;
+    }
+    
+    if (!hasChiller) {
+        warnings.push('Отсутствует холодильный агрегат');
+        isValid = false;
+        score -= 10;
+    }
+    
+    if (!hasSteam) {
+        warnings.push('Отсутствует парогенератор');
+        isValid = false;
+        score -= 10;
+    }
+    
+    if (!hasHeatExchanger) {
+    warnings.push('Отсутствует теплообменник');
+    isValid = false;
+    score -= 10;
+}
+    
+    if (!hasChemical) {
+        warnings.push('Отсутствует химраствор для мойки');
+        isValid = false;
+        score -= 5;
+    }
+    
+    // Проверяем бюджет
+    const totalCost = selectedEquipment.reduce((sum, item) => sum + item.price, 0);
+    const budget = this.getFacilityBudget(facilityType);
+    
+    if (totalCost > budget) {
+        warnings.push(`Превышен бюджет! Потрачено: ${totalCost} BP, Доступно: ${budget} BP`);
+        isValid = false;
+        score -= 25;
+    }
+    
+    console.log('Итог валидации:', { isValid, warnings, score });
+    return { isValid, warnings, score: Math.max(0, score) };
+}
+
+// === ЭКРАН УСПЕХА ===
+showEquipmentSuccess(facilityType, equipment, score) {
+    this.playSound('success');
+    
+    const facility = this.businessLevels[facilityType];
+    const totalCost = equipment.reduce((sum, item) => sum + item.price, 0);
+    
+    const message = `🎉 Отлично! Комплект собран правильно!
+
+Вы успешно оснастили ${facility.name}
+за ${totalCost} BP
+
+💯 Оценка комплекта: ${score}/100
+
+"Правильный подбор оборудования - залог качественного пива!"
+
+✅ Следующий этап: Мойка производственных мощностей`;
+
+    this.openInfoModal(message, [
+        {
+            label: '🚰 Перейти к мойке →',
+            onClick: () => this.startCleaningProcess(facilityType),
+            variant: 'primary'
+        }
+    ]);
+}
+
+
+// === ЭКРАН ОШИБКИ ===
+showEquipmentError(warnings) {
+    this.playSound('error');
+    
+    let message = `❌ Комплект требует доработки
+
+Обнаружены проблемы в подборе оборудования:`;
+
+    warnings.forEach(warning => {
+        message += `\n• ${warning}`;
+    });
+
+    message += `
+
+💡 Рекомендации:
+- Проверьте наличие обязательного оборудования
+- Убедитесь, что не превышен бюджет
+- Оборудование должно соответствовать мощности помещения
+
+"Хорошая пивоварня начинается с правильного оборудования!"`;
+
+    this.openInfoModal(message, [
+        {
+            label: '↻ Вернуться к выбору',
+            onClick: () => this.closeHintModal(),
+            variant: 'secondary'
+        }
+    ]);
+}
+
+} // ← ДОБАВЬ ЭТУ СКОБКУ
 
 // Создаем глобальную переменную для доступа из HTML
 const game = new BreweryGame();
