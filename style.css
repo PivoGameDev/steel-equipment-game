@@ -228,8 +228,6 @@ body {
 
 /* Игровой экран */
 #game-screen {
-    overflow-y: auto !important;
-    overflow-y: auto !important;
     background-color: white;
     z-index: 80;
     justify-content: flex-start;
@@ -242,11 +240,10 @@ body {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 5px !important; /* ОТСТУП СНИЗУ */
+    margin-bottom: 2px !important;
     flex-wrap: wrap;
-    height: 35px !important; /* ФИКСИРОВАННАЯ ВЫСОТА */
-    min-height: 35px !important;
-    max-height: 35px !important;
+    flex: none !important;
+    min-height: 30px !important;
 }
 
 .header-left, .header-right {
@@ -293,33 +290,31 @@ body {
 .feedback-message.incorrect { color: #ef4444; }
 
 /* Блок описания уровня */
-/* ОСТАВЬТЕ ТОЛЬКО ЭТОТ БЛОК и ОБНОВИТЕ */
 .level-description {
     width: calc(100% - 10px);
     background-color: #e0f2fe;
     border-radius: 10px;
-    padding: 12px !important;
-    margin: 0 0 5px !important; /* ОТСТУП СНИЗУ 5px */
-    font-size: 16px !important;
+    padding: 8px !important;
+    margin: 0 0 3px !important;
+    font-size: 12px !important;
     text-align: left;
-    height: 55px !important; /* ФИКСИРОВАННАЯ ВЫСОТА */
-    min-height: 55px !important;
-    max-height: 55px !important;
+    max-height: 60px !important;
+    min-height: 45px !important;
     overflow-y: auto;
-    line-height: 1.4 !important;
+    line-height: 1.2 !important;
+    flex: none !important;
 }
 #level-desc-text { color: #0c4a6e; }
 
-/* ОСНОВНОЙ ИГРОВОЙ КОНТЕЙНЕР - ИСПРАВЛЕННЫЙ */
+/* ОСНОВНОЙ ИГРОВОЙ КОНТЕЙНЕР - ИСПРАВЛЕН */
 .game-container {
     display: flex !important;
     flex-direction: column !important;
     width: 100%;
-    height: 480px !important; /* ФИКСИРОВАННАЯ ВЫСОТА */
-    min-height: 480px !important;
-    max-height: 480px !important;
-    gap: 10px !important;
-    margin: 0 0 10px !important; /* ОТСТУП СНИЗУ 10px */
+    flex: 1 !important;
+    min-height: 0 !important;
+    gap: 5px !important;
+    margin: 0 0 0px !important;
     padding: 0 5px;
     overflow: hidden !important;
 }
@@ -463,17 +458,18 @@ body {
     z-index: 2; 
 }
 
+/* НАСТРОЙКИ - ИСПРАВЛЕНЫ */
 .settings-container {
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 10px;
-    overflow-y: auto;
-    height: 380px !important; /* ФИКСИРОВАННАЯ ВЫСОТА */
-    min-height: 380px !important;
-    max-height: 380px !important;
+    overflow-y: visible;
+    height: auto;
+    min-height: auto;
     align-items: stretch;
     width: 100%;
+    flex: none !important;
 }
 
 .setting-item {
@@ -541,43 +537,49 @@ body {
 }
 
 /* КНОПКИ УПРАВЛЕНИЯ - ПОЛНОСТЬЮ ИСПРАВЛЕНЫ */
-/* === ИСПРАВЛЕННЫЕ КНОПКИ УПРАВЛЕНИЯ - СТАТИЧНЫЕ === */
-
 .game-controls {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 8px;
     width: 100%;
-    padding: 15px 10px !important;
-    margin-top: 10px !important;
-    flex-wrap: nowrap;
-    height: 90px !important; /* ФИКСИРОВАННАЯ ВЫСОТА */
-    min-height: 90px !important;
-    max-height: 90px !important;
+    padding: 5px !important;
+    margin-top: 5px !important;
+    flex-wrap: wrap;
+    flex: none !important;
+    height: auto !important;
+    min-height: 50px !important;
+    max-height: none !important;
     order: 100 !important;
-    position: relative;
-    background: white;
-    border-top: 2px solid #e5e7eb;
 }
 
-/* ФИКСИРОВАННЫЕ размеры кнопок */
 #hint-btn, #launch-btn {
-    padding: 12px 20px !important; /* Фиксированные отступы */
+    padding: 8px 12px !important; 
     border: none; 
     border-radius: 50px; 
-    font-size: 16px !important; /* Фиксированный размер шрифта */
+    font-size: 12px !important;
     cursor: pointer; 
     transition: all 0.3s; 
-    min-width: 160px !important; /* ФИКСИРОВАННАЯ минимальная ширина */
-    max-width: 180px !important; /* ФИКСИРОВАННАЯ максимальная ширина */
-    flex: 0 1 auto !important; /* Запрещаем растягивание/сжатие */
-    height: 50px !important; /* ФИКСИРОВАННАЯ высота */
-    min-height: 50px !important; /* ФИКСИРОВАННАЯ минимальная высота */
-    max-height: 50px !important; /* ФИКСИРОВАННАЯ максимальная высота */
+    min-width: 120px !important; 
+    flex: 1 !important; 
+    max-width: 140px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
     margin: 0 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    #hint-btn, #launch-btn {
+        min-width: 110px !important;
+        max-width: 130px !important;
+        font-size: 11px !important;
+        height: 34px !important;
+        padding: 6px 10px !important;
+    }
 }
 
 #hint-btn { 
@@ -585,13 +587,16 @@ body {
     color: white; 
     box-shadow: 0 4px 15px rgba(245,158,11,.4); 
 }
+#hint-btn:disabled { background: #9ca3af; box-shadow: none; cursor: not-allowed; opacity: .6; }
+#hint-btn:not(:disabled):hover { transform: translateY(-3px); box-shadow: 0 7px 20px rgba(245,158,11,.6); }
 
 #launch-btn { 
     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); 
     color: white; 
     box-shadow: 0 4px 15px rgba(59,130,246,.4); 
-    min-width: 180px !important; 
-    font-size: 16px !important;
+    min-width: 160px !important; 
+    font-size: 13.5px !important;
+    letter-spacing: -0.2px !important;
 }
 #launch-btn:disabled { background: #9ca3af; box-shadow: none; cursor: not-allowed; }
 #launch-btn:not(:disabled):hover { transform: translateY(-3px); box-shadow: 0 7px 20px rgba(59,130,246,.6); }
@@ -693,6 +698,89 @@ body {
     margin: 8px 0 !important; /* Уменьшаем отступы */
     padding: 10px 20px !important; /* Уменьшаем padding */
     font-size: 14px !important; /* Уменьшаем размер шрифта */
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    #win-screen {
+        padding: 10px 8px !important;
+        justify-content: flex-start !important;
+    }
+    
+    .win-content {
+        padding: 12px !important;
+        margin: 5px !important;
+    }
+    
+    .win-text {
+        font-size: 1.6rem !important;
+        margin-bottom: 8px !important;
+    }
+    
+    #win-screen p {
+        font-size: 13px !important;
+        margin: 6px 0 !important;
+    }
+    
+    .level-results {
+        padding: 10px !important;
+        margin: 8px 0 !important;
+    }
+    
+    .level-result h3 {
+        font-size: 15px !important;
+    }
+    
+    .email-form {
+        padding: 12px !important;
+        margin: 10px 0 !important;
+    }
+    
+    .email-form p {
+        font-size: 13px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #win-screen {
+        padding: 8px 5px !important;
+    }
+    
+    .win-content {
+        padding: 10px !important;
+    }
+    
+    .win-text {
+        font-size: 1.4rem !important;
+    }
+    
+    #win-screen p {
+        font-size: 12px !important;
+    }
+    
+    .level-results {
+        padding: 8px !important;
+    }
+    
+    .email-input {
+        padding: 10px 12px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    .win-text {
+        font-size: 1.3rem !important;
+    }
+    
+    #win-screen p {
+        font-size: 11px !important;
+    }
+    
+    .level-result h3 {
+        font-size: 14px !important;
+    }
 }
 
 /* Убедимся, что все помещается */
@@ -1148,6 +1236,162 @@ body {
   }
 }
 
+/* === АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ === */
+@media (max-width: 768px) {
+    .screen { height: 95vh; max-height: none; padding: 8px 10px 5px; }
+    .logo-container { width: 250px; height: 260px; margin: 5px auto 10px; }
+    .game-title { font-size: 2.5rem; }
+    .game-name { font-size: 2rem; }
+    .welcome-text { font-size: 1.1rem; margin-bottom: 20px; }
+    
+    /* Уменьшаем верхние блоки еще больше для мобильных */
+    .level-description {
+        min-height: 40px !important;
+        max-height: 50px !important;
+        font-size: 11px !important;
+        padding: 6px !important;
+    }
+    
+    .game-header {
+        min-height: 25px !important;
+    }
+    
+    .level-name {
+        font-size: 12px !important;
+    }
+    
+    .timer {
+        font-size: 16px !important;
+    }
+    
+    /* Настройки для мобильных */
+    .setting-item {
+        min-height: 65px !important;
+        padding: 8px !important;
+    }
+    
+    .setting-item label {
+        font-size: 12px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .temp-slider {
+        height: 12px !important;
+    }
+    
+    .temp-value {
+        font-size: 13px !important;
+        min-width: 35px !important;
+    }
+    
+    /* Кнопки для мобильных */
+    #hint-btn, #launch-btn {
+        min-width: 140px !important;
+        max-width: 160px !important;
+        font-size: 13px !important;
+        height: 40px !important;
+        min-height: 40px !important;
+        max-height: 40px !important;
+    }
+    
+    #launch-btn {
+        font-size: 12.5px !important;
+        min-width: 150px !important;
+    }
+    
+    /* Бизнес-карточки для мобильных */
+    .business-options {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .business-card {
+        min-height: 350px;
+        padding: 15px;
+    }
+    
+    .business-description {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-controls {
+        gap: 8px;
+        padding: 6px 3px !important;
+    }
+    
+    .business-card {
+        min-height: 320px;
+        padding: 12px;
+    }
+    
+    .business-image {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .business-card h3 {
+        font-size: 16px;
+    }
+    
+    .business-card-desc {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 360px) {
+    .playground-container,
+    .equipment-panel-container {
+        min-height: 120px !important;
+        max-height: 130px !important;
+    }
+    
+    .slot,
+    .equipment-btn {
+        width: 130px !important;
+        height: 130px !important;
+    }
+    
+    .equipment,
+    .equipment-placed {
+        width: 110px !important;
+        height: 110px !important;
+    }
+    
+    #hint-btn, #launch-btn {
+        min-width: 130px !important;
+        max-width: 140px !important;
+        font-size: 12px !important;
+    }
+    
+    #launch-btn {
+        font-size: 11.5px !important;
+        min-width: 140px !important;
+    }
+    
+    .business-card {
+        min-height: 300px;
+    }
+}
+
+/* Для планшетов и больших экранов */
+@media (min-width: 769px) {
+    .slot, .equipment-btn { width: 160px; height: 160px; }
+    .equipment { width: 140px; height: 140px; }
+    .equipment-placed { width: 140px; height: 140px; }
+    
+    .business-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1201px) {
+    .business-options {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 /* Стили для развернутых результатов */
 .parameter-results {
   margin: 15px 0;
@@ -1275,6 +1519,47 @@ body {
     margin: 10px 0 !important;
 }
 
+/* Особые стили для очень маленьких экранов */
+@media (max-width: 480px) {
+    .win-content {
+        margin: 5px !important;
+        padding: 20px 15px !important;
+        min-height: auto !important;
+    }
+    
+    .level-results {
+        margin: 15px 0 !important;
+        padding: 15px !important;
+    }
+    
+    .level-result h3 {
+        font-size: 1.3rem !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .level-summary {
+        margin-top: 15px !important;
+        padding-top: 15px !important;
+    }
+}
+
+/* Для горизонтальной ориентации на мобильных */
+@media (max-width: 768px) and (orientation: landscape) {
+    #win-screen,
+    #lose-screen,
+    #business-start-screen {
+        padding: 10px 5px !important;
+    }
+    
+    .win-content {
+        padding: 15px 10px !important;
+    }
+    
+    .business-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 /* Убедимся что контент не обрезается */
 .win-content {
     min-height: min-content !important;
@@ -1292,13 +1577,18 @@ body {
     display: none !important;
 }
 
+/* Исправляем отображение brewery-background для уровней 1 и 4 */
 .brewery-background {
     position: relative !important;
     width: 100% !important;
-    height: 100px !important; /* ФИКСИРОВАННАЯ ВЫСОТА */
-    min-height: 100px !important;
-    max-height: 100px !important;
-    margin: 0 !important;
+    height: auto !important;
+    max-height: 150px !important;
+    margin: 10px 0 5px 0 !important;
+    bottom: auto !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    z-index: 1 !important;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1345,6 +1635,39 @@ body {
 /* Скрываем placeholder-image во всех случаях */
 .placeholder-image {
     display: none !important;
+}
+
+/* === АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ === */
+@media (max-width: 768px) {
+    .brewery-background {
+        max-height: 120px !important;
+        margin: 8px 0 3px 0 !important;
+    }
+    
+    .brewery-background img {
+        max-height: 110px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .brewery-background {
+        max-height: 100px !important;
+        margin: 5px 0 2px 0 !important;
+    }
+    
+    .brewery-background img {
+        max-height: 90px !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .brewery-background {
+        max-height: 80px !important;
+    }
+    
+    .brewery-background img {
+        max-height: 75px !important;
+    }
 }
 
 /* === ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ ИГРОВЫХ ЭКРАНОВ === */
@@ -1592,6 +1915,44 @@ body {
     box-shadow: none;
 }
 
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .equipment-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .budget-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .equipment-controls {
+        flex-direction: column;
+    }
+    
+    .business-action-btn {
+        width: 100%;
+    }
+    
+    .garage-setup-container {
+        max-height: 50vh;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .equipment-option {
+        padding: 8px;
+    }
+    
+    .equipment-category {
+        padding: 10px;
+    }
+    
+    .equipment-details span {
+        font-size: 11px;
+    }
+}
 /* Стили для полного магазина оборудования */
 .equipment-store-container {
     padding: 15px;
@@ -1760,6 +2121,47 @@ body {
     flex-wrap: wrap;
 }
 
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .equipment-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .equipment-store-container {
+        max-height: 55vh;
+        padding: 10px;
+    }
+    
+    .equipment-option {
+        padding: 10px;
+    }
+    
+    .equipment-controls {
+        flex-direction: column;
+    }
+    
+    .business-action-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .equipment-category h3 {
+        font-size: 14px;
+        padding: 8px;
+    }
+    
+    .equipment-details span {
+        font-size: 11px;
+    }
+    
+    #selected-equipment div {
+        font-size: 13px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}
 /* Исправляем ширину бизнес-опций */
 .business-options {
     display: grid;
@@ -1792,6 +2194,45 @@ body {
     max-width: 1200px; /* Увеличиваем максимальную ширину */
     margin: 0 auto;
     padding: 20px;
+}
+
+/* Адаптивность для бизнес-карточек */
+@media (max-width: 768px) {
+    .business-options {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 0 5px;
+    }
+    
+    .business-card {
+        min-height: 350px;
+        padding: 15px;
+        max-width: 100%; /* На мобильных занимаем всю ширину */
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .business-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1025px) {
+    .business-options {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Увеличиваем ширину roadmap */
+.development-roadmap {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 800px; /* Увеличиваем ширину */
 }
 
 /* Увеличиваем описание */
@@ -2085,6 +2526,84 @@ body {
     box-shadow: none;
 }
 
+/* Адаптивность для широкого экрана */
+@media (max-width: 1024px) {
+    .wide-equipment-store {
+        padding: 20px;
+    }
+    
+    .equipment-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 12px;
+    }
+    
+    .summary-content {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    #facility-equipment-screen {
+        padding: 15px 10px;
+        width: 98%;
+    }
+    
+    .equipment-win-content {
+        padding: 15px;
+    }
+    
+    .wide-equipment-store {
+        padding: 15px;
+    }
+    
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .budget-info-wide {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .equipment-category-wide {
+        padding: 15px;
+    }
+    
+    .equipment-controls-wide {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .equipment-action-btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .equipment-description {
+        font-size: 16px;
+    }
+    
+    .budget-display-wide h2 {
+        font-size: 1.3rem;
+    }
+    
+    .equipment-category-wide h3 {
+        font-size: 16px;
+        padding: 10px;
+    }
+    
+    .equipment-option-wide {
+        padding: 12px;
+    }
+    
+    .summary-section-wide {
+        padding: 20px;
+    }
+}
+
 /* Плавная анимация появления */
 .wide-equipment-store {
     animation: slideInUp 0.5s ease-out;
@@ -2119,1033 +2638,3 @@ body {
 .selected-equipment-list::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
-/* === УЛУЧШЕННЫЕ СТИЛИ ДЛЯ ЭКРАНА ОСНАЩЕНИЯ НА МОБИЛЬНЫХ === */
-
-/* Фиксированный заголовок с бюджетом */
-.equipment-header {
-    margin-bottom: 25px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 10px 0;
-    margin: -25px -25px 25px -25px;
-}
-
-.budget-display-wide {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    color: white;
-    padding: 15px 20px;
-    border-radius: 0 0 15px 15px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.budget-display-wide h2 {
-    margin-bottom: 12px;
-    font-size: 1.3rem;
-}
-
-/* Бюджет в одну строку на мобильных */
-.budget-info-wide {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 5px;
-}
-
-.budget-item-wide {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    flex-shrink: 0;
-    min-width: 80px;
-}
-
-.budget-label {
-    font-size: 11px;
-    opacity: 0.9;
-    white-space: nowrap;
-}
-
-.budget-value {
-    font-size: 14px;
-    font-weight: bold;
-    white-space: nowrap;
-}
-
-/* Более компактные категории оборудования */
-.equipment-categories-wide {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.equipment-category-wide {
-    background: white;
-    border-radius: 12px;
-    padding: 15px;
-    border: 2px solid #e5e7eb;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.equipment-category-wide h3 {
-    color: #1f2937;
-    margin-bottom: 12px;
-    font-size: 16px;
-    padding: 10px;
-    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-    border-radius: 8px;
-    text-align: center;
-    border-left: 4px solid #3b82f6;
-}
-
-/* Адаптивная сетка оборудования */
-.equipment-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 10px;
-}
-
-.equipment-option-wide {
-    border: 2px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: white;
-    position: relative;
-}
-
-.equipment-option-wide:hover {
-    border-color: #3b82f6;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-}
-
-.equipment-option-wide label {
-    cursor: pointer;
-    display: block;
-    color: #1f2937;
-    font-size: 14px;
-    line-height: 1.3;
-}
-
-.equipment-details-wide {
-    margin-top: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.equipment-details-wide span {
-    font-size: 12px;
-    color: #6b7280;
-    line-height: 1.2;
-}
-
-/* Компактная сводка */
-.summary-section-wide {
-    background: #f8fafc;
-    padding: 20px;
-    border-radius: 12px;
-    border: 2px solid #e2e8f0;
-    margin: 20px 0 15px 0;
-}
-
-.summary-section-wide h3 {
-    color: #1f2937;
-    margin-bottom: 12px;
-    font-size: 16px;
-    text-align: center;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.summary-content {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.selected-equipment-list {
-    max-height: 200px;
-    overflow-y: auto;
-    color: #1f2937;
-    background: white;
-    border-radius: 8px;
-    padding: 12px;
-    border: 1px solid #e5e7eb;
-    font-size: 13px;
-}
-
-.selected-equipment-list div {
-    padding: 8px;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.equipment-item-price {
-    color: #059669;
-    font-weight: 600;
-    font-size: 12px;
-}
-
-.empty-selection-wide {
-    color: #6b7280;
-    font-style: italic;
-    text-align: center;
-    margin: 0;
-    padding: 20px !important;
-}
-
-/* Компактные кнопки управления */
-.equipment-controls-wide {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin-top: 20px;
-    flex-wrap: wrap;
-}
-
-.equipment-action-btn {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 25px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 160px;
-}
-
-/* Плавная прокрутка */
-.wide-equipment-store {
-    scroll-behavior: smooth;
-}
-
-/* Улучшаем видимость фиксированного заголовка при прокрутке */
-.equipment-header::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.1), transparent);
-}
-
-/* === СУПЕР-КОМПАКТНЫЙ ЭКРАН ОСНАЩЕНИЯ ДЛЯ МОБИЛЬНЫХ === */
-
-/* Бюджет в одну строку */
-.budget-info-wide {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    gap: 5px !important;
-    flex-wrap: nowrap !important;
-    height: auto !important;
-    min-height: 30px !important;
-}
-
-.budget-item-wide {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 5px !important;
-    min-width: auto !important;
-    flex: 1 !important;
-    justify-content: center !important;
-}
-
-.budget-label {
-    font-size: 10px !important;
-    opacity: 0.9;
-    white-space: nowrap;
-}
-
-.budget-value {
-    font-size: 12px !important;
-    font-weight: bold;
-    white-space: nowrap;
-}
-
-/* Разделители между элементами бюджета */
-.budget-item-wide:not(:last-child)::after {
-    content: "|";
-    color: rgba(255,255,255,0.3);
-    margin-left: 8px;
-}
-
-/* Уменьшаем заголовок */
-.budget-display-wide h2 {
-    margin-bottom: 8px !important;
-    font-size: 1.1rem !important;
-}
-
-/* Делаем бюджетный блок еще компактнее */
-.budget-display-wide {
-    padding: 10px 15px !important;
-    min-height: auto !important;
-}
-
-/* Стиль чека для выбранного оборудования */
-.selected-equipment-list {
-    background: white !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 8px !important;
-    padding: 8px !important;
-    max-height: 150px !important;
-}
-
-.selected-equipment-item {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    padding: 6px 4px !important;
-    border-bottom: 1px dashed #e5e7eb !important;
-    font-size: 12px !important;
-    min-height: 28px !important;
-}
-
-.selected-equipment-item:last-child {
-    border-bottom: none !important;
-}
-
-.equipment-item-name {
-    flex: 1;
-    text-align: left;
-    color: #1f2937;
-}
-
-.equipment-item-price {
-    color: #059669;
-    font-weight: 600;
-    font-size: 11px !important;
-    min-width: 40px;
-    text-align: right;
-}
-
-/* Кнопка удаления из чека */
-.remove-equipment-btn {
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
-    cursor: pointer;
-    margin-left: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.remove-equipment-btn:hover {
-    background: #dc2626;
-}
-
-/* Итоговая строка в чеке */
-.equipment-total {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    padding: 8px 4px 0 4px !important;
-    border-top: 2px solid #059669 !important;
-    margin-top: 5px !important;
-    font-weight: bold !important;
-    font-size: 13px !important;
-    color: #1f2937 !important;
-}
-
-/* Убираем лишние отступы в сводке */
-.summary-section-wide {
-    padding: 12px !important;
-    margin: 10px 0 5px 0 !important;
-}
-
-.summary-section-wide h3 {
-    font-size: 14px !important;
-    margin-bottom: 8px !important;
-    padding-bottom: 6px !important;
-}
-
-/* Компактные кнопки управления */
-.equipment-controls-wide {
-    padding: 8px 0 !important;
-    margin-top: 10px !important;
-}
-
-.equipment-action-btn {
-    padding: 8px 16px !important;
-    font-size: 13px !important;
-    min-width: 140px !important;
-}
-/* === КРАСИВЫЙ СИНИЙ БЛОК БЮДЖЕТА === */
-.budget-display-wide {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
-    color: white;
-    padding: 12px 20px !important;
-    border-radius: 12px !important;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    backdrop-filter: blur(10px) !important;
-    margin: 0 auto 20px auto !important;
-    max-width: 95% !important;
-}
-
-.budget-display-wide h2 {
-    margin-bottom: 10px !important;
-    font-size: 1.2rem !important;
-    font-weight: 600 !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-    letter-spacing: -0.2px !important;
-}
-
-/* Бюджет в одну строку - компактно но читаемо */
-.budget-info-wide {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    gap: 8px !important;
-    flex-wrap: nowrap !important;
-    height: auto !important;
-    min-height: 28px !important;
-    padding: 0 5px !important;
-}
-
-.budget-item-wide {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 2px !important;
-    flex: 1 !important;
-    justify-content: center !important;
-    padding: 4px 0 !important;
-}
-
-.budget-label {
-    font-size: 10px !important;
-    opacity: 0.9;
-    white-space: nowrap;
-    font-weight: 500 !important;
-    letter-spacing: 0.3px !important;
-}
-
-.budget-value {
-    font-size: 13px !important;
-    font-weight: 700 !important;
-    white-space: nowrap;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* Красивые разделители */
-.budget-item-wide:not(:last-child) {
-    position: relative;
-}
-
-.budget-item-wide:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    right: -4px;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 20px;
-    width: 1px;
-    background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.4), transparent);
-}
-
-/* Анимация при изменении бюджета */
-.budget-value {
-    transition: all 0.3s ease;
-}
-
-.budget-value.changed {
-    animation: budgetPulse 0.6s ease;
-}
-
-@keyframes budgetPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-/* Особый стиль для отрицательного остатка */
-.budget-value.negative {
-    color: #fecaca !important;
-    animation: negativePulse 0.8s ease;
-}
-
-@keyframes negativePulse {
-    0% { color: #fecaca; }
-    50% { color: #fef2f2; }
-    100% { color: #fecaca; }
-}
-
-/* Ховер-эффект для всего блока */
-.budget-display-wide {
-    transition: all 0.3s ease;
-}
-
-.budget-display-wide:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
-}
-/* === ШИРОКАЯ СВОДКА НА ПК И УБИРАЕМ КРЕСТИКИ === */
-
-
-/* Убираем красные крестики */
-.remove-equipment-btn {
-    display: none !important;
-}
-
-/* Улучшаем отображение без крестиков */
-.selected-equipment-item {
-    padding: 6px 4px !important;
-    border-bottom: 1px dashed #e5e7eb !important;
-    font-size: 12px !important;
-    min-height: 28px !important;
-}
-
-.selected-equipment-item:last-child {
-    border-bottom: none !important;
-}
-
-.equipment-item-name {
-    flex: 1;
-    text-align: left;
-    color: #1f2937;
-    padding-right: 10px;
-}
-
-.equipment-item-price {
-    color: #059669;
-    font-weight: 600;
-    font-size: 11px !important;
-    min-width: 45px;
-    text-align: right;
-}
-
-/* Делаем сводку более читаемой */
-.selected-equipment-list {
-    background: white !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 8px !important;
-    padding: 10px !important;
-    max-height: 200px !important;
-    font-family: 'Courier New', monospace !important;
-}
-
-/* Итоговая строка выделяем больше */
-.equipment-total {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    padding: 10px 4px 0 4px !important;
-    border-top: 2px solid #059669 !important;
-    margin-top: 8px !important;
-    font-weight: bold !important;
-    font-size: 14px !important;
-    color: #1f2937 !important;
-    background: #f0f9ff !important;
-    margin: 8px -10px 0 -10px !important;
-    padding: 8px 10px !important;
-}
-
-
-/* Ховер-эффекты для строк */
-.selected-equipment-item {
-    transition: background-color 0.2s ease;
-}
-
-.selected-equipment-item:hover {
-    background-color: #f8fafc;
-}
-
-/* Выравнивание по левому краю для лучшей читаемости */
-.summary-content {
-    align-items: flex-start !important;
-}
-
-.selected-equipment-list {
-    width: 100% !important;
-}
-/* === УБИРАЕМ ПУСТОТУ МЕЖДУ КОНТЕНТОМ И КНОПКАМИ НА УРОВНЯХ 1-5 === */
-
-
-.playground-container,
-.equipment-panel-container {
-    margin-bottom: 0 !important;
-    min-height: 120px !important;
-    max-height: 130px !important;
-}
-
-
-
-/* Компактные настройки для уровней 1,2,4 */
-.setting-item {
-    min-height: 55px !important;
-    padding: 6px !important;
-}
-
-.setting-item label {
-    margin-bottom: 4px !important;
-    font-size: 11px !important;
-}
-
-.setting-controls {
-    gap: 8px !important;
-}
-
-.temp-slider {
-    height: 10px !important;
-}
-
-.temp-value {
-    font-size: 12px !important;
-    min-width: 30px !important;
-}
-
-
-/* Для уровней с оборудованием (3,5) - делаем слоты и панель компактнее */
-.slot, .equipment-btn {
-    width: 120px !important;
-    height: 120px !important;
-}
-
-.equipment, .equipment-placed {
-    width: 100px !important;
-    height: 100px !important;
-}
-
-.slot-number {
-    width: 18px !important;
-    height: 18px !important;
-    font-size: 10px !important;
-}
-
-/* Убираем лишние отступы в playground */
-.playground {
-    gap: 8px !important;
-    padding: 5px !important;
-}
-
-.equipment-panel {
-    gap: 8px !important;
-    padding: 3px !important;
-}
-
-
-/* Планшеты и мобильные (768px и меньше) */
-@media (max-width: 768px) {
-    .screen { 
-        height: 95vh; 
-        max-height: none; 
-        padding: 8px 10px 5px; 
-    }
-    
-    .logo-container { 
-        width: 250px; 
-        height: 260px; 
-        margin: 5px auto 10px; 
-    }
-    
-    .game-title { font-size: 2.5rem; }
-    .game-name { font-size: 2rem; }
-    .welcome-text { 
-        font-size: 1.1rem; 
-        margin-bottom: 20px; 
-    }
-    
-    
-    .level-name { font-size: 12px !important; }
-    .timer { font-size: 16px !important; }
-    
-    .setting-item { min-height: 65px !important; padding: 8px !important; }
-    .setting-item label { font-size: 12px !important; margin-bottom: 6px !important; }
-    .temp-slider { height: 12px !important; }
-    .temp-value { font-size: 13px !important; min-width: 35px !important; }
-    
-    
-    #hint-btn, #launch-btn {
-        padding: 12px 20px !important;
-        font-size: 16px !important;
-        min-width: 160px !important;
-        max-width: 180px !important;
-        height: 50px !important;
-        min-height: 50px !important;
-        max-height: 50px !important;
-    }
-    
-    #launch-btn {
-        min-width: 180px !important;
-        font-size: 16px !important;
-    }
-    
-    .business-options { grid-template-columns: 1fr; gap: 15px; }
-    .business-card { min-height: 350px; padding: 15px; }
-    .business-description { font-size: 14px; }
-    
-    /* Экран победы для мобильных */
-    #win-screen { padding: 10px 8px !important; justify-content: flex-start !important; }
-    .win-content { padding: 12px !important; margin: 5px !important; }
-    .win-text { font-size: 1.6rem !important; margin-bottom: 8px !important; }
-    #win-screen p { font-size: 13px !important; margin: 6px 0 !important; }
-    .level-results { padding: 10px !important; margin: 8px 0 !important; }
-    .level-result h3 { font-size: 15px !important; }
-    .email-form { padding: 12px !important; margin: 10px 0 !important; }
-    .email-form p { font-size: 13px !important; }
-}
-
-/* Горизонтальная ориентация на мобильных */
-@media (max-width: 768px) and (orientation: landscape) {
-    #win-screen,
-    #lose-screen,
-    #business-start-screen {
-        padding: 10px 5px !important;
-    }
-    
-    .win-content { padding: 15px 10px !important; }
-    .business-options { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* Планшеты и большие экраны (769px и больше) */
-@media (min-width: 769px) {
-    .slot, .equipment-btn { width: 160px; height: 160px; }
-    .equipment { width: 140px; height: 140px; }
-    .equipment-placed { width: 140px; height: 140px; }
-    .business-options { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* Большие экраны (1201px и больше) */
-@media (min-width: 1201px) {
-    .business-options { grid-template-columns: repeat(3, 1fr); }
-}
-
-/* БОЛЬШИЕ РАЗМЕРЫ ДЛЯ УРОВНЕЙ С ОБОРУДОВАНИЕМ (3 и 5) - ОСНОВНЫЕ СТИЛИ */
-.playground-container:not(.hidden),
-.equipment-panel-container:not(.hidden) {
-    min-height: 180px !important;
-    max-height: 200px !important;
-    margin-bottom: 10px !important;
-}
-
-.slot, .equipment-btn {
-    width: 160px !important;
-    height: 160px !important;
-}
-
-.equipment, .equipment-placed {
-    width: 140px !important;
-    height: 140px !important;
-}
-
-.slot-number {
-    width: 26px !important;
-    height: 26px !important;
-    font-size: 14px !important;
-}
-
-.playground {
-    gap: 15px !important;
-    padding: 12px !important;
-}
-
-.equipment-panel {
-    gap: 15px !important;
-    padding: 10px !important;
-}
-
-/* Когда виден brewery-background - скрываем другие контейнеры */
-.brewery-background:not(.hidden) ~ .playground-container.hidden,
-.brewery-background:not(.hidden) ~ .equipment-panel-container.hidden {
-    display: none !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* Когда виден playground-container - скрываем brewery-background и settings */
-.playground-container:not(.hidden) ~ .brewery-background.hidden,
-.playground-container:not(.hidden) ~ .settings-container.hidden {
-    display: none !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* Убираем отступы у скрытых элементов */
-.game-container .hidden {
-    margin: 0 !important;
-    padding: 0 !important;
-    min-height: 0 !important;
-    max-height: 0 !important;
-}
-
-/* Увеличиваем видимые изображения */
-.brewery-background:not(.hidden) {
-    min-height: 180px !important;
-    max-height: 220px !important;
-    margin: 10px 0 !important;
-}
-
-.brewery-background:not(.hidden) img {
-    max-width: 85% !important;
-    max-height: 200px !important;
-    width: auto !important;
-    height: auto !important;
-}
-
-
-/* === ФИКС НАЛОЖЕНИЯ ХЕДЕРА === */
-#win-screen,
-#business-start-screen,
-#facility-equipment-screen {
-  padding-top: 70px !important;
-  justify-content: flex-start !important;
-}
-
-@media (max-width: 768px) {
-  #win-screen,
-  #business-start-screen,
-  #facility-equipment-screen {
-    padding-top: 60px !important;
-  }
-  
-  .win-content,
-  .equipment-win-content {
-    margin-top: 10px !important;
-    padding-top: 15px !important;
-  }
-}
-
-/* Гарантируем что контент не скрывается */
-.win-content,
-.equipment-win-content {
-  position: relative !important;
-  z-index: 1 !important;
-}
-/* === ШИРИНА БЛОКА ВЫБОРА ОБОРУДОВАНИЯ === */
-@media (max-width: 768px) {
-  .wide-equipment-store {
-    width: 95% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding: 15px !important;
-  }
-  
-  .equipment-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
-    gap: 10px !important;
-  }
-  
-  .equipment-category-wide {
-    padding: 12px !important;
-  }
-  
-  .summary-content {
-    grid-template-columns: 1fr !important;
-    gap: 15px !important;
-  }
-  
-  .selected-equipment-list {
-    max-height: 150px !important;
-  }
-}
-/* === ФИКС ОТСТУПОВ ДЛЯ УРОВНЕЙ 3 И 5 === */
-.playground-container:not(.hidden) + .equipment-panel-container:not(.hidden) {
-  margin-top: 10px !important;
-}
-
-/* Убираем большие пустые расстояния */
-.game-container:has(.playground-container:not(.hidden)) {
-  gap: 10px !important;
-}
-
-/* Компактные отступы для слотов и оборудования */
-.playground-container:not(.hidden),
-.equipment-panel-container:not(.hidden) {
-  margin: 5px 0 !important;
-}
-
-@media (max-width: 768px) {
-  .playground-container:not(.hidden) + .equipment-panel-container:not(.hidden) {
-    margin-top: 8px !important;
-  }
-
-  
-}
-/* ПРОСТОЙ ВАРИАНТ - убираем sticky полностью */
-.equipment-header {
-    margin-bottom: 20px;
-    position: relative;
-}
-
-.budget-display-wide {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
-    color: white;
-    padding: 15px 20px !important;
-    border-radius: 12px !important;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    margin: 0 auto 20px auto !important;
-    max-width: 100% !important;
-    /* Убираем sticky свойства */
-    position: relative;
-    top: auto;
-}
-
-  /* Фиксированные высоты для разных типов уровней */
-  
-  /* Уровни с настройками (1, 2, 4) */
-  .settings-container:not(.hidden) {
-    height: 180px !important;
-    min-height: 180px !important;
-    max-height: 180px !important;
-    overflow-y: auto !important;
-    margin-bottom: 5px !important;
-  }
-
-  /* Уровни с оборудованием (3, 5) */
-  .playground-container:not(.hidden) {
-    height: 140px !important;
-    min-height: 140px !important;
-    max-height: 140px !important;
-    margin-bottom: 5px !important;
-  }
-
-  .equipment-panel-container:not(.hidden) {
-    height: 140px !important;
-    min-height: 140px !important;
-    max-height: 140px !important;
-    margin-bottom: 5px !important;
-  }
-
-  /* Фон для уровней с настройками */
-  .brewery-background:not(.hidden) {
-    height: 120px !important;
-    min-height: 120px !important;
-    max-height: 120px !important;
-    margin: 5px 0 !important;
-  }
-
-  .brewery-background:not(.hidden) img {
-    max-height: 110px !important;
-    max-width: 90% !important;
-  }
-
-
-  /* Компактные настройки */
-  .setting-item {
-    min-height: 50px !important;
-    max-height: 50px !important;
-    padding: 5px !important;
-    margin-bottom: 5px !important;
-  }
-
-  .setting-item label {
-    font-size: 11px !important;
-    margin-bottom: 3px !important;
-    line-height: 1.1 !important;
-  }
-
-  .temp-slider {
-    height: 8px !important;
-  }
-
-  .temp-value {
-    font-size: 11px !important;
-    min-width: 25px !important;
-  }
-
-  /* Компактное оборудование */
-  .slot, .equipment-btn {
-    width: 110px !important;
-    height: 110px !important;
-    flex-shrink: 0 !important;
-  }
-
-  .equipment, .equipment-placed {
-    width: 90px !important;
-    height: 90px !important;
-  }
-
-  .slot-number {
-    width: 16px !important;
-    height: 16px !important;
-    font-size: 9px !important;
-  }
-
-
-/* Особые стили для очень маленьких экранов */
-@media (max-width: 360px) {
-  .settings-container:not(.hidden) {
-    height: 160px !important;
-    min-height: 160px !important;
-    max-height: 160px !important;
-  }
-
-  .playground-container:not(.hidden),
-  .equipment-panel-container:not(.hidden) {
-    height: 120px !important;
-    min-height: 120px !important;
-    max-height: 120px !important;
-  }
-
-  .brewery-background:not(.hidden) {
-    height: 100px !important;
-    min-height: 100px !important;
-    max-height: 100px !important;
-  }
-
-  .slot, .equipment-btn {
-    width: 100px !important;
-    height: 100px !important;
-  }
-
-  .equipment, .equipment-placed {
-    width: 80px !important;
-    height: 80px !important;
-  }
-}
-
-
-  .settings-container:not(.hidden) {
-    height: 140px !important;
-    min-height: 140px !important;
-    max-height: 140px !important;
-  }
-
-  .playground-container:not(.hidden),
-  .equipment-panel-container:not(.hidden) {
-    height: 110px !important;
-    min-height: 110px !important;
-    max-height: 110px !important;
-  }
-
-  .brewery-background:not(.hidden) {
-    height: 90px !important;
-    min-height: 90px !important;
-    max-height: 90px !important;
-  }
-
-
-/* Делаем картинку компактной */
-.brewery-background img {
-    max-height: 90px !important;
-    max-width: 90% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    object-fit: contain;
-}
-
-

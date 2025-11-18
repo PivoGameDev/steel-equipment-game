@@ -1304,7 +1304,6 @@ class BreweryGame {
     
     this.playSound('click');
     this.state.currentLevel = levelNum;
-    this.elements.gameScreen.setAttribute('data-level', levelNum);
     const level = this.levels[levelNum];
     this.elements.playground.innerHTML = '';
     this.elements.equipmentPanel.innerHTML = '';
@@ -1720,39 +1719,23 @@ class BreweryGame {
 
     const level = this.levels[levelNum];
     
-    // Принудительно убираем скролл у игрового экрана
-    this.elements.gameScreen.style.overflow = 'hidden';
-    
     if (levelNum === 1 || levelNum === 2 || levelNum === 4) {
-        // Уровни с настройками
+        // Уровни с настройками - показываем настройки и фон
         this.createSettingsInterface(level);
         this.elements.settingsContainer.classList.remove('hidden');
         this.elements.breweryBackground.classList.remove('hidden');
         this.updateBackgroundImage(levelNum);
-        
-        // Гарантируем что оборудование скрыто
-        this.elements.playgroundContainer.classList.add('hidden');
-        this.elements.equipmentPanelContainer.classList.add('hidden');
     } else if (levelNum === 3 || levelNum === 5) {
-        // Уровни с оборудованием
+        // Уровни с оборудованием - показываем слоты и панель оборудования
         this.createEquipmentSlots(level);
         this.createEquipmentPanel(level);
         this.elements.playgroundContainer.classList.remove('hidden');
         this.elements.equipmentPanelContainer.classList.remove('hidden');
-        
-        // Гарантируем что настройки и фон скрыты
-        this.elements.settingsContainer.classList.add('hidden');
-        this.elements.breweryBackground.classList.add('hidden');
     }
     
     // Всегда показываем кнопку подсказки
     this.elements.hintBtn.classList.remove('hidden');
-    
-    // Принудительный reflow для стабильности
-    setTimeout(() => {
-        this.elements.gameScreen.style.height = '100vh';
-    }, 50);
-}
+  }
 
   // === МЕТОДЫ ДЛЯ ЭКРАНА ОБОРУДОВАНИЯ ===
 
@@ -1825,33 +1808,6 @@ class BreweryGame {
     
     // Инициализируем первый расчет
     this.updateEquipmentSelection(facilityType);
-
-    initMobileEquipmentBehavior() 
-    {
-    // Плавная прокрутка к категориям
-    const categoryHeaders = document.querySelectorAll('.equipment-category-wide h3');
-    categoryHeaders.forEach(header => {
-        header.style.cursor = 'pointer';
-        header.addEventListener('click', () => {
-            const category = header.closest('.equipment-category-wide');
-            category.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
-    });
-
-    // Оптимизация для touch devices
-    if (this.isMobile()) {
-        const equipmentOptions = document.querySelectorAll('.equipment-option-wide');
-        equipmentOptions.forEach(option => {
-            option.addEventListener('touchstart', () => {
-                option.style.transform = 'scale(0.98)';
-            });
-            
-            option.addEventListener('touchend', () => {
-                option.style.transform = '';
-            });
-        });
-    }
-}
   }
 
   selectBasicEquipment(facilityType) {
@@ -1953,21 +1909,17 @@ class BreweryGame {
     }
     
     if (selectedEquipment.length > 0) {
-    selectedList.innerHTML = selectedEquipment.map(item => 
-        `<div class="selected-equipment-item" data-id="${item.id}">
-            <span class="equipment-item-name">${item.name}</span>
-            <span class="equipment-item-price">${item.price} BP</span>
-        </div>`
-    ).join('') + 
-    `<div class="equipment-total">
-        <span>ИТОГО:</span>
-        <span>${totalCost} BP</span>
-    </div>`;
-    console.log('Сводка оборудования обновлена');
-} else {
-    selectedList.innerHTML = '<p class="empty-selection-wide">Выберите оборудование выше...</p>';
-    console.log('Сводка оборудования пуста');
-}
+        selectedList.innerHTML = selectedEquipment.map(item => 
+            `<div>
+                <span>✅ ${item.name}</span>
+                <span class="equipment-item-price">${item.price} BP</span>
+            </div>`
+        ).join('');
+        console.log('Сводка оборудования обновлена');
+    } else {
+        selectedList.innerHTML = '<p class="empty-selection-wide">Выберите оборудование выше...</p>';
+        console.log('Сводка оборудования пуста');
+    }
     
     // Проверяем совместимость
     const compatibilityCheck = document.getElementById('compatibility-check');
@@ -2038,82 +1990,6 @@ class BreweryGame {
         this.showBusinessStartScreen();
     }, 3000);
   }
-  // Добавьте этот метод для обновления интерфейса чека
-updateEquipmentUI(totalCost, selectedEquipment, budget, facilityType) {
-    console.log('Обновление UI - стоимость:', totalCost, 'бюджет:', budget);
-    
-    // Обновляем стоимость
-    document.getElementById('total-cost').textContent = totalCost + ' BP';
-    document.getElementById('remaining-budget').textContent = (budget - totalCost) + ' BP';
-    
-    // Показываем выбранное оборудование в стиле чека
-    const selectedList = document.getElementById('selected-equipment-wide');
-    if (!selectedList) {
-        console.error('Элемент selected-equipment-wide не найден в DOM!');
-        return;
-    }
-    
-    if (selectedEquipment.length > 0) {
-        selectedList.innerHTML = selectedEquipment.map(item => 
-            `<div class="selected-equipment-item" data-id="${item.id}">
-                <span class="equipment-item-name">${item.name}</span>
-                <span class="equipment-item-price">${item.price} BP</span>
-                <button class="remove-equipment-btn" onclick="game.removeEquipment('${item.id}')">×</button>
-            </div>`
-        ).join('') + 
-        `<div class="equipment-total">
-            <span>ИТОГО:</span>
-            <span>${totalCost} BP</span>
-        </div>`;
-        
-        console.log('Сводка оборудования обновлена');
-    } else {
-        selectedList.innerHTML = '<p class="empty-selection-wide">Выберите оборудование выше...</p>';
-        console.log('Сводка оборудования пуста');
-    }
-    
-    // Остальной код проверок совместимости и бюджета...
-    const compatibilityCheck = document.getElementById('compatibility-check');
-    const isCompatible = this.checkEquipmentCompatibility(selectedEquipment, facilityType);
-    
-    if (!isCompatible) {
-        compatibilityCheck.classList.remove('hidden');
-    } else {
-        compatibilityCheck.classList.add('hidden');
-    }
-    
-    const budgetWarning = document.getElementById('budget-warning');
-    if (totalCost > budget) {
-        budgetWarning.classList.remove('hidden');
-    } else {
-        budgetWarning.classList.add('hidden');
-    }
-    
-    const selectedMash = document.querySelector('input[name="mashTun"]:checked');
-    const hasChemical = document.getElementById('chemical')?.checked || false;
-    const isValid = selectedMash && hasChemical && totalCost <= budget && isCompatible;
-    
-    const startBtn = document.getElementById('start-production-btn');
-    startBtn.disabled = !isValid;
-    
-    console.log('Кнопка запуска активна:', isValid);
-}
-
-
-// Добавьте этот вспомогательный метод
-getCurrentFacilityType() {
-    const facilityName = document.getElementById('current-facility-name').textContent;
-    const facilityTypes = {
-        'Подготовительной': 'preparation',
-        'Заторно-сусловарной': 'mashing', 
-        'Цеха брожения': 'fermentation',
-        'Розливной': 'bottling',
-        'Производственного цеха': 'production',
-        'Продвинутого цеха': 'advanced',
-        'Пивоваренного комплекса': 'complex'
-    };
-    return facilityTypes[facilityName] || 'preparation';
-}
 }
 
 // Создаем глобальную переменную для доступа из HTML
