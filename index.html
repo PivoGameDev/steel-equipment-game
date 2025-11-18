@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Собери пивной завод</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style-fixes.css">
 </head>
 <body>
     <!-- Стартовый экран -->
@@ -14,6 +15,7 @@
             <div class="logo-animation-container">
                 <img src="assets/images/logo.png" alt="Логотип" class="logo-animated">
             </div>
+            
         </div>
         
         <!-- Основной контент (пока скрыт) -->
@@ -78,6 +80,7 @@
             <button id="hint-btn" class="hidden">Подсказка</button>
             <button id="launch-btn" disabled>Далее →</button>
         </div>
+        
     </div>
 
     <!-- Экран победы -->
@@ -166,23 +169,24 @@
             
             <div class="wide-equipment-store">
                 <div class="equipment-header">
-                    <div class="budget-display-wide">
-                        <h2>🎯 Оборудование для <span id="current-facility-name">Подготовительной</span></h2>
-                        <div class="budget-info-wide">
-                            <div class="budget-item-wide">
-                                <span class="budget-label">Бюджет:</span>
-                                <span class="budget-value" id="total-budget">50 BP</span>
-                            </div>
-                            <div class="budget-item-wide">
-                                <span class="budget-label">Потрачено:</span>
-                                <span class="budget-value" id="total-cost">0 BP</span>
-                            </div>
-                            <div class="budget-item-wide">
-                                <span class="budget-label">Осталось:</span>
-                                <span class="budget-value" id="remaining-budget">50 BP</span>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Обновите этот раздел в equipment-header -->
+            <div class="budget-display-wide">
+               <h2>🎯 Оснащение <span id="current-facility-name">Подготовительной</span></h2>
+    <div class="budget-info-wide">
+        <div class="budget-item-wide">
+            <span class="budget-label">Бюджет</span>
+            <span class="budget-value" id="total-budget">50 BP</span>
+        </div>
+        <div class="budget-item-wide">
+            <span class="budget-label">Потрачено</span>
+            <span class="budget-value" id="total-cost">0 BP</span>
+        </div>
+        <div class="budget-item-wide">
+            <span class="budget-label">Осталось</span>
+            <span class="budget-value" id="remaining-budget">50 BP</span>
+        </div>
+    </div>
+</div>
                 </div>
 
                 <div class="equipment-categories-wide">
