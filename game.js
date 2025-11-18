@@ -4,25 +4,24 @@ class BreweryGame {
   constructor() {
     this.levels = {
       1: {
-        name: "Подготовка сырья",
-        time: 180,
-        settings: [
-          { 
-            id: "malt-consumption", 
-            correct: 185, 
-            min: 100, 
-            max: 500, 
-            step: 5, 
-            label: "Расход солода на 1000 л пива (кг)" 
-          },
-          { 
-            id: "wort-boiling-temp", 
-            correct: 90, 
-            min: 70, 
-            max: 110, 
-            step: 1, 
-            label: "Температура варки сусла (°C)" 
-          }
+        name: "Подготовка сырья", 
+  settings: [
+    { 
+      id: "malt-consumption", 
+      correct: 185, 
+      min: 100, 
+      max: 500, 
+      step: 5, 
+      label: "Расход солода на 1000 л пива (кг)" 
+    },
+    { 
+      id: "wort-boiling-time",    // ← Поменял id
+      correct: 90,               // ← 90 минут - правильно!
+      min: 60,                   // ← Поменял минимум на 60 минут
+      max: 120,                  // ← Поменял максимум на 120 минут  
+      step: 5,                   // ← Шаг 5 минут
+      label: "Время варки сусла (минут)" // ← Поменял label
+    }
         ],
         threshold3: 30,
         threshold2: 60,
@@ -430,16 +429,14 @@ class BreweryGame {
         
         this.updateBusinessDisplay();
         this.renderBusinessCards();
+        this.saveProgress(); // ← ДОБАВИЛИ сохранение прогресса
         
         const facilityName = this.businessLevels[facilityType].name;
         this.showFeedback(`Помещение "${facilityName}" успешно арендовано!`, 'correct');
         
         console.log('=== Before showFacilityEquipment ===');
         
-        // ВМЕСТО setTimeout используем немедленный вызов
         this.showFacilityEquipment(facilityType);
-        
-        // Разблокируем следующее помещение
         this.unlockNextFacility(facilityType);
     } else {
         this.showFeedback('Недостаточно средств или помещение уже куплено', 'incorrect');
@@ -794,25 +791,31 @@ class BreweryGame {
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
-            this.progress.unlockedLevels = parsed.unlockedLevels || [1]; // Гарантируем что 1 уровень разблокирован
+            this.progress.unlockedLevels = parsed.unlockedLevels || [1];
             this.progress.bestScores = parsed.bestScores || {};
             
-            // Если почему-то разблокированы другие уровни, оставляем только 1
-            if (this.progress.unlockedLevels.length > 1 && !this.progress.unlockedLevels.includes(1)) {
-                this.progress.unlockedLevels = [1];
+            // ← ДОБАВИЛИ загрузку бизнес-данных
+            if (parsed.business) {
+                this.state.business = parsed.business;
             }
+            
         } catch (e) { 
             console.error('Ошибка загрузки прогресса:', e);
-            this.progress.unlockedLevels = [1]; // По умолчанию только 1 уровень
+            this.progress.unlockedLevels = [1];
         }
     } else {
-        this.progress.unlockedLevels = [1]; // Новый игрок - только 1 уровень
+        this.progress.unlockedLevels = [1];
     }
 }
 
   saveProgress() { 
-    localStorage.setItem('breweryGameProgress', JSON.stringify(this.progress)); 
-  }
+    const progressData = {
+        unlockedLevels: this.progress.unlockedLevels,
+        bestScores: this.progress.bestScores,
+        business: this.state.business // ← ДОБАВИЛИ бизнес-данные
+    };
+    localStorage.setItem('breweryGameProgress', JSON.stringify(progressData)); 
+}
 
   startGame() {
     this.state.gameStarted = true;
@@ -1273,11 +1276,17 @@ class BreweryGame {
     this.playSound('click');
     this.elements.startScreen.classList.add('hidden');
     this.elements.levelSelectScreen.classList.remove('hidden');
+    this.loadProgress(); // ← ЗДЕСЬ ОДИН РАЗ
     this.renderLevelCards();
-  }
+}
 
-  renderLevelCards() {
-  this.elements.levelCardsContainer.innerHTML = '';
+renderLevelCards() {
+    // ← УБЕРИ this.loadProgress(); ОТСЮДА!
+    this.elements.levelCardsContainer.innerHTML = '';
+    
+    // === ГЛАВА 1: ОБУЧЕНИЕ ===
+    // ... остальной код
+
   
   // === ГЛАВА 1: ОБУЧЕНИЕ ===
   const chapter1Header = document.createElement('div');
@@ -1450,6 +1459,7 @@ class BreweryGame {
       
       let unit = '°C';
       if (setting.id === "malt-consumption") unit = 'кг';
+      if (setting.id === "wort-boiling-time") unit = 'мин';
       if (setting.id === "wort-brewing-time") unit = 'ч';
       if (setting.id === "maturation-time") unit = 'дн';
       
