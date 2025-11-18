@@ -3137,6 +3137,20 @@ body {
     color: #000 !important;
     letter-spacing: 1px;
 }
+
+/* Агрессивное удаление галочек */
+#selected-equipment *:before {
+    display: none !important;
+    content: "" !important;
+}
+
+#selected-equipment div {
+    padding: 5px 0 !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    font-size: 12px !important;
+    list-style: none !important;
+}
+
 /* Мобильная версия - только то что просили */
 @media (max-width: 768px) {
     /* 1. Текст "Оснащение: Пивоварня ресторанного типа" - уменьшить на 20% и 2 строки */
@@ -3173,5 +3187,51 @@ body {
     .equipment-options {
         grid-template-columns: 1fr !important;
         gap: 8px !important;
+    }
+}
+/* Мобильная версия - только то что просили */
+@media (max-width: 768px) {
+    /* 1. Текст "Оснащение: Пивоварня ресторанного типа" */
+    .garage-setup-container .equipment-category h3 {
+        font-size: 11.2px !important;
+        line-height: 1.2 !important;
+        max-height: 2.4em !important;
+        overflow: hidden !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+    }
+    
+    /* 2. Блок с бюджетом - в один ряд */
+    #business-start-screen .budget-info,
+    .garage-setup-container .budget-info {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        gap: 5px !important;
+        align-items: center !important;
+    }
+    
+    .garage-setup-container .budget-item {
+        flex: 1 !important;
+        text-align: center !important;
+        padding: 8px 5px !important;
+        margin: 0 !important;
+    }
+    
+    /* 3. Блоки выбора оборудования */
+    .game-screen .equipment-category,
+    .garage-setup-container .equipment-category {
+        margin-left: 5px !important;
+        margin-right: 5px !important;
+        width: calc(100% - 10px) !important;
+        max-width: none !important;
+    }
+    
+    .garage-setup-container .equipment-options {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        width: 100% !important;
     }
 }
