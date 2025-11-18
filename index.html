@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Собери пивной завод</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="style-fixes.css">
 </head>
 <body>
     <!-- Стартовый экран -->
@@ -33,8 +32,27 @@
     </div>
 
     <!-- Экран выбора уровня -->
-    <div id="level-select-screen" class="screen hidden">
-        <h1 class="level-select-title">Выберите уровень</h1>
+<div id="level-select-screen" class="screen hidden">
+    <!-- БЛОК АВТОРИЗАЦИИ -->
+<div class="auth-block">
+    <div class="auth-form">
+        <h3>Вход в игру</h3>
+        <input type="email" id="login-email" placeholder="Ваш email" class="auth-input">
+        <input type="password" id="login-password" placeholder="Пароль" class="auth-input">
+        <button id="login-btn" class="auth-btn login-btn">Войти</button>
+        <button id="register-btn" class="auth-btn register-btn">Создать аккаунт</button>
+        <p class="auth-message" id="auth-message"></p>
+    </div>
+</div>
+<!-- Блок статуса авторизации (показывается когда пользователь вошел) -->
+<div id="auth-status-block" class="auth-status-block hidden">
+    <div class="auth-status-content">
+        <p class="auth-greeting">Здравствуйте, <span id="user-email-display">user@example.com</span>!</p>
+        <button id="logout-btn" class="logout-btn">Выйти</button>
+    </div>
+</div>
+    
+    <h1 class="level-select-title">Выберите уровень</h1>
         <div class="level-cards">
             <!-- Уровни будут сгенерированы скриптом -->
         </div>

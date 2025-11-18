@@ -388,17 +388,22 @@ class BreweryGame {
       }
       
       card.innerHTML = `
-        <div class="business-image ${facilityType}-image"></div>
-        <h3>${isAvailable ? facility.name : facility.name + ' 🔒'}</h3>
-        <p class="business-card-desc">
-          <strong>Площадь:</strong> ${facility.area}<br>
-          <strong>База:</strong> ${facility.baseCapacity}<br>
-          <strong>Макс:</strong> ${facility.maxCapacity}<br>
-          <strong>Оснащение:</strong> ${facility.equipment}
-        </p>
-        <div class="business-price">Стоимость: ${facility.price} BP</div>
-        <div class="business-balance">Ваш баланс: <span>${this.state.business.balance}</span> BP</div>
-        ${buttonHTML}
+  <div class="level-card-content">
+    <div class="level-card-info">
+      <h3>${level.name}</h3>
+      <p>${level.description || ''}</p>
+      <div class="level-card-meta">
+        <span class="meta-item">${level.slots ? '🔧 ' + level.slots.length + ' оборудования' : '⚙️ Настройки параметров'}</span>
+        <span class="meta-item">⏱️ ${level.time} сек</span>
+      </div>
+    </div>
+    <div class="level-card-stats">
+      <div class="level-score">
+        ${this.progress.bestScores[levelNum] ? '🏆 ' + this.progress.bestScores[levelNum] : 'Новый'}
+      </div>
+    </div>
+  </div>
+  <div class="lock-icon ${isUnlocked ? 'hidden' : ''}"></div>
       `;
       
       businessOptions.appendChild(card);
@@ -1277,36 +1282,119 @@ class BreweryGame {
   }
 
   renderLevelCards() {
-    this.elements.levelCardsContainer.innerHTML = '';
-    for (const [id, level] of Object.entries(this.levels)) {
-        const levelNum = parseInt(id);
-        
-        // РАЗБЛОКИРУЕМ ТОЛЬКО ПЕРВЫЙ УРОВЕНЬ, остальные по прогрессу
-        const isUnlocked = levelNum === 1 || this.progress.unlockedLevels.includes(levelNum);
+  this.elements.levelCardsContainer.innerHTML = '';
+  
+  // === ГЛАВА 1: ОБУЧЕНИЕ ===
+  const chapter1Header = document.createElement('div');
+  chapter1Header.className = 'chapter-header';
+  chapter1Header.innerHTML = `
+    <h2>🎓 Глава 1: Обучение</h2>
+    <p>Изучите основы пивоварения</p>
+  `;
+  this.elements.levelCardsContainer.appendChild(chapter1Header);
 
-        const card = document.createElement('div');
-        card.className = 'level-card';
-        card.dataset.level = id;
-        card.innerHTML = `
-            <h2>${level.name}</h2>
-            <p>${level.slots ? level.slots.length + ' оборудования' : 'Настройки температуры'}</p>
-            <p>${level.time} секунд</p>
-            <div class="level-score">
-                ${this.progress.bestScores[levelNum] ? 'Лучший счет: ' + this.progress.bestScores[levelNum] : ''}
-            </div>
-            <div class="lock-icon ${isUnlocked ? 'hidden' : ''}"></div>`;
+  // Уровни 1-5
+  for (let levelNum = 1; levelNum <= 5; levelNum++) {
+    const level = this.levels[levelNum];
+    if (!level) continue;
+    
+    const isUnlocked = this.progress.unlockedLevels.includes(levelNum);
 
-        if (isUnlocked) {
-            card.addEventListener('click', () => this.startLevel(levelNum));
-            card.style.cursor = 'pointer';
-            card.style.opacity = '1';
-        } else {
-            card.style.cursor = 'not-allowed';
-            card.style.opacity = '0.7';
-        }
-        
-        this.elements.levelCardsContainer.appendChild(card);
+    const card = document.createElement('div');
+    card.className = 'level-card';
+    card.dataset.level = levelNum;
+    card.innerHTML = `
+        <h3>${level.name}</h3>
+        <p>${level.slots ? level.slots.length + ' оборудования' : 'Настройки'}</p>
+        <p>⏱️ ${level.time} сек</p>
+        <div class="level-score">
+            ${this.progress.bestScores[levelNum] ? '🏆 ' + this.progress.bestScores[levelNum] : ''}
+        </div>
+        <div class="lock-icon ${isUnlocked ? 'hidden' : ''}"></div>`;
+
+    if (isUnlocked) {
+        card.addEventListener('click', () => this.startLevel(levelNum));
+    } else {
+        card.style.opacity = '0.6';
     }
+    
+    this.elements.levelCardsContainer.appendChild(card);
+  }
+
+  // === БИЗНЕС ===
+  const businessHeader = document.createElement('div');
+  businessHeader.className = 'chapter-header';
+  businessHeader.innerHTML = `
+    <h2>💼 Бизнес-симулятор</h2>
+    <p>Создайте свою пивоварню</p>
+  `;
+  this.elements.levelCardsContainer.appendChild(businessHeader);
+
+  const businessCard = document.createElement('div');
+  businessCard.className = 'level-card business-card';
+  
+  // Проверяем завершён ли уровень 5
+  const isBusinessUnlocked = this.progress.unlockedLevels.includes(5);
+
+  businessCard.innerHTML = `
+  <div class="level-card-content">
+    <div class="level-card-info">
+      <h3>🏭 Начать бизнес</h3>
+      <p>Создайте свою пивоварню с нуля</p>
+      <div class="business-status">
+        ${isBusinessUnlocked ? '✅ Доступно' : '🔒 Завершите обучение'}
+      </div>
+    </div>
+  </div>
+`;
+
+  if (isBusinessUnlocked) {
+    businessCard.addEventListener('click', () => this.startBusiness());
+    businessCard.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+  } else {
+    businessCard.style.opacity = '0.6';
+    businessCard.style.background = '#666';
+  }
+  
+  this.elements.levelCardsContainer.appendChild(businessCard);
+
+  // === ГЛАВА 2 ===
+  const chapter2Header = document.createElement('div');
+  chapter2Header.className = 'chapter-header';
+  chapter2Header.innerHTML = `
+    <h2>🍺 Глава 2: Первая варка</h2>
+    <p>Мойка оборудования и первая варка</p>
+  `;
+  this.elements.levelCardsContainer.appendChild(chapter2Header);
+
+  const chapter2Card = document.createElement('div');
+  chapter2Card.className = 'level-card chapter2-card';
+  
+  // Проверяем куплено ли оборудование в бизнесе
+  const hasEquipment = this.state.business.purchasedFacilities.length > 0;
+  const isChapter2Unlocked = hasEquipment;
+
+  chapter2Card.innerHTML = `
+  <div class="level-card-content">
+    <div class="level-card-info">
+      <h3>🚀 Первая варка</h3>
+      <p>Мойка оборудования и запуск производства</p>
+      <div class="chapter-status">
+        ${isChapter2Unlocked ? '✅ Доступно' : '🔒 Завершите бизнес'}
+      </div>
+    </div>
+  </div>
+`;
+
+  if (isChapter2Unlocked) {
+    chapter2Card.addEventListener('click', () => this.startChapter2());
+    chapter2Card.style.background = 'linear-gradient(135deg, #ff8c00 0%, #ff4500 100%)';
+  } else {
+    chapter2Card.style.opacity = '0.6';
+    chapter2Card.style.background = '#666';
+  }
+  
+  this.elements.levelCardsContainer.appendChild(chapter2Card);
 }
 
   startLevel(levelNum) {
@@ -2142,12 +2230,12 @@ validateEquipmentSet(selectedEquipment, facilityType) {
 
 // === ЭКРАН УСПЕХА ===
 showEquipmentSuccess(facilityType, equipment, score) {
-    this.playSound('success');
-    
-    const facility = this.businessLevels[facilityType];
-    const totalCost = equipment.reduce((sum, item) => sum + item.price, 0);
-    
-    const message = `🎉 Отлично! Комплект собран правильно!
+  this.playSound('success');
+  
+  const facility = this.businessLevels[facilityType];
+  const totalCost = equipment.reduce((sum, item) => sum + item.price, 0);
+  
+  const message = `🎉 Отлично! Комплект собран правильно!
 
 Вы успешно оснастили ${facility.name}
 за ${totalCost} BP
@@ -2156,15 +2244,20 @@ showEquipmentSuccess(facilityType, equipment, score) {
 
 "Правильный подбор оборудования - залог качественного пива!"
 
-✅ Следующий этап: Мойка производственных мощностей`;
+✅ Глава 1: "Основы пивоварения" завершена!`;
 
-    this.openInfoModal(message, [
-        {
-            label: '🚰 Перейти к мойке →',
-            onClick: () => this.startCleaningProcess(facilityType),
-            variant: 'primary'
-        }
-    ]);
+  this.openInfoModal(message, [
+    {
+      label: '🚀 Начать Главу 2 →',
+      onClick: () => this.startChapter2(),
+      variant: 'primary'
+    },
+    {
+      label: '🏠 В главное меню', 
+      onClick: () => this.showStartScreen(),
+      variant: 'secondary'
+    }
+  ]);
 }
 
 
@@ -2198,7 +2291,179 @@ showEquipmentError(warnings) {
     ]);
 }
 
+startChapter2() {
+  console.log('Запуск Главы 2');
+  
+  // Сохраняем прогресс Главы 1
+  this.saveProgress();
+  
+  // Показываем сообщение о переходе
+  this.showFeedback('🚀 Переходим к Главе 2: Первая варка...', 'correct');
+  
+  // Плавный переход через 2 секунды
+  setTimeout(() => {
+    // Переходим на страницу Главы 2
+    window.location.href = 'chapter2.html';
+  }, 2000);
+}
+
 } // ← ДОБАВЬ ЭТУ СКОБКУ
+// Авторизация - простой вариант
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        const loginBtn = document.querySelector('.login-btn');
+        const registerBtn = document.querySelector('.register-btn');
+        
+        if (loginBtn) {
+            loginBtn.addEventListener('click', function() {
+                alert('Вход - в разработке!');
+            });
+        }
+        
+        if (registerBtn) {
+            registerBtn.addEventListener('click', function() {
+                alert('Регистрация - в разработке!');
+            });
+        }
+    }, 1000);
+});
+// Простая система авторизации
+class SimpleAuth {
+    constructor() {
+        this.users = JSON.parse(localStorage.getItem('brewery_users')) || {};
+        this.initAuth();
+    }
+
+    initAuth() {
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        if (loginBtn && registerBtn) {
+            loginBtn.addEventListener('click', () => this.login());
+            registerBtn.addEventListener('click', () => this.register());
+        }
+        
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => this.logout());
+        }
+        
+        // Проверяем статус при загрузке
+        this.updateAuthUI();
+    }
+
+    showMessage(message, type = '') {
+        const messageEl = document.getElementById('auth-message');
+        if (messageEl) {
+            messageEl.textContent = message;
+            messageEl.className = `auth-message ${type}`;
+            
+            setTimeout(() => {
+                messageEl.textContent = '';
+                messageEl.className = 'auth-message';
+            }, 3000);
+        }
+    }
+
+    updateAuthUI() {
+        const authBlock = document.querySelector('.auth-block');
+        const authStatusBlock = document.getElementById('auth-status-block');
+        const currentUser = localStorage.getItem('current_user');
+        
+        if (currentUser && this.users[currentUser]) {
+            // Пользователь авторизован
+            authBlock.style.display = 'none';
+            authStatusBlock.classList.remove('hidden');
+            
+            // Обновляем email в блоке статуса
+            const emailDisplay = document.getElementById('user-email-display');
+            if (emailDisplay) {
+                emailDisplay.textContent = currentUser;
+            }
+        } else {
+            // Пользователь не авторизован
+            authBlock.style.display = 'block';
+            authStatusBlock.classList.add('hidden');
+        }
+    }
+
+    logout() {
+        localStorage.removeItem('current_user');
+        this.showMessage('Вы вышли из системы', 'success');
+        this.updateAuthUI();
+        
+        // Перезагружаем прогресс игры
+        game.loadProgress();
+        game.renderLevelCards();
+    }
+
+    login() {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        if (!email || !password) {
+            this.showMessage('Заполните все поля', 'error');
+            return;
+        }
+
+        if (this.users[email] && this.users[email].password === password) {
+            this.showMessage('Успешный вход!', 'success');
+            this.loadUserProgress(email);
+            this.updateAuthUI();
+        } else {
+            this.showMessage('Неверный email или пароль', 'error');
+        }
+    }
+
+    register() {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        if (!email || !password) {
+            this.showMessage('Заполните все поля', 'error');
+            return;
+        }
+
+        if (this.users[email]) {
+            this.showMessage('Пользователь уже существует', 'error');
+            return;
+        }
+
+        this.users[email] = {
+            password: password,
+            progress: {
+                unlockedLevels: [1],
+                bestScores: {}
+            },
+            createdAt: new Date().toISOString()
+        };
+
+        localStorage.setItem('brewery_users', JSON.stringify(this.users));
+        this.showMessage('Аккаунт создан! Входите.', 'success');
+        this.updateAuthUI();
+    }
+
+    loadUserProgress(email) {
+        if (this.users[email] && this.users[email].progress) {
+            localStorage.setItem('current_user', email);
+            game.progress = this.users[email].progress;
+            game.saveProgress();
+            game.renderLevelCards();
+        }
+    }
+
+    saveUserProgress(email, progress) {
+        if (this.users[email]) {
+            this.users[email].progress = progress;
+            localStorage.setItem('brewery_users', JSON.stringify(this.users));
+        }
+    }
+}
+
+// Инициализация авторизации
+document.addEventListener('DOMContentLoaded', function() {
+    window.auth = new SimpleAuth();
+});
 
 // Создаем глобальную переменную для доступа из HTML
 const game = new BreweryGame();

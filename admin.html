@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - Пивоварня</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ffd700;
+            font-size: 2.5rem;
+        }
+
+        .password-section {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .password-input {
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            margin: 15px 0;
+            width: 300px;
+            text-align: center;
+        }
+
+        .password-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .password-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 10px 0;
+        }
+
+        .users-table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .users-table th {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .users-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .users-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .error-message {
+            color: #ef4444;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .level-progress {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .level-badge {
+            background: #10b981;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <h1>🍺 Админ-панель Пивоварни</h1>
+        
+        <!-- Секция ввода пароля -->
+        <div class="password-section" id="passwordSection">
+            <h2>Введите пароль доступа</h2>
+            <input type="password" class="password-input" id="adminPassword" placeholder="Введите пароль">
+            <br>
+            <button class="password-btn" onclick="checkPassword()">Войти в админку</button>
+            <div class="error-message" id="passwordError"></div>
+        </div>
+
+        <!-- Основной контент админки -->
+        <div class="admin-content" id="adminContent">
+            <!-- Статистика -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div>Всего пользователей</div>
+                    <div class="stat-number" id="totalUsers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div>Новые за неделю</div>
+                    <div class="stat-number" id="newUsers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div>Завершили игру</div>
+                    <div class="stat-number" id="completedGame">0</div>
+                </div>
+                <div class="stat-card">
+                    <div>Активных игроков</div>
+                    <div class="stat-number" id="activeUsers">0</div>
+                </div>
+            </div>
+
+            <!-- Кнопка экспорта -->
+            <button class="export-btn" onclick="exportToCSV()">📊 Экспорт в CSV</button>
+
+            <!-- Таблица пользователей -->
+            <div class="users-table-container">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Дата регистрации</th>
+                            <th>Уровни</th>
+                            <th>Лучший счет</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Данные загружаются через JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🔐 ПАРОЛЬ - поменяй на свой!
+        const ADMIN_PASSWORD = "brewery2024";
+
+        function checkPassword() {
+            const passwordInput = document.getElementById('adminPassword');
+            const errorElement = document.getElementById('passwordError');
+            const passwordSection = document.getElementById('passwordSection');
+            const adminContent = document.getElementById('adminContent');
+
+            if (passwordInput.value === ADMIN_PASSWORD) {
+                // Правильный пароль
+                passwordSection.style.display = 'none';
+                adminContent.style.display = 'block';
+                loadUserData();
+            } else {
+                // Неправильный пароль
+                errorElement.textContent = '❌ Неверный пароль!';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+
+        function loadUserData() {
+            // Получаем данные пользователей из localStorage
+            const usersData = localStorage.getItem('brewery_users');
+            
+            if (!usersData) {
+                document.getElementById('usersTableBody').innerHTML = 
+                    '<tr><td colspan="5" class="no-data">Нет данных о пользователях</td></tr>';
+                return;
+            }
+
+            const users = JSON.parse(usersData);
+            const tableBody = document.getElementById('usersTableBody');
+            const userEmails = Object.keys(users);
+            
+            // Обновляем статистику
+            updateStatistics(users, userEmails);
+
+            // Очищаем таблицу
+            tableBody.innerHTML = '';
+
+            // Заполняем таблицу данными
+            userEmails.forEach(email => {
+                const user = users[email];
+                const row = document.createElement('tr');
+                
+                // Определяем прогресс по уровням
+                const unlockedLevels = user.progress?.unlockedLevels || [1];
+                const bestScores = user.progress?.bestScores || {};
+                const maxLevel = Math.max(...unlockedLevels);
+                
+                // Статус пользователя
+                let status = 'Новичок';
+                if (maxLevel >= 5) status = 'Завершил игру';
+                else if (maxLevel >= 3) status = 'Опытный';
+                else if (maxLevel >= 2) status = 'Активный';
+
+                row.innerHTML = `
+                    <td>${email}</td>
+                    <td>${formatDate(user.createdAt)}</td>
+                    <td>
+                        <div class="level-progress">
+                            ${unlockedLevels.map(level => 
+                                `<span class="level-badge">${level}</span>`
+                            ).join('')}
+                        </div>
+                    </td>
+                    <td>${Object.values(bestScores).reduce((sum, score) => sum + (score || 0), 0)}</td>
+                    <td>${status}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateStatistics(users, userEmails) {
+            const totalUsers = userEmails.length;
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            // Считаем новых пользователей за неделю
+            const newUsers = userEmails.filter(email => {
+                const userDate = new Date(users[email].createdAt);
+                return userDate > oneWeekAgo;
+            }).length;
+
+            // Считаем завершивших игру (уровень 5 разблокирован)
+            const completedGame = userEmails.filter(email => {
+                const unlockedLevels = users[email].progress?.unlockedLevels || [1];
+                return unlockedLevels.includes(5);
+            }).length;
+
+            // Активные (прошли больше 1 уровня)
+            const activeUsers = userEmails.filter(email => {
+                const unlockedLevels = users[email].progress?.unlockedLevels || [1];
+                return unlockedLevels.length > 1;
+            }).length;
+
+            // Обновляем цифры в интерфейсе
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('newUsers').textContent = newUsers;
+            document.getElementById('completedGame').textContent = completedGame;
+            document.getElementById('activeUsers').textContent = activeUsers;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function exportToCSV() {
+            const usersData = localStorage.getItem('brewery_users');
+            if (!usersData) {
+                alert('Нет данных для экспорта');
+                return;
+            }
+
+            const users = JSON.parse(usersData);
+            let csv = 'Email,Дата регистрации,Макс уровень,Лучший счет,Статус\n';
+
+            Object.keys(users).forEach(email => {
+                const user = users[email];
+                const unlockedLevels = user.progress?.unlockedLevels || [1];
+                const bestScores = user.progress?.bestScores || {};
+                const maxLevel = Math.max(...unlockedLevels);
+                const totalScore = Object.values(bestScores).reduce((sum, score) => sum + (score || 0), 0);
+                
+                let status = 'Новичок';
+                if (maxLevel >= 5) status = 'Завершил игру';
+                else if (maxLevel >= 3) status = 'Опытный';
+
+                csv += `"${email}","${formatDate(user.createdAt)}",${maxLevel},${totalScore},"${status}"\n`;
+            });
+
+            // Создаем и скачиваем файл
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `brewery_users_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Автоматический фокус на поле пароля при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('adminPassword').focus();
+            
+            // Enter для ввода пароля
+            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
