@@ -5037,3 +5037,137 @@ body {
         color: #10b981 !important;
     }
 }
+/* === ИСПРАВЛЕНИЯ ДЛЯ ВНУТРЕННЕГО ХЕДЕРА УРОВНЯ === */
+
+/* Основной контейнер game-screen */
+#game-screen {
+    padding-top: 70px !important; /* Отступ под фиксированным хедером */
+    height: calc(100vh - 70px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Внутренний хедер уровня */
+#game-screen .game-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px !important;
+    flex-wrap: wrap;
+    flex: none !important;
+    min-height: 40px !important;
+    padding: 0 5px;
+    order: 1;
+}
+
+/* Левая часть - название уровня и таймер */
+#game-screen .header-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 45%;
+    padding: 0 5px;
+}
+
+/* Правая часть - сообщения */
+#game-screen .header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 45%;
+    padding: 0 5px;
+}
+
+/* Название уровня */
+#game-screen .level-name {
+    font-size: 16px !important;
+    font-weight: bold;
+    color: #3b82f6;
+    text-align: left;
+    margin-bottom: 2px !important;
+    line-height: 1.1 !important;
+}
+
+/* Таймер */
+#game-screen .timer {
+    font-size: 20px !important;
+    font-weight: bold;
+    color: #10b981;
+    text-align: left;
+    margin-top: -2px !important;
+}
+
+/* Сообщения обратной связи */
+#game-screen .feedback-message {
+    height: 22px;
+    font-weight: bold;
+    margin: 2px 0;
+    font-size: 15px;
+    text-align: right;
+    width: 100%;
+    padding: 0 5px;
+    animation: fadeInOut 3s ease forwards;
+}
+
+/* Описание уровня */
+.level-description {
+    order: 2;
+    margin-bottom: 8px !important;
+}
+
+/* Игровой контейнер */
+.game-container {
+    order: 3;
+    flex: 1 !important;
+}
+
+/* Кнопки управления */
+.game-controls {
+    order: 4;
+    margin-top: auto !important;
+}
+
+/* === АДАПТИВНОСТЬ === */
+@media (max-width: 768px) {
+    #game-screen {
+        padding-top: 60px !important;
+        height: calc(100vh - 60px) !important;
+    }
+    
+    #game-screen .game-header {
+        min-height: 35px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    #game-screen .level-name {
+        font-size: 14px !important;
+    }
+    
+    #game-screen .timer {
+        font-size: 18px !important;
+    }
+    
+    .level-description {
+        margin-bottom: 6px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #game-screen .game-header {
+        min-height: 30px !important;
+        margin-bottom: 4px !important;
+    }
+    
+    #game-screen .level-name {
+        font-size: 13px !important;
+    }
+    
+    #game-screen .timer {
+        font-size: 16px !important;
+    }
+    
+    .level-description {
+        margin-bottom: 4px !important;
+    }
+}
