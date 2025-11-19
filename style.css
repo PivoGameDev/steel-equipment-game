@@ -4805,3 +4805,119 @@ body {
 .level-select-title {
     display: none !important;
 }
+/* ЖЕСТКИЙ ФИКС ДЛЯ МОБИЛЬНОГО ХЕДЕРА */
+@media (max-width: 768px) {
+    .game-header {
+        height: 50px !important;
+        padding: 5px 0 !important;
+    }
+    
+    .header-content {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        height: 40px !important;
+        gap: 5px !important;
+        width: 100% !important;
+    }
+    
+    /* УБИРАЕМ header-center */
+    .header-center {
+        display: contents !important;
+    }
+    
+    /* Левая часть - кнопка назад */
+    .header-left {
+        flex: 0 0 auto !important;
+        min-width: 100px !important;
+        max-width: 120px !important;
+    }
+    
+    #global-back-btn {
+        font-size: 11px !important;
+        padding: 6px 8px !important;
+        height: 30px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    
+    /* Центр - бюджет */
+    .budget-display {
+        flex: 0 0 auto !important;
+        padding: 6px 8px !important;
+        height: 30px !important;
+        margin: 0 !important;
+        min-width: 70px !important;
+        max-width: 90px !important;
+    }
+    
+    .budget-label {
+        font-size: 11px !important;
+        display: inline !important;
+    }
+    
+    .budget-value {
+        font-size: 11px !important;
+        display: inline !important;
+    }
+    
+    /* Правая часть - кнопка Войти */
+    .header-right {
+        flex: 0 0 auto !important;
+        min-width: 50px !important;
+        max-width: 80px !important;
+    }
+    
+    #header-login-btn {
+        font-size: 11px !important;
+        padding: 6px 8px !important;
+        height: 30px !important;
+        white-space: nowrap !important;
+        width: 100% !important;
+    }
+    
+    /* Статус авторизации */
+    #auth-status-block {
+        height: 30px !important;
+        padding: 4px 6px !important;
+        min-width: 120px !important;
+        max-width: 150px !important;
+    }
+    
+    .auth-greeting {
+        font-size: 10px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    
+    #logout-btn {
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+        height: 22px !important;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    #global-back-btn {
+        font-size: 10px !important;
+        padding: 5px 6px !important;
+    }
+    
+    .budget-display {
+        padding: 5px 6px !important;
+        min-width: 60px !important;
+    }
+    
+    .budget-label, .budget-value {
+        font-size: 10px !important;
+    }
+    
+    #header-login-btn {
+        font-size: 10px !important;
+        padding: 5px 6px !important;
+    }
+}
