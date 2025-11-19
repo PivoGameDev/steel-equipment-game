@@ -3706,3 +3706,19 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
 }
+.back-level-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+}
+
+.back-level-btn:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+}

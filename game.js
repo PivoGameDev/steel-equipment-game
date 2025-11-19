@@ -4,29 +4,30 @@ class BreweryGame {
   constructor() {
     this.levels = {
       1: {
-        name: "Подготовка сырья", 
-  settings: [
-    { 
-      id: "malt-consumption", 
-      correct: 185, 
-      min: 100, 
-      max: 500, 
-      step: 5, 
-      label: "Расход солода на 1000 л пива (кг)" 
-    },
-    { 
-      id: "wort-boiling-time",    // ← Поменял id
-      correct: 90,               // ← 90 минут - правильно!
-      min: 60,                   // ← Поменял минимум на 60 минут
-      max: 120,                  // ← Поменял максимум на 120 минут  
-      step: 5,                   // ← Шаг 5 минут
-      label: "Время варки сусла (минут)" // ← Поменял label
-    }
+        name: "Подготовка сырья",
+        time: 180,
+        settings: [
+          { 
+            id: "malt-consumption", 
+            correct: 185, 
+            min: 100, 
+            max: 500, 
+            step: 5, 
+            label: "Расход солода на 1000 л пива (кг)" 
+          },
+          { 
+            id: "wort-boiling-time",  // ← ПРАВИЛЬНО!
+            correct: 90, 
+            min: 60, 
+            max: 120, 
+            step: 5, 
+            label: "Время варки сусла (мин)" 
+          }
         ],
         threshold3: 30,
         threshold2: 60,
         description: "Добро пожаловать в пивоварню! Начнем с основ - расчета сырья и температурного режима. От точности этих параметров зависит качество будущего пива.",
-        hint: "Расход солода: 170-200 кг на 1000 литров. Температура варки .. подберите опытным путем"
+        hint: "Расход солода: 170-200 кг на 1000 литров. Время варки .. подберите опытным путем"
       },
       2: {
         name: "Основы заторного процесса",
@@ -429,14 +430,16 @@ class BreweryGame {
         
         this.updateBusinessDisplay();
         this.renderBusinessCards();
-        this.saveProgress(); // ← ДОБАВИЛИ сохранение прогресса
         
         const facilityName = this.businessLevels[facilityType].name;
         this.showFeedback(`Помещение "${facilityName}" успешно арендовано!`, 'correct');
         
         console.log('=== Before showFacilityEquipment ===');
         
+        // ВМЕСТО setTimeout используем немедленный вызов
         this.showFacilityEquipment(facilityType);
+        
+        // Разблокируем следующее помещение
         this.unlockNextFacility(facilityType);
     } else {
         this.showFeedback('Недостаточно средств или помещение уже куплено', 'incorrect');
@@ -509,7 +512,7 @@ class BreweryGame {
 
   buildPartialHint(levelNum) {
     if (levelNum === 1) {
-      return "Расход солода: 170-200 кг на 1000 литров. Температура варки сусла должна достигать точки кипения...";
+      return "Расход солода: 170-200 кг на 1000 литров. Время варки сусла...";
     }
     if (levelNum === 2) {
       return "Температура горячей воды = температуре промывных вод в фильтрационном аппарате. Время затирания подбери опытным путём...";
@@ -791,31 +794,25 @@ class BreweryGame {
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
-            this.progress.unlockedLevels = parsed.unlockedLevels || [1];
+            this.progress.unlockedLevels = parsed.unlockedLevels || [1]; // Гарантируем что 1 уровень разблокирован
             this.progress.bestScores = parsed.bestScores || {};
             
-            // ← ДОБАВИЛИ загрузку бизнес-данных
-            if (parsed.business) {
-                this.state.business = parsed.business;
+            // Если почему-то разблокированы другие уровни, оставляем только 1
+            if (this.progress.unlockedLevels.length > 1 && !this.progress.unlockedLevels.includes(1)) {
+                this.progress.unlockedLevels = [1];
             }
-            
         } catch (e) { 
             console.error('Ошибка загрузки прогресса:', e);
-            this.progress.unlockedLevels = [1];
+            this.progress.unlockedLevels = [1]; // По умолчанию только 1 уровень
         }
     } else {
-        this.progress.unlockedLevels = [1];
+        this.progress.unlockedLevels = [1]; // Новый игрок - только 1 уровень
     }
 }
 
   saveProgress() { 
-    const progressData = {
-        unlockedLevels: this.progress.unlockedLevels,
-        bestScores: this.progress.bestScores,
-        business: this.state.business // ← ДОБАВИЛИ бизнес-данные
-    };
-    localStorage.setItem('breweryGameProgress', JSON.stringify(progressData)); 
-}
+    localStorage.setItem('breweryGameProgress', JSON.stringify(this.progress)); 
+  }
 
   startGame() {
     this.state.gameStarted = true;
@@ -1026,20 +1023,22 @@ class BreweryGame {
     const userValues = {};
 
     level.settings.forEach(setting => {
-      const input = document.getElementById(setting.id);
-      const value = parseInt(input.value);
-      userValues[setting.id] = value;
+  const input = document.getElementById(setting.id);
+  const value = parseInt(input.value);
+  userValues[setting.id] = value;
 
-      const diff = Math.abs(value - setting.correct);
-      let allowedDeviation = 3;
-      
-      if (setting.id === "malt-consumption") {
-        allowedDeviation = 15;
-      } else if (setting.id === "wort-brewing-time") {
-        allowedDeviation = 1;
-      } else if (setting.id === "maturation-time") {
-        allowedDeviation = 2;
-      }
+  const diff = Math.abs(value - setting.correct);
+  let allowedDeviation = 3;
+  
+  if (setting.id === "malt-consumption") {
+    allowedDeviation = 15;
+  } else if (setting.id === "wort-boiling-time") {  // ДОБАВИЛИ ЭТУ СТРОКУ
+    allowedDeviation = 5;
+  } else if (setting.id === "wort-brewing-time") {
+    allowedDeviation = 1;
+  } else if (setting.id === "maturation-time") {
+    allowedDeviation = 2;
+  }
 
       if (diff <= allowedDeviation) {
         correctCount++;
@@ -1065,6 +1064,8 @@ class BreweryGame {
       let allowedDeviation = 3;
       if (s.id === "malt-consumption") {
         allowedDeviation = 15;
+        } else if (s.id === "wort-boiling-time") {  // ДОБАВЬТЕ ЭТО
+        allowedDeviation = 5;
       } else if (s.id === "wort-brewing-time") {
         allowedDeviation = 1;
       } else if (s.id === "maturation-time") {
@@ -1128,82 +1129,82 @@ class BreweryGame {
     this.elements.scoreDisplayLose.textContent = totalScore;
 
     const createDetailedResults = () => {
-      const level = 1;
-      const result = this.state.levelResults[level];
-      
-      let maltValue = 0;
-      let tempValue = 0;
-      
-      const userValues = this.levelReview[level]?.userValues;
-      if (userValues) {
-        maltValue = userValues['malt-consumption'] || 0;
-        tempValue = userValues['wort-boiling-temp'] || 0;
-      } else {
-        const savedValues = localStorage.getItem('lastUserValues');
-        if (savedValues) {
-          const parsed = JSON.parse(savedValues);
-          maltValue = parsed['malt-consumption'] || 0;
-          tempValue = parsed['wort-boiling-temp'] || 0;
-        } else {
-          const maltInput = document.getElementById('malt-consumption');
-          const tempInput = document.getElementById('wort-boiling-temp');
-          if (maltInput) maltValue = parseInt(maltInput.value) || 0;
-          if (tempInput) tempValue = parseInt(tempInput.value) || 0;
-        }
-      }
+  const level = 1;
+  const result = this.state.levelResults[level];
+  
+  let maltValue = 0;
+  let timeValue = 0;
+  
+  const userValues = this.levelReview[level]?.userValues;
+  if (userValues) {
+    maltValue = userValues['malt-consumption'] || 0;
+    timeValue = userValues['wort-boiling-time'] || 0;
+  } else {
+    const savedValues = localStorage.getItem('lastUserValues');
+    if (savedValues) {
+      const parsed = JSON.parse(savedValues);
+      maltValue = parsed['malt-consumption'] || 0;
+      timeValue = parsed['wort-boiling-time'] || 0;
+    } else {
+      const maltInput = document.getElementById('malt-consumption');
+      const timeInput = document.getElementById('wort-boiling-time');
+      if (maltInput) maltValue = parseInt(maltInput.value) || 0;
+      if (timeInput) timeValue = parseInt(timeInput.value) || 0;
+    }
+  }
 
-      const maltCorrect = Math.abs(maltValue - 185) <= 15;
-      const tempCorrect = Math.abs(tempValue - 90) <= 2;
-      
-      const maltIcon = maltCorrect ? '✅' : '❌';
-      const tempIcon = tempCorrect ? '✅' : '❌';
-      
-      let maltComment = '';
-      let tempComment = '';
-      
-      if (maltCorrect) {
-        maltComment = 'оптимальный расход солода';
-      } else if (maltValue < 170) {
-        maltComment = 'недостаточно солода, будет слабое тело пива';
-      } else {
-        maltComment = 'избыток солода, возможна высокая плотность';
-      }
-      
-      if (tempCorrect) {
-        tempComment = 'идеальная температура затора';
-      } else if (tempValue < 88) {
-        tempComment = 'недостаточная для правильного затора';
-      } else {
-        tempComment = 'превышение, возможна избыточная карамелизация';
-      }
+  const maltCorrect = Math.abs(maltValue - 185) <= 15;
+  const timeCorrect = Math.abs(timeValue - 90) <= 5;
+  
+  const maltIcon = maltCorrect ? '✅' : '❌';
+  const timeIcon = timeCorrect ? '✅' : '❌';
+  
+  let maltComment = '';
+  let timeComment = '';
+  
+  if (maltCorrect) {
+    maltComment = 'оптимальный расход солода';
+  } else if (maltValue < 170) {
+    maltComment = 'недостаточно солода, будет слабое тело пива';
+  } else {
+    maltComment = 'избыток солода, возможна высокая плотность';
+  }
+  
+  if (timeCorrect) {
+    timeComment = 'идеальное время варки';
+  } else if (timeValue < 85) {
+    timeComment = 'недостаточное время для правильного затора';
+  } else {
+    timeComment = 'превышение времени, возможна избыточная карамелизация';
+  }
 
-      return `
-        <div class="level-results">
-          <div class="level-result">
-            <h3>Уровень ${level}: ${this.levels[level].name}</h3>
-            <div class="parameter-results">
-              <div class="parameter ${maltCorrect ? 'correct' : 'incorrect'}">
-                ${maltIcon} <strong>Расход солода:</strong> ${maltValue} кг
-                <div class="parameter-comment">${maltComment}</div>
-                <div class="parameter-range">Оптимально: 170-200 кг</div>
-              </div>
-              <div class="parameter ${tempCorrect ? 'correct' : 'incorrect'}">
-                ${tempIcon} <strong>Температура варки:</strong> ${tempValue}°C
-                <div class="parameter-comment">${tempComment}</div>
-                <div class="parameter-range">Целевая: 88-92°C</div>
-              </div>
-            </div>
-            <div class="level-summary">
-              <p><strong>Итог:</strong> ${result.correct} из ${result.total} параметров настроено верно</p>
-              ${result.correct === 2 ? 
-                '<p>Отличный старт! Параметры обеспечат сбалансированное сусло.</p>' : 
-                '<p>Обратите внимание на рекомендации выше для улучшения качества.</p>'
-              }
-            </div>
+  return `
+    <div class="level-results">
+      <div class="level-result">
+        <h3>Уровень ${level}: ${this.levels[level].name}</h3>
+        <div class="parameter-results">
+          <div class="parameter ${maltCorrect ? 'correct' : 'incorrect'}">
+            ${maltIcon} <strong>Расход солода:</strong> ${maltValue} кг
+            <div class="parameter-comment">${maltComment}</div>
+            <div class="parameter-range">Оптимально: 170-200 кг</div>
+          </div>
+          <div class="parameter ${timeCorrect ? 'correct' : 'incorrect'}">
+            ${timeIcon} <strong>Время варки:</strong> ${timeValue} мин
+            <div class="parameter-comment">${timeComment}</div>
+            <div class="parameter-range">Оптимально: 85-95 мин</div>
           </div>
         </div>
-      `;
-    };
+        <div class="level-summary">
+          <p><strong>Итог:</strong> ${result.correct} из ${result.total} параметров настроено верно</p>
+          ${result.correct === 2 ? 
+            '<p>Отличный старт! Параметры обеспечат сбалансированное сусло.</p>' : 
+            '<p>Обратите внимание на рекомендации выше для улучшения качества.</p>'
+          }
+        </div>
+      </div>
+    </div>
+  `;
+};
 
     setTimeout(() => {
       const detailedHTML = createDetailedResults();
@@ -1276,17 +1277,11 @@ class BreweryGame {
     this.playSound('click');
     this.elements.startScreen.classList.add('hidden');
     this.elements.levelSelectScreen.classList.remove('hidden');
-    this.loadProgress(); // ← ЗДЕСЬ ОДИН РАЗ
     this.renderLevelCards();
-}
+  }
 
-renderLevelCards() {
-    // ← УБЕРИ this.loadProgress(); ОТСЮДА!
-    this.elements.levelCardsContainer.innerHTML = '';
-    
-    // === ГЛАВА 1: ОБУЧЕНИЕ ===
-    // ... остальной код
-
+  renderLevelCards() {
+  this.elements.levelCardsContainer.innerHTML = '';
   
   // === ГЛАВА 1: ОБУЧЕНИЕ ===
   const chapter1Header = document.createElement('div');
@@ -1433,42 +1428,43 @@ renderLevelCards() {
   }
 
   createSettingsInterface(level) {
-    const settingsHTML = level.settings.map(setting => {
-      let unit = '°C';
-      if (setting.id === "malt-consumption") unit = 'кг';
-      if (setting.id === "wort-brewing-time") unit = 'ч';
-      if (setting.id === "maturation-time") unit = 'дн';
-      
-      const initialValue = Math.round((setting.min + setting.max) / 2);
-      
-      return `
-      <div class="setting-item">
-        <label for="${setting.id}">${setting.label}</label>
-        <div class="setting-controls">
-          <input type="range" id="${setting.id}" min="${setting.min}" max="${setting.max}" step="${setting.step}" value="${initialValue}" class="temp-slider">
-          <span class="temp-value">${initialValue}${unit}</span>
-        </div>
-      </div>`;
-    }).join('');
-
-    this.elements.settingsContainer.innerHTML = settingsHTML;
+  const settingsHTML = level.settings.map(setting => {
+    let unit = '°C';
+    if (setting.id === "malt-consumption") unit = 'кг';
+    if (setting.id === "wort-boiling-time") unit = 'мин';  // ДОБАВИЛИ ЭТУ СТРОКУ
+    if (setting.id === "wort-brewing-time") unit = 'ч';
+    if (setting.id === "maturation-time") unit = 'дн';
     
-    level.settings.forEach(setting => {
-      const slider = document.getElementById(setting.id);
-      const valueDisplay = slider.nextElementSibling;
-      
-      let unit = '°C';
-      if (setting.id === "malt-consumption") unit = 'кг';
-      if (setting.id === "wort-boiling-time") unit = 'мин';
-      if (setting.id === "wort-brewing-time") unit = 'ч';
-      if (setting.id === "maturation-time") unit = 'дн';
-      
-      slider.addEventListener('input', () => {
-        valueDisplay.textContent = `${slider.value}${unit}`;
-        this.elements.launchBtn.disabled = false;
-      });
+    const initialValue = Math.round((setting.min + setting.max) / 2);
+    
+    return `
+    <div class="setting-item">
+      <label for="${setting.id}">${setting.label}</label>
+      <div class="setting-controls">
+        <input type="range" id="${setting.id}" min="${setting.min}" max="${setting.max}" step="${setting.step}" value="${initialValue}" class="temp-slider">
+        <span class="temp-value">${initialValue}${unit}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  this.elements.settingsContainer.innerHTML = settingsHTML;
+  
+  level.settings.forEach(setting => {
+    const slider = document.getElementById(setting.id);
+    const valueDisplay = slider.nextElementSibling;
+    
+    let unit = '°C';
+    if (setting.id === "malt-consumption") unit = 'кг';
+    if (setting.id === "wort-boiling-time") unit = 'мин';  // ДОБАВИЛИ ЭТУ СТРОКУ
+    if (setting.id === "wort-brewing-time") unit = 'ч';
+    if (setting.id === "maturation-time") unit = 'дн';
+    
+    slider.addEventListener('input', () => {
+      valueDisplay.textContent = `${slider.value}${unit}`;
+      this.elements.launchBtn.disabled = false;
     });
-  }
+  });
+}
 
   createEquipmentSlots(level) {
     level.slots.forEach(slotConfig => {
