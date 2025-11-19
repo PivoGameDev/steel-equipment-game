@@ -2615,3 +2615,43 @@ document.addEventListener('click', function(e) {
 });
 
 console.log('🔧 Бизнес-модуль загружен!');
+// Обработчики для новой авторизации
+document.getElementById('header-login-btn').addEventListener('click', function() {
+    document.getElementById('auth-modal').classList.remove('hidden');
+});
+
+// Закрытие модального окна
+document.querySelector('#auth-modal .close-modal').addEventListener('click', function() {
+    document.getElementById('auth-modal').classList.add('hidden');
+});
+
+// Вход через модальное окно
+document.getElementById('modal-login-btn').addEventListener('click', function() {
+    const email = document.getElementById('modal-login-email').value;
+    const password = document.getElementById('modal-login-password').value;
+    
+    // Здесь будет логика входа
+    if (email && password) {
+        // Успешный вход
+        document.getElementById('auth-modal').classList.add('hidden');
+        document.getElementById('header-login-btn').classList.add('hidden');
+        document.getElementById('auth-status-block').classList.remove('hidden');
+        document.getElementById('user-email-display').textContent = email;
+        
+        // Очищаем поля
+        document.getElementById('modal-login-email').value = '';
+        document.getElementById('modal-login-password').value = '';
+    }
+});
+
+// Регистрация через модальное окно
+document.getElementById('modal-register-btn').addEventListener('click', function() {
+    const email = document.getElementById('modal-login-email').value;
+    const password = document.getElementById('modal-login-password').value;
+    
+    // Здесь будет логика регистрации
+    if (email && password) {
+        document.getElementById('modal-auth-message').textContent = 'Регистрация успешна!';
+        document.getElementById('modal-auth-message').style.color = 'green';
+    }
+});

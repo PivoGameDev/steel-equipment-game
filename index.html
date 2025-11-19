@@ -24,24 +24,18 @@
             </div>
             
             <!-- Правая часть: авторизация -->
-            <div class="header-right">
-                <div id="auth-status-block" class="auth-status-block hidden">
-                    <div class="auth-status-content">
-                        <p class="auth-greeting">Здравствуйте, <span id="user-email-display">user@example.com</span>!</p>
-                        <button id="logout-btn" class="logout-btn">Выйти</button>
-                    </div>
-                </div>
-                
-                <div class="auth-block">
-                    <div class="auth-form">
-                        <input type="email" id="login-email" placeholder="Ваш email" class="auth-input">
-                        <input type="password" id="login-password" placeholder="Пароль" class="auth-input">
-                        <button id="login-btn" class="auth-btn login-btn">Войти</button>
-                        <button id="register-btn" class="auth-btn register-btn">Создать аккаунт</button>
-                        <p class="auth-message" id="auth-message"></p>
-                    </div>
-                </div>
-            </div>
+<div class="header-right">
+    <!-- Показывается когда пользователь НЕ авторизован -->
+    <button id="header-login-btn" class="login-header-btn">Войти</button>
+    
+    <!-- Показывается когда пользователь авторизован -->
+    <div id="auth-status-block" class="auth-status-block hidden">
+        <div class="auth-status-content">
+            <p class="auth-greeting">Здравствуйте, <span id="user-email-display">user@example.com</span>!</p>
+            <button id="logout-btn" class="logout-btn">Выйти</button>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 </header>
@@ -998,11 +992,26 @@
         </div>
     </div>
 
-    <!-- Модальное окно для подсказок -->
+       <!-- Модальное окно для подсказок -->
     <div id="hint-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <p id="hint-text"></p>
+        </div>
+    </div>
+
+    <!-- Модальное окно для авторизации -->
+    <div id="auth-modal" class="modal hidden">
+        <div class="modal-content auth-modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Вход в систему</h3>
+            <div class="auth-form">
+                <input type="email" id="modal-login-email" placeholder="Ваш email" class="auth-input">
+                <input type="password" id="modal-login-password" placeholder="Пароль" class="auth-input">
+                <button id="modal-login-btn" class="auth-btn login-btn">Войти</button>
+                <button id="modal-register-btn" class="auth-btn register-btn">Создать аккаунт</button>
+                <p class="auth-message" id="modal-auth-message"></p>
+            </div>
         </div>
     </div>
 
