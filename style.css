@@ -5276,3 +5276,64 @@ body {
         font-size: 9px !important;
     }
 }
+/* === ФИКС ДЛЯ ЭКРАНА ОСНАЩЕНИЯ НА МОБИЛЬНЫХ === */
+
+@media (max-width: 768px) {
+    #facility-equipment-screen {
+        padding-top: 60px !important; /* Отступ под хедером */
+        height: calc(100vh - 60px) !important;
+        overflow-y: auto !important;
+    }
+    
+    /* Убедимся что хедер поверх всего */
+    .game-header {
+        z-index: 1000 !important;
+    }
+    
+    /* Увеличиваем отступ для контента */
+    .equipment-win-content {
+        padding-top: 10px !important;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    #facility-equipment-screen {
+        padding-top: 55px !important;
+        height: calc(100vh - 55px) !important;
+    }
+}
+/* === ГАРАНТИРОВАННЫЙ ФИКС ДЛЯ ХЕДЕРА НА ВСЕХ ЭКРАНАХ === */
+
+/* Показываем хедер на всех экранах кроме стартового */
+#game-header {
+    display: flex !important;
+}
+
+/* Только на стартовом экране скрываем хедер */
+#start-screen:not(.hidden) ~ #game-header,
+body:has(#start-screen:not(.hidden)) #game-header {
+    display: none !important;
+}
+
+/* Отступы для всех экранов кроме стартового */
+#level-select-screen:not(.hidden),
+#game-screen:not(.hidden),
+#win-screen:not(.hidden),
+#lose-screen:not(.hidden),
+#business-start-screen:not(.hidden),
+#facility-equipment-screen:not(.hidden) {
+    padding-top: 70px !important;
+}
+
+/* Мобильные отступы */
+@media (max-width: 768px) {
+    #level-select-screen:not(.hidden),
+    #game-screen:not(.hidden),
+    #win-screen:not(.hidden),
+    #lose-screen:not(.hidden),
+    #business-start-screen:not(.hidden),
+    #facility-equipment-screen:not(.hidden) {
+        padding-top: 60px !important;
+    }
+}
