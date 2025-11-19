@@ -4333,3 +4333,359 @@ body {
     flex-direction: column;
     gap: 15px;
 }
+/* === КОМПАКТНЫЙ ХЕДЕР ДЛЯ МОБИЛЬНЫХ === */
+
+/* Базовые стили для ПК */
+.game-header {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 10px 0;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+    border-bottom: 2px solid #ff8c00;
+    width: 100%;
+    max-width: 900px;
+    height: 60px; /* Уменьшаем высоту */
+    display: flex;
+    align-items: center;
+}
+
+.header-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+    gap: 8px;
+}
+
+/* Левая часть - кнопка назад */
+.header-left {
+    flex-shrink: 0;
+    min-width: 140px;
+}
+
+.header-left .back-level-btn {
+    background: white;
+    border: 2px solid #ff8c00;
+    color: #1f2937;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Центр - бюджет */
+.budget-display {
+    background: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 2px solid #ff8c00;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin: 0 5px;
+}
+
+.budget-label {
+    color: #1f2937;
+    font-size: 12px;
+    margin-right: 4px;
+    font-weight: 600;
+}
+
+.budget-value {
+    color: #ff8c00;
+    font-weight: bold;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Правая часть - авторизация */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    min-width: 120px;
+    justify-content: flex-end;
+}
+
+/* Кнопка Войти в хедере */
+.login-header-btn {
+    padding: 6px 12px;
+    background: #ff8c00;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    height: 32px;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.login-header-btn:hover {
+    background: #e67e00;
+}
+
+/* Авторизованный статус */
+.auth-status-block {
+    margin: 0;
+    padding: 6px 8px;
+    background: white;
+    border-radius: 6px;
+    border: 2px solid #ff8c00;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.auth-status-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+    width: 100%;
+    min-width: 0;
+}
+
+.auth-greeting {
+    color: #1f2937;
+    font-size: 11px;
+    margin: 0;
+    white-space: nowrap;
+    font-weight: 500;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#user-email-display {
+    color: #ff8c00;
+    font-weight: 600;
+    font-size: 11px;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.logout-btn {
+    padding: 4px 8px;
+    background: #ff4500;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 500;
+    height: 24px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* === АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ === */
+@media (max-width: 768px) {
+    .game-header {
+        max-width: 98% !important;
+        padding: 8px 0;
+        height: 50px; /* Еще компактнее на мобильных */
+    }
+    
+    .header-container {
+        padding: 0 10px;
+    }
+    
+    .header-content {
+        height: 34px;
+        gap: 5px;
+    }
+    
+    /* Левая часть - кнопка назад (мобильная) */
+    .header-left {
+        min-width: 110px;
+    }
+    
+    .header-left .back-level-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+        height: 28px;
+        border-width: 1px;
+    }
+    
+    /* Центр - бюджет (мобильная) */
+    .budget-display {
+        padding: 4px 8px;
+        border-width: 1px;
+        height: 28px;
+        margin: 0 3px;
+        flex-shrink: 1;
+        min-width: 70px;
+    }
+    
+    .budget-label {
+        font-size: 11px;
+        margin-right: 2px;
+    }
+    
+    .budget-value {
+        font-size: 11px;
+    }
+    
+    /* Правая часть - авторизация (мобильная) */
+    .header-right {
+        min-width: 100px;
+        gap: 5px;
+        flex-shrink: 1;
+    }
+    
+    .auth-status-block {
+        padding: 4px 6px;
+        border-width: 1px;
+        height: 28px;
+        flex-shrink: 1;
+        min-width: 0;
+    }
+    
+    .auth-status-content {
+        gap: 5px;
+    }
+    
+    .auth-greeting {
+        font-size: 10px;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    #user-email-display {
+        font-size: 10px;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .logout-btn {
+        padding: 3px 6px;
+        font-size: 10px;
+        height: 22px;
+        border-width: 1px;
+        flex-shrink: 0;
+    }
+    
+    .login-header-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+        height: 28px;
+        border-width: 1px;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    .game-header {
+        height: 45px;
+        padding: 6px 0;
+    }
+    
+    .header-content {
+        height: 32px;
+        gap: 3px;
+    }
+    
+    .header-left {
+        min-width: 90px;
+    }
+    
+    .header-left .back-level-btn {
+        font-size: 10px;
+        padding: 3px 6px;
+        height: 26px;
+    }
+    
+    .budget-display {
+        padding: 3px 6px;
+        height: 26px;
+        margin: 0 2px;
+        min-width: 60px;
+    }
+    
+    .budget-label {
+        font-size: 10px;
+    }
+    
+    .budget-value {
+        font-size: 10px;
+    }
+    
+    .header-right {
+        min-width: 80px;
+        gap: 3px;
+    }
+    
+    .auth-status-block {
+        padding: 3px 5px;
+        height: 26px;
+    }
+    
+    .auth-greeting {
+        font-size: 9px;
+    }
+    
+    #user-email-display {
+        font-size: 9px;
+    }
+    
+    .logout-btn {
+        padding: 2px 4px;
+        font-size: 9px;
+        height: 20px;
+    }
+    
+    .login-header-btn {
+        padding: 3px 6px;
+        font-size: 10px;
+        height: 26px;
+    }
+}
+
+/* Сдвигаем контент под хедер */
+body {
+    padding-top: 65px;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 55px;
+    }
+}
+
+@media (max-width: 360px) {
+    body {
+        padding-top: 50px;
+    }
+}
