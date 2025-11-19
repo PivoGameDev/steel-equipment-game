@@ -4950,3 +4950,27 @@ body {
         margin-left: -40px !important;
     }
 }
+/* Делаем отступ для внутреннего хедера игрового экрана */
+#game-screen .game-header {
+    margin-top: 60px !important; /* Отступ под фиксированным хедером */
+    padding-top: 10px !important;
+}
+
+/* Или добавляем отступ для всего игрового экрана кроме хедера */
+#game-screen {
+    padding-top: 60px !important;
+}
+
+#game-screen .game-header {
+    margin-top: 0 !important;
+    position: relative;
+    z-index: 1;
+}
+#level-select-screen,
+#game-screen,
+#win-screen,
+#lose-screen,
+#business-start-screen,
+#facility-equipment-screen {
+    padding-top: 70px !important;
+}
