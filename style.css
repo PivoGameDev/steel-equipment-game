@@ -4689,52 +4689,11 @@ body {
         padding-top: 50px;
     }
 }
-/* Убираем отступ для стартового экрана и заставки */
-#start-screen,
-#start-screen .main-content,
-#animation-overlay {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
+/* Самый простой способ */
+body:has(#start-screen:not(.hidden)) .game-header {
+    display: none !important;
 }
 
-/* Для стартового экрана убираем отступ body */
 body:has(#start-screen:not(.hidden)) {
     padding-top: 0 !important;
-}
-
-/* Оставляем отступ для всех остальных экранов */
-#level-select-screen,
-#game-screen,
-#win-screen,
-#lose-screen,
-#business-start-screen,
-#facility-equipment-screen {
-    padding-top: 65px !important;
-}
-
-/* Адаптивность для мобильных */
-@media (max-width: 768px) {
-    body:has(#start-screen:not(.hidden)) {
-        padding-top: 0 !important;
-    }
-    
-    #level-select-screen,
-    #game-screen,
-    #win-screen,
-    #lose-screen,
-    #business-start-screen,
-    #facility-equipment-screen {
-        padding-top: 55px !important;
-    }
-}
-
-@media (max-width: 360px) {
-    #level-select-screen,
-    #game-screen,
-    #win-screen,
-    #lose-screen,
-    #business-start-screen,
-    #facility-equipment-screen {
-        padding-top: 50px !important;
-    }
 }
