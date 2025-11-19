@@ -3934,3 +3934,213 @@ body {
     z-index: 1000;
     position: relative;
 }
+/* === КОМПАКТНЫЙ ХЕДЕР ДЛЯ МОБИЛЬНЫХ === */
+
+/* Базовые стили хедера */
+.game-header {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #2c5530 0%, #1a3c1e 100%);
+    padding: 8px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+    border-bottom: 3px solid #4a7c59;
+    width: 100%;
+    max-width: 900px;
+}
+
+.header-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Левая часть - кнопка назад компактная */
+.header-left .back-level-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid #4a7c59;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    min-width: 60px;
+}
+
+/* Центр - бюджет компактный */
+.budget-display {
+    background: rgba(255,255,255,0.1);
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid #4a7c59;
+    margin: 0 8px;
+}
+
+.budget-label {
+    color: #a8d5ba;
+    font-size: 11px;
+    margin-right: 4px;
+}
+
+.budget-value {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+/* Правая часть - авторизация компактная */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-right .auth-form {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.header-right .auth-input {
+    padding: 4px 8px;
+    border: 1px solid #4a7c59;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.9);
+    font-size: 11px;
+    width: 90px;
+    height: 24px;
+}
+
+.header-right .auth-btn {
+    padding: 4px 8px;
+    background: #4a7c59;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    height: 24px;
+    white-space: nowrap;
+    transition: background 0.3s ease;
+}
+
+/* === АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ === */
+
+@media (max-width: 768px) {
+    .game-header {
+        max-width: 98% !important;
+        padding: 6px 0;
+        height: auto;
+        min-height: 50px;
+    }
+    
+    .header-container {
+        padding: 0 8px;
+    }
+    
+    .header-content {
+        flex-wrap: nowrap; /* Все в одну строку */
+        gap: 5px;
+    }
+    
+    /* Еще более компактные стили для очень маленьких экранов */
+    @media (max-width: 480px) {
+        .header-left .back-level-btn {
+            padding: 4px 8px;
+            font-size: 11px;
+            min-width: 50px;
+        }
+        
+        .budget-display {
+            padding: 4px 8px;
+            margin: 0 5px;
+        }
+        
+        .budget-label {
+            font-size: 10px;
+        }
+        
+        .budget-value {
+            font-size: 12px;
+        }
+        
+        .header-right .auth-input {
+            width: 80px;
+            font-size: 10px;
+            padding: 3px 6px;
+        }
+        
+        .header-right .auth-btn {
+            font-size: 10px;
+            padding: 3px 6px;
+        }
+        
+        .header-right {
+            gap: 4px;
+        }
+    }
+    
+    /* Горизонтальная ориентация на мобильных */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .game-header {
+            padding: 4px 0;
+            min-height: 40px;
+        }
+        
+        .header-content {
+            gap: 3px;
+        }
+    }
+}
+
+/* Убираем лишние отступы для авторизованного состояния */
+.auth-status-block {
+    margin: 0;
+    padding: 6px 10px;
+}
+
+.auth-status-content {
+    gap: 8px;
+}
+
+.auth-greeting {
+    font-size: 12px;
+}
+
+.logout-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+}
+
+/* Сдвигаем контент под компактный хедер */
+body {
+    padding-top: 70px; /* Уменьшили с 120px */
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding-top: 55px;
+    }
+}
+
+/* Стартовый экран без отступа */
+#start-screen {
+    padding-top: 0 !important;
+}
