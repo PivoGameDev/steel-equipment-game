@@ -4937,3 +4937,16 @@ body {
 .chapter-header {
     margin-top: 20px !important;
 }
+@media (max-width: 768px) {
+    /* Бюджет - делаем рамку еще шире */
+    .budget-display {
+        min-width: 105px !important; /* +20px */
+        max-width: 120px !important; /* +20px */
+        padding: 6px 12px !important;
+    }
+    
+    /* Кнопку назад смещаем влево */
+    .header-left {
+        margin-left: -40px !important;
+    }
+}
