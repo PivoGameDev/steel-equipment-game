@@ -7,6 +7,44 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<header id="game-header" class="game-header hidden">
+    <div class="header-container"> <!-- ← ДОБАВИЛ ЭТОТ КОНТЕЙНЕР -->
+        <div class="header-content">
+            <!-- Левая часть: кнопка назад -->
+            <div class="header-left">
+                <button id="global-back-btn" class="back-level-btn">← Назад к выбору уровня</button>
+            </div>
+            
+            <!-- Центральная часть: бюджет -->
+            <div class="header-center">
+                <div class="budget-display">
+                    <span class="budget-label">Бюджет:</span>
+                    <span class="budget-value" id="global-budget">0 BP</span>
+                </div>
+            </div>
+            
+            <!-- Правая часть: авторизация -->
+            <div class="header-right">
+                <div id="auth-status-block" class="auth-status-block hidden">
+                    <div class="auth-status-content">
+                        <p class="auth-greeting">Здравствуйте, <span id="user-email-display">user@example.com</span>!</p>
+                        <button id="logout-btn" class="logout-btn">Выйти</button>
+                    </div>
+                </div>
+                
+                <div class="auth-block">
+                    <div class="auth-form">
+                        <input type="email" id="login-email" placeholder="Ваш email" class="auth-input">
+                        <input type="password" id="login-password" placeholder="Пароль" class="auth-input">
+                        <button id="login-btn" class="auth-btn login-btn">Войти</button>
+                        <button id="register-btn" class="auth-btn register-btn">Создать аккаунт</button>
+                        <p class="auth-message" id="auth-message"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
     <!-- Стартовый экран -->
     <div id="start-screen" class="screen">
         <!-- Черный фон для анимации -->
@@ -34,16 +72,6 @@
     <!-- Экран выбора уровня -->
 <div id="level-select-screen" class="screen hidden">
     <!-- БЛОК АВТОРИЗАЦИИ -->
-<div class="auth-block">
-    <div class="auth-form">
-        <h3>Вход в игру</h3>
-        <input type="email" id="login-email" placeholder="Ваш email" class="auth-input">
-        <input type="password" id="login-password" placeholder="Пароль" class="auth-input">
-        <button id="login-btn" class="auth-btn login-btn">Войти</button>
-        <button id="register-btn" class="auth-btn register-btn">Создать аккаунт</button>
-        <p class="auth-message" id="auth-message"></p>
-    </div>
-</div>
 <!-- Блок статуса авторизации (показывается когда пользователь вошел) -->
 <div id="auth-status-block" class="auth-status-block hidden">
     <div class="auth-status-content">
@@ -180,9 +208,9 @@
                 <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
                 
                 <!-- КНОПКА -->
-                <button class="business-action-btn" data-price="50">
-                    Арендовать за 50 BP
-                </button>
+               <button class="business-action-btn" data-price="50" data-type="preparation">
+    Арендовать за 50 BP
+</button>
             </div>
 
             <!-- КАРТОЧКА 2: Пивоварня с дистрибуцией -->

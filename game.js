@@ -1,4 +1,5 @@
 // @ts-nocheck
+// @ts-nocheck
 // Улучшенный основной класс игры с «умным» поиском картинок
 class BreweryGame {
   constructor() {
@@ -16,7 +17,7 @@ class BreweryGame {
             label: "Расход солода на 1000 л пива (кг)" 
           },
           { 
-            id: "wort-boiling-time",  // ← ПРАВИЛЬНО!
+            id: "wort-boiling-time",
             correct: 90, 
             min: 60, 
             max: 120, 
@@ -181,7 +182,7 @@ class BreweryGame {
         5: { correct: 0, total: 3 }
       },
       business: {
-        balance: 100,
+        balance: 100,  // Стартовый капитал 100 BP
         purchasedFacilities: []
       }
     };
@@ -211,6 +212,151 @@ class BreweryGame {
       this.initIntroAnimation();
     }, 500);
     this.showStartScreen();
+
+    // ИНИЦИАЛИЗИРУЕМ БЮДЖЕТ ПРИ ЗАПУСКЕ
+    setTimeout(() => {
+      this.updateBudgetEverywhere();
+    }, 1000);
+  }
+
+  // Метод для обновления бюджета во всех местах
+  updateBudgetEverywhere() {
+    const balance = this.state.business.balance;
+    
+    // 1. Обновляем в глобальном хедере
+    if (this.elements.globalBudget) {
+      this.elements.globalBudget.textContent = balance + ' BP';
+    }
+    
+    // 2. Обновляем на экране бизнеса (Поздравляем с успешным обучением)
+    const highlightPoints = document.querySelector('.highlight-points');
+    if (highlightPoints) {
+      highlightPoints.textContent = balance + ' Brewery Points';
+    }
+    
+    // 3. Обновляем в карточках бизнеса
+    const businessBalanceElements = document.querySelectorAll('.business-balance span');
+    businessBalanceElements.forEach(element => {
+      element.textContent = balance;
+    });
+    
+    // 4. Обновляем на экране оборудования
+    const equipmentBudget = document.getElementById('equipment-budget');
+    const totalBudget = document.getElementById('total-budget');
+    const remainingBudget = document.getElementById('remaining-budget');
+    
+    if (equipmentBudget) equipmentBudget.textContent = balance;
+    if (totalBudget) totalBudget.textContent = balance + ' BP';
+    if (remainingBudget) remainingBudget.textContent = balance + ' BP';
+    
+    console.log('💰 Бюджет обновлен везде:', balance + ' BP');
+  }
+
+  // Обновляем метод rentFacility
+  rentFacility(facilityType, price) {
+    console.log('=== rentFacility called ===');
+    console.log('facilityType:', facilityType);
+    console.log('price:', price);
+    console.log('current balance:', this.state.business.balance);
+    
+    if (this.state.business.balance >= price && 
+      !this.state.business.purchasedFacilities.includes(facilityType)) {
+      
+      // Вычитаем стоимость аренды
+      this.state.business.balance -= price;
+      
+      // ОБНОВЛЯЕМ БЮДЖЕТ ВЕЗДЕ
+      this.updateBudgetEverywhere();
+      
+      this.state.business.purchasedFacilities.push(facilityType);
+      this.playSound('success');
+      
+      this.updateBusinessDisplay();
+      this.renderBusinessCards();
+      
+      const facilityName = this.businessLevels[facilityType].name;
+      this.showFeedback(`Помещение "${facilityName}" успешно арендовано!`, 'correct');
+      
+      console.log('=== Before showFacilityEquipment ===');
+      
+      // Показываем экран оборудования
+      this.showFacilityEquipment(facilityType);
+      
+      // Разблокируем следующее помещение
+      this.unlockNextFacility(facilityType);
+    } else {
+      this.showFeedback('Недостаточно средств или помещение уже куплено', 'incorrect');
+    }
+  }
+
+  // Обновляем метод showFacilityEquipment
+  showFacilityEquipment(facilityType) {
+    console.log('=== showFacilityEquipment called ===');
+    console.log('facilityType:', facilityType);
+    
+    this.playSound('click');
+    
+    // Скрываем все экраны
+    const allScreens = [
+      this.elements.businessStartScreen,
+      this.elements.winScreen, 
+      this.elements.loseScreen,
+      this.elements.gameScreen,
+      this.elements.levelSelectScreen,
+      this.elements.startScreen
+    ];
+    
+    allScreens.forEach(screen => {
+      if (screen) screen.classList.add('hidden');
+    });
+    
+    // Показываем экран оборудования
+    const equipmentScreen = document.getElementById('facility-equipment-screen');
+    if (equipmentScreen) {
+      equipmentScreen.classList.remove('hidden');
+    }
+    
+    // ОБНОВЛЯЕМ БЮДЖЕТ ПРИ ПОКАЗЕ ЭКРАНА
+    this.updateBudgetEverywhere();
+    
+    // Обновляем информацию о помещении
+    const facility = this.businessLevels[facilityType];
+    
+    // Обновляем заголовок
+    const facilityNameElement = document.getElementById('equipment-facility-name');
+    if (facilityNameElement) {
+      facilityNameElement.innerHTML = `Оснащение: <span class="facility-name-orange">${facility.name}</span>`;
+    }
+    
+    // Обновляем описание с актуальным бюджетом
+    const equipmentDescription = document.querySelector('.equipment-description');
+    if (equipmentDescription) {
+      equipmentDescription.innerHTML = `
+        Теперь нужно закупить оборудование для вашей пивоварни. 
+        У вас есть <strong style="color: #10b981; font-weight: bold;">${this.state.business.balance} BP</strong> на оборудование.
+      `;
+    }
+    
+    // Обновляем бюджет в таблице
+    document.getElementById('total-budget').textContent = this.state.business.balance + ' BP';
+    document.getElementById('total-cost').textContent = '0 BP';
+    document.getElementById('remaining-budget').textContent = this.state.business.balance + ' BP';
+    
+    // Инициализируем выбор оборудования
+    setTimeout(() => {
+      this.initEquipmentSelection(facilityType);
+    }, 100);
+  }
+
+  // Метод для показа/скрытия хедера
+  updateGlobalHeader(show = true) {
+    if (this.elements.globalHeader) {
+      if (show) {
+        this.elements.globalHeader.classList.remove('hidden');
+      } else {
+        this.elements.globalHeader.classList.add('hidden');
+      }
+    }
   }
 
   isVerySmallScreen() {
@@ -307,7 +453,10 @@ class BreweryGame {
       levelDetails: document.getElementById('level-details'),
       levelDetailsLose: document.getElementById('level-details-lose'),
       breweryBackground: document.querySelector('.brewery-background'),
-      playgroundContainer: document.querySelector('.playground-container')
+      playgroundContainer: document.querySelector('.playground-container'),
+      globalHeader: document.getElementById('game-header'),
+      globalBackBtn: document.getElementById('global-back-btn'), 
+      globalBudget: document.getElementById('global-budget')
     };
 
     this.sounds = {
@@ -356,95 +505,70 @@ class BreweryGame {
 
   showBusinessStartScreen() {
     this.playSound('click');
+    this.updateGlobalHeader(true);
+    
     this.elements.winScreen.classList.add('hidden');
     this.elements.loseScreen.classList.add('hidden');
     this.elements.businessStartScreen.classList.remove('hidden');
+    
+    // ОБНОВЛЯЕМ БЮДЖЕТ ПРИ ПОКАЗЕ ЭКРАНА
+    this.updateBudgetEverywhere();
+    
     this.updateBusinessDisplay();
     this.renderBusinessCards();
   }
 
   renderBusinessCards() {
-  const businessOptions = document.querySelector('.business-options');
-  if (!businessOptions) return;
+    const businessOptions = document.querySelector('.business-options');
+    if (!businessOptions) return;
 
-  businessOptions.innerHTML = '';
+    businessOptions.innerHTML = '';
 
-  const facilityOrder = ['preparation', 'mashing', 'fermentation', 'bottling', 'production', 'advanced', 'complex'];
-  
-  facilityOrder.forEach((facilityType) => {
-    const facility = this.businessLevels[facilityType];
-    const isAvailable = this.isFacilityAvailable(facilityType);
-    const isPurchased = this.state.business.purchasedFacilities.includes(facilityType);
+    const facilityOrder = ['preparation', 'mashing', 'fermentation', 'bottling', 'production', 'advanced', 'complex'];
     
-    const card = document.createElement('div');
-    card.className = `business-card ${isAvailable ? 'available' : 'locked'}`;
-    card.dataset.type = facilityType;
-    
-    let buttonHTML = '';
-    if (isAvailable && !isPurchased) {
-      buttonHTML = `<button class="business-action-btn" data-price="${facility.price}">Арендовать за ${facility.price} BP</button>`;
-    } else if (isPurchased) {
-      buttonHTML = `<button class="business-action-btn equipped" onclick="game.showFacilityEquipment('${facilityType}')">Оснастить оборудованием →</button>`;
-    }
-    
-    card.innerHTML = `
-      <div class="business-image ${facilityType}-image"></div>
-      <h3>${facility.name} ${!isAvailable ? '🔒' : ''}</h3>
-      <p class="business-card-desc">
-        <strong>Площадь:</strong> ${facility.area}<br>
-        <strong>Базовая производительность:</strong> ${facility.baseCapacity}<br>
-        <strong>Максимальная производительность:</strong> ${facility.maxCapacity}<br>
-        <strong>Оснащение:</strong> ${facility.equipment}
-      </p>
-      <div class="business-price">Стоимость аренды: ${facility.price} BP</div>
-      <div class="business-balance">Ваш баланс: <span>${this.state.business.balance}</span> BP</div>
-      ${buttonHTML}
-    `;
-    
-    businessOptions.appendChild(card);
-  });
-}
+    facilityOrder.forEach((facilityType) => {
+      const facility = this.businessLevels[facilityType];
+      const isAvailable = this.isFacilityAvailable(facilityType);
+      const isPurchased = this.state.business.purchasedFacilities.includes(facilityType);
+      
+      const card = document.createElement('div');
+      card.className = `business-card ${isAvailable ? 'available' : 'locked'}`;
+      card.dataset.type = facilityType;
+      
+      let buttonHTML = '';
+      if (isAvailable && !isPurchased) {
+        buttonHTML = `<button class="business-action-btn" data-price="${facility.price}" data-type="${facilityType}">Арендовать за ${facility.price} BP</button>`;
+      } else if (isPurchased) {
+        buttonHTML = `<button class="business-action-btn equipped" data-type="${facilityType}">Оснастить оборудованием →</button>`;
+      }
+      
+      card.innerHTML = `
+        <div class="business-image ${facilityType}-image"></div>
+        <h3>${facility.name} ${!isAvailable ? '🔒' : ''}</h3>
+        <p class="business-card-desc">
+          <strong>Площадь:</strong> ${facility.area}<br>
+          <strong>Базовая производительность:</strong> ${facility.baseCapacity}<br>
+          <strong>Максимальная производительность:</strong> ${facility.maxCapacity}<br>
+          <strong>Оснащение:</strong> ${facility.equipment}
+        </p>
+        <div class="business-price">Стоимость аренды: ${facility.price} BP</div>
+        <div class="business-balance">Ваш баланс: <span>${this.state.business.balance}</span> BP</div>
+        ${buttonHTML}
+      `;
+      
+      businessOptions.appendChild(card);
+    });
+  }
 
   isFacilityAvailable(facilityType) {
     const facilityOrder = ['preparation', 'mashing', 'fermentation', 'bottling', 'production', 'advanced', 'complex'];
     const currentIndex = facilityOrder.indexOf(facilityType);
     
-    if (currentIndex === 0) return true; // Первое помещение всегда доступно
+    if (currentIndex === 0) return true;
     
     const previousFacility = facilityOrder[currentIndex - 1];
     return this.state.business.purchasedFacilities.includes(previousFacility);
   }
-
-  rentFacility(facilityType, price) {
-    console.log('=== rentFacility called ===');
-    console.log('facilityType:', facilityType);
-    console.log('price:', price);
-    console.log('current balance:', this.state.business.balance);
-    
-    if (this.state.business.balance >= price && 
-        !this.state.business.purchasedFacilities.includes(facilityType)) {
-        
-        this.state.business.balance -= price;
-        this.state.business.purchasedFacilities.push(facilityType);
-        this.playSound('success');
-        
-        this.updateBusinessDisplay();
-        this.renderBusinessCards();
-        
-        const facilityName = this.businessLevels[facilityType].name;
-        this.showFeedback(`Помещение "${facilityName}" успешно арендовано!`, 'correct');
-        
-        console.log('=== Before showFacilityEquipment ===');
-        
-        // ВМЕСТО setTimeout используем немедленный вызов
-        this.showFacilityEquipment(facilityType);
-        
-        // Разблокируем следующее помещение
-        this.unlockNextFacility(facilityType);
-    } else {
-        this.showFeedback('Недостаточно средств или помещение уже куплено', 'incorrect');
-    }
-}
 
   unlockNextFacility(currentFacility) {
     const facilityOrder = ['preparation', 'mashing', 'fermentation', 'bottling', 'production', 'advanced', 'complex'];
@@ -452,7 +576,6 @@ class BreweryGame {
     
     if (currentIndex !== -1 && currentIndex < facilityOrder.length - 1) {
       const nextFacility = facilityOrder[currentIndex + 1];
-      // Следующее помещение автоматически станет доступным при следующем рендере
       console.log(`Разблокировано помещение: ${nextFacility}`);
     }
   }
@@ -460,8 +583,6 @@ class BreweryGame {
   startFacilityLevel(facilityType) {
     this.playSound('click');
     this.elements.businessStartScreen.classList.add('hidden');
-    
-    // Здесь можно добавить специфичные уровни для каждого помещения
     this.showFacilityDetails(facilityType);
   }
 
@@ -493,10 +614,8 @@ class BreweryGame {
   }
 
   startEquipmentSetup(facilityType) {
-    // Здесь будет логика настройки оборудования для конкретного помещения
     this.showFeedback(`Начинаем оснащение ${this.businessLevels[facilityType].name}`, 'correct');
     
-    // Временная заглушка - возвращаем к выбору помещений
     setTimeout(() => {
       this.showBusinessStartScreen();
     }, 2000);
@@ -573,6 +692,13 @@ class BreweryGame {
   initEventListeners() {
     this.elements.startBtn.addEventListener('click', () => this.showLevelSelect());
     this.elements.backToMenuBtn.addEventListener('click', () => this.showStartScreen());
+    
+    if (this.elements.globalBackBtn) {
+      this.elements.globalBackBtn.addEventListener('click', () => {
+        this.showLevelSelect();
+      });
+    }
+    
     this.elements.launchBtn.addEventListener('click', () => this.checkSolution());
     this.elements.hintBtn.addEventListener('click', () => this.showHint());
     this.elements.closeModal.addEventListener('click', () => this.closeHintModal());
@@ -792,23 +918,22 @@ class BreweryGame {
   loadProgress() {
     const saved = localStorage.getItem('breweryGameProgress');
     if (saved) {
-        try {
-            const parsed = JSON.parse(saved);
-            this.progress.unlockedLevels = parsed.unlockedLevels || [1]; // Гарантируем что 1 уровень разблокирован
-            this.progress.bestScores = parsed.bestScores || {};
-            
-            // Если почему-то разблокированы другие уровни, оставляем только 1
-            if (this.progress.unlockedLevels.length > 1 && !this.progress.unlockedLevels.includes(1)) {
-                this.progress.unlockedLevels = [1];
-            }
-        } catch (e) { 
-            console.error('Ошибка загрузки прогресса:', e);
-            this.progress.unlockedLevels = [1]; // По умолчанию только 1 уровень
+      try {
+        const parsed = JSON.parse(saved);
+        this.progress.unlockedLevels = parsed.unlockedLevels || [1];
+        this.progress.bestScores = parsed.bestScores || {};
+        
+        if (this.progress.unlockedLevels.length > 1 && !this.progress.unlockedLevels.includes(1)) {
+          this.progress.unlockedLevels = [1];
         }
+      } catch (e) { 
+        console.error('Ошибка загрузки прогресса:', e);
+        this.progress.unlockedLevels = [1];
+      }
     } else {
-        this.progress.unlockedLevels = [1]; // Новый игрок - только 1 уровень
+      this.progress.unlockedLevels = [1];
     }
-}
+  }
 
   saveProgress() { 
     localStorage.setItem('breweryGameProgress', JSON.stringify(this.progress)); 
@@ -855,18 +980,17 @@ class BreweryGame {
   }
 
   updateTimer() {
-    // Если мы на экране бизнеса - не обновляем таймер
     if (!this.elements.businessStartScreen.classList.contains('hidden')) {
-        return;
+      return;
     }
     
     this.state.timeLeft--;
     this.updateTimerDisplay();
     if (this.state.timeLeft <= 10) this.elements.timerDisplay.classList.add('low-time');
     if (this.state.timeLeft <= 0) {
-        clearInterval(this.timer);
-        this.playSound('error');
-        this.endGame(false);
+      clearInterval(this.timer);
+      this.playSound('error');
+      this.endGame(false);
     }
   }
 
@@ -967,39 +1091,39 @@ class BreweryGame {
 
   checkSolution() {
     if (this.state.currentLevel === 1 || this.state.currentLevel === 2 || this.state.currentLevel === 4) { 
-        this.checkSettingsSolution(); 
-        return; 
+      this.checkSettingsSolution(); 
+      return; 
     }
 
     const level = this.levels[this.state.currentLevel];
     let correctCount = 0;
 
     level.slots.forEach(slotConfig => {
-        const slot = document.getElementById(slotConfig.id);
-        if (slot.dataset.equipment === slotConfig.correct) {
-            correctCount++;
-            this.highlightSlot(slot, 'correct');
-        } else {
-            this.highlightSlot(slot, 'incorrect');
-        }
+      const slot = document.getElementById(slotConfig.id);
+      if (slot.dataset.equipment === slotConfig.correct) {
+        correctCount++;
+        this.highlightSlot(slot, 'correct');
+      } else {
+        this.highlightSlot(slot, 'incorrect');
+      }
     });
 
     this.state.levelResults[this.state.currentLevel].correct = correctCount;
 
     if (correctCount === level.slots.length) {
-        this.showFeedback('Правильно! Оборудование установлено верно!', 'correct');
-        this.playSound('success');
+      this.showFeedback('Правильно! Оборудование установлено верно!', 'correct');
+      this.playSound('success');
     } else {
-        this.showFeedback(`Правильно ${correctCount} из ${level.slots.length}`, 'incorrect');
-        this.playSound('error');
+      this.showFeedback(`Правильно ${correctCount} из ${level.slots.length}`, 'incorrect');
+      this.playSound('error');
     }
 
     const wrong = [];
     const right = [];
     level.slots.forEach((slotConfig, idx) => {
-        const slot = document.getElementById(slotConfig.id);
-        const placed = slot.dataset.equipment || '—';
-        if (placed === slotConfig.correct) right.push(idx+1); else wrong.push(idx+1);
+      const slot = document.getElementById(slotConfig.id);
+      const placed = slot.dataset.equipment || '—';
+      if (placed === slotConfig.correct) right.push(idx+1); else wrong.push(idx+1);
     });
     this.levelReview[this.state.currentLevel] = { right, wrong };
 
@@ -1009,12 +1133,27 @@ class BreweryGame {
 
     let buttonText = 'Далее →';
     if (this.state.currentLevel === 3) {
-        buttonText = 'К брожению →';
+      buttonText = 'К брожению →';
     } else if (this.state.currentLevel === 5) {
-        buttonText = 'Посмотреть результаты';
+      buttonText = 'Посмотреть результаты';
     }
 
-    this.openInfoModal(text, [{label: buttonText, variant:'primary', onClick:()=>this.nextLevel()}]);
+    this.openInfoModal(text, [{
+      label: buttonText, 
+      variant:'primary', 
+      onClick:() => {
+        // Сначала закрываем модальное окно
+        this.closeHintModal();
+        
+        if (this.state.currentLevel === 5) {
+          // Для уровня 5 завершаем игру и переходим на экран победы
+          clearInterval(this.timer);
+          this.endGame(true);
+        } else {
+          this.nextLevel();
+        }
+      }
+    }]);
   }
 
   checkSettingsSolution() {
@@ -1023,22 +1162,22 @@ class BreweryGame {
     const userValues = {};
 
     level.settings.forEach(setting => {
-  const input = document.getElementById(setting.id);
-  const value = parseInt(input.value);
-  userValues[setting.id] = value;
+      const input = document.getElementById(setting.id);
+      const value = parseInt(input.value);
+      userValues[setting.id] = value;
 
-  const diff = Math.abs(value - setting.correct);
-  let allowedDeviation = 3;
-  
-  if (setting.id === "malt-consumption") {
-    allowedDeviation = 15;
-  } else if (setting.id === "wort-boiling-time") {  // ДОБАВИЛИ ЭТУ СТРОКУ
-    allowedDeviation = 5;
-  } else if (setting.id === "wort-brewing-time") {
-    allowedDeviation = 1;
-  } else if (setting.id === "maturation-time") {
-    allowedDeviation = 2;
-  }
+      const diff = Math.abs(value - setting.correct);
+      let allowedDeviation = 3;
+      
+      if (setting.id === "malt-consumption") {
+        allowedDeviation = 15;
+      } else if (setting.id === "wort-boiling-time") {
+        allowedDeviation = 5;
+      } else if (setting.id === "wort-brewing-time") {
+        allowedDeviation = 1;
+      } else if (setting.id === "maturation-time") {
+        allowedDeviation = 2;
+      }
 
       if (diff <= allowedDeviation) {
         correctCount++;
@@ -1064,7 +1203,7 @@ class BreweryGame {
       let allowedDeviation = 3;
       if (s.id === "malt-consumption") {
         allowedDeviation = 15;
-        } else if (s.id === "wort-boiling-time") {  // ДОБАВЬТЕ ЭТО
+      } else if (s.id === "wort-boiling-time") {
         allowedDeviation = 5;
       } else if (s.id === "wort-brewing-time") {
         allowedDeviation = 1;
@@ -1105,6 +1244,16 @@ class BreweryGame {
     this.stopHintPulse();
 
     if (isWin) {
+    // === ПРОСТОЙ ФИКС ДЛЯ РАЗБЛОКИРОВКИ ===
+    const nextLevel = this.state.currentLevel + 1;
+    if (nextLevel <= 5) {
+      this.progress.unlockedLevels.push(nextLevel);
+      // Убираем дубликаты на всякий случай
+      this.progress.unlockedLevels = [...new Set(this.progress.unlockedLevels)];
+      this.saveProgress();
+      console.log('✅ Уровень ' + nextLevel + ' разблокирован!');
+    }
+    // === КОНЕЦ ФИКСА ===
       const emailForm = document.getElementById('email-form');
       const sendBtn = document.getElementById('send-results-btn');
       
@@ -1129,82 +1278,82 @@ class BreweryGame {
     this.elements.scoreDisplayLose.textContent = totalScore;
 
     const createDetailedResults = () => {
-  const level = 1;
-  const result = this.state.levelResults[level];
-  
-  let maltValue = 0;
-  let timeValue = 0;
-  
-  const userValues = this.levelReview[level]?.userValues;
-  if (userValues) {
-    maltValue = userValues['malt-consumption'] || 0;
-    timeValue = userValues['wort-boiling-time'] || 0;
-  } else {
-    const savedValues = localStorage.getItem('lastUserValues');
-    if (savedValues) {
-      const parsed = JSON.parse(savedValues);
-      maltValue = parsed['malt-consumption'] || 0;
-      timeValue = parsed['wort-boiling-time'] || 0;
-    } else {
-      const maltInput = document.getElementById('malt-consumption');
-      const timeInput = document.getElementById('wort-boiling-time');
-      if (maltInput) maltValue = parseInt(maltInput.value) || 0;
-      if (timeInput) timeValue = parseInt(timeInput.value) || 0;
-    }
-  }
+      const level = 1;
+      const result = this.state.levelResults[level];
+      
+      let maltValue = 0;
+      let timeValue = 0;
+      
+      const userValues = this.levelReview[level]?.userValues;
+      if (userValues) {
+        maltValue = userValues['malt-consumption'] || 0;
+        timeValue = userValues['wort-boiling-time'] || 0;
+      } else {
+        const savedValues = localStorage.getItem('lastUserValues');
+        if (savedValues) {
+          const parsed = JSON.parse(savedValues);
+          maltValue = parsed['malt-consumption'] || 0;
+          timeValue = parsed['wort-boiling-time'] || 0;
+        } else {
+          const maltInput = document.getElementById('malt-consumption');
+          const timeInput = document.getElementById('wort-boiling-time');
+          if (maltInput) maltValue = parseInt(maltInput.value) || 0;
+          if (timeInput) timeValue = parseInt(timeInput.value) || 0;
+        }
+      }
 
-  const maltCorrect = Math.abs(maltValue - 185) <= 15;
-  const timeCorrect = Math.abs(timeValue - 90) <= 5;
-  
-  const maltIcon = maltCorrect ? '✅' : '❌';
-  const timeIcon = timeCorrect ? '✅' : '❌';
-  
-  let maltComment = '';
-  let timeComment = '';
-  
-  if (maltCorrect) {
-    maltComment = 'оптимальный расход солода';
-  } else if (maltValue < 170) {
-    maltComment = 'недостаточно солода, будет слабое тело пива';
-  } else {
-    maltComment = 'избыток солода, возможна высокая плотность';
-  }
-  
-  if (timeCorrect) {
-    timeComment = 'идеальное время варки';
-  } else if (timeValue < 85) {
-    timeComment = 'недостаточное время для правильного затора';
-  } else {
-    timeComment = 'превышение времени, возможна избыточная карамелизация';
-  }
+      const maltCorrect = Math.abs(maltValue - 185) <= 15;
+      const timeCorrect = Math.abs(timeValue - 90) <= 5;
+      
+      const maltIcon = maltCorrect ? '✅' : '❌';
+      const timeIcon = timeCorrect ? '✅' : '❌';
+      
+      let maltComment = '';
+      let timeComment = '';
+      
+      if (maltCorrect) {
+        maltComment = 'оптимальный расход солода';
+      } else if (maltValue < 170) {
+        maltComment = 'недостаточно солода, будет слабое тело пива';
+      } else {
+        maltComment = 'избыток солода, возможна высокая плотность';
+      }
+      
+      if (timeCorrect) {
+        timeComment = 'идеальное время варки';
+      } else if (timeValue < 85) {
+        timeComment = 'недостаточное время для правильного затора';
+      } else {
+        timeComment = 'превышение времени, возможна избыточная карамелизация';
+      }
 
-  return `
-    <div class="level-results">
-      <div class="level-result">
-        <h3>Уровень ${level}: ${this.levels[level].name}</h3>
-        <div class="parameter-results">
-          <div class="parameter ${maltCorrect ? 'correct' : 'incorrect'}">
-            ${maltIcon} <strong>Расход солода:</strong> ${maltValue} кг
-            <div class="parameter-comment">${maltComment}</div>
-            <div class="parameter-range">Оптимально: 170-200 кг</div>
-          </div>
-          <div class="parameter ${timeCorrect ? 'correct' : 'incorrect'}">
-            ${timeIcon} <strong>Время варки:</strong> ${timeValue} мин
-            <div class="parameter-comment">${timeComment}</div>
-            <div class="parameter-range">Оптимально: 85-95 мин</div>
+      return `
+        <div class="level-results">
+          <div class="level-result">
+            <h3>Уровень ${level}: ${this.levels[level].name}</h3>
+            <div class="parameter-results">
+              <div class="parameter ${maltCorrect ? 'correct' : 'incorrect'}">
+                ${maltIcon} <strong>Расход солода:</strong> ${maltValue} кг
+                <div class="parameter-comment">${maltComment}</div>
+                <div class="parameter-range">Оптимально: 170-200 кг</div>
+              </div>
+              <div class="parameter ${timeCorrect ? 'correct' : 'incorrect'}">
+                ${timeIcon} <strong>Время варки:</strong> ${timeValue} мин
+                <div class="parameter-comment">${timeComment}</div>
+                <div class="parameter-range">Оптимально: 85-95 мин</div>
+              </div>
+            </div>
+            <div class="level-summary">
+              <p><strong>Итог:</strong> ${result.correct} из ${result.total} параметров настроено верно</p>
+              ${result.correct === 2 ? 
+                '<p>Отличный старт! Параметры обеспечат сбалансированное сусло.</p>' : 
+                '<p>Обратите внимание на рекомендации выше для улучшения качества.</p>'
+              }
+            </div>
           </div>
         </div>
-        <div class="level-summary">
-          <p><strong>Итог:</strong> ${result.correct} из ${result.total} параметров настроено верно</p>
-          ${result.correct === 2 ? 
-            '<p>Отличный старт! Параметры обеспечат сбалансированное сусло.</p>' : 
-            '<p>Обратите внимание на рекомендации выше для улучшения качества.</p>'
-          }
-        </div>
-      </div>
-    </div>
-  `;
-};
+      `;
+    };
 
     setTimeout(() => {
       const detailedHTML = createDetailedResults();
@@ -1222,6 +1371,9 @@ class BreweryGame {
       this.elements.winScreen.classList.remove('hidden');
       this.playSound('success');
       this.createConfetti();
+      
+      // ОБНОВЛЯЕМ БЮДЖЕТ ПРИ ПОБЕДЕ
+      this.updateBudgetEverywhere();
     } else {
       this.elements.gameScreen.classList.add('hidden');
       this.elements.loseScreen.classList.remove('hidden');
@@ -1254,8 +1406,9 @@ class BreweryGame {
 
   showStartScreen() {
     this.playSound('click');
+    this.updateGlobalHeader(false);
     this.elements.levelSelectScreen.classList.add('hidden');
-    this.elements.gameScreen.classList.add('hidden'); // ← ДОБАВЬТЕ ЭТУ СТРОЧКУ
+    this.elements.gameScreen.classList.add('hidden');
     this.elements.winScreen.classList.add('hidden');
     this.elements.loseScreen.classList.add('hidden');
     this.elements.businessStartScreen.classList.add('hidden');
@@ -1274,129 +1427,144 @@ class BreweryGame {
   }
 
   showLevelSelect() {
+    // Сначала скрываем ВСЕ экраны
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.add('hidden');
+    });
+    // Потом показываем нужный
+    this.elements.levelSelectScreen.classList.remove('hidden');
     this.playSound('click');
+    this.updateGlobalHeader(true);
     this.elements.startScreen.classList.add('hidden');
     this.elements.levelSelectScreen.classList.remove('hidden');
+    
+    // ДОБАВЬ ЭТУ СТРОЧКУ - ОБНОВЛЯЕМ КАРТОЧКИ ПЕРЕД ПОКАЗОМ
     this.renderLevelCards();
-  }
-
-  renderLevelCards() {
-  this.elements.levelCardsContainer.innerHTML = '';
-  
-  // === ГЛАВА 1: ОБУЧЕНИЕ ===
-  const chapter1Header = document.createElement('div');
-  chapter1Header.className = 'chapter-header';
-  chapter1Header.innerHTML = `
-    <h2>🎓 Глава 1: Обучение</h2>
-    <p>Изучите основы пивоварения</p>
-  `;
-  this.elements.levelCardsContainer.appendChild(chapter1Header);
-
-  // Уровни 1-5
-  for (let levelNum = 1; levelNum <= 5; levelNum++) {
-    const level = this.levels[levelNum];
-    if (!level) continue;
     
-    const isUnlocked = this.progress.unlockedLevels.includes(levelNum);
-
-    const card = document.createElement('div');
-    card.className = 'level-card';
-    card.dataset.level = levelNum;
-    card.innerHTML = `
-        <h3>${level.name}</h3>
-        <p>${level.slots ? level.slots.length + ' оборудования' : 'Настройки'}</p>
-        <p>⏱️ ${level.time} сек</p>
-        <div class="level-score">
-            ${this.progress.bestScores[levelNum] ? '🏆 ' + this.progress.bestScores[levelNum] : ''}
-        </div>
-        <div class="lock-icon ${isUnlocked ? 'hidden' : ''}"></div>`;
-
-    if (isUnlocked) {
-        card.addEventListener('click', () => this.startLevel(levelNum));
-    } else {
-        card.style.opacity = '0.6';
-    }
-    
-    this.elements.levelCardsContainer.appendChild(card);
-  }
-
-  // === БИЗНЕС ===
-  const businessHeader = document.createElement('div');
-  businessHeader.className = 'chapter-header';
-  businessHeader.innerHTML = `
-    <h2>💼 Бизнес-симулятор</h2>
-    <p>Создайте свою пивоварню</p>
-  `;
-  this.elements.levelCardsContainer.appendChild(businessHeader);
-
-  const businessCard = document.createElement('div');
-  businessCard.className = 'level-card business-card';
-  
-  // Проверяем завершён ли уровень 5
-  const isBusinessUnlocked = this.progress.unlockedLevels.includes(5);
-
-  businessCard.innerHTML = `
-  <div class="level-card-content">
-    <div class="level-card-info">
-      <h3>🏭 Начать бизнес</h3>
-      <p>Создайте свою пивоварню с нуля</p>
-      <div class="business-status">
-        ${isBusinessUnlocked ? '✅ Доступно' : '🔒 Завершите обучение'}
-      </div>
-    </div>
-  </div>
-`;
-
-  if (isBusinessUnlocked) {
-    businessCard.addEventListener('click', () => this.startBusiness());
-    businessCard.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-  } else {
-    businessCard.style.opacity = '0.6';
-    businessCard.style.background = '#666';
-  }
-  
-  this.elements.levelCardsContainer.appendChild(businessCard);
-
-  // === ГЛАВА 2 ===
-  const chapter2Header = document.createElement('div');
-  chapter2Header.className = 'chapter-header';
-  chapter2Header.innerHTML = `
-    <h2>🍺 Глава 2: Первая варка</h2>
-    <p>Мойка оборудования и первая варка</p>
-  `;
-  this.elements.levelCardsContainer.appendChild(chapter2Header);
-
-  const chapter2Card = document.createElement('div');
-  chapter2Card.className = 'level-card chapter2-card';
-  
-  // Проверяем куплено ли оборудование в бизнесе
-  const hasEquipment = this.state.business.purchasedFacilities.length > 0;
-  const isChapter2Unlocked = hasEquipment;
-
-  chapter2Card.innerHTML = `
-  <div class="level-card-content">
-    <div class="level-card-info">
-      <h3>🚀 Первая варка</h3>
-      <p>Мойка оборудования и запуск производства</p>
-      <div class="chapter-status">
-        ${isChapter2Unlocked ? '✅ Доступно' : '🔒 Завершите бизнес'}
-      </div>
-    </div>
-  </div>
-`;
-
-  if (isChapter2Unlocked) {
-    chapter2Card.addEventListener('click', () => this.startChapter2());
-    chapter2Card.style.background = 'linear-gradient(135deg, #ff8c00 0%, #ff4500 100%)';
-  } else {
-    chapter2Card.style.opacity = '0.6';
-    chapter2Card.style.background = '#666';
-  }
-  
-  this.elements.levelCardsContainer.appendChild(chapter2Card);
+    this.renderLevelCards();
 }
 
+  renderLevelCards() {
+    console.log('Отрисовываю карточки, разблокировано:', this.progress.unlockedLevels);
+    this.elements.levelCardsContainer.innerHTML = '';
+    
+    // === ГЛАВА 1: ОБУЧЕНИЕ ===
+    const chapter1Header = document.createElement('div');
+    chapter1Header.className = 'chapter-header';
+    chapter1Header.innerHTML = `
+      <h2>🎓 Глава 1: Обучение</h2>
+      <p>Изучите основы пивоварения</p>
+    `;
+    this.elements.levelCardsContainer.appendChild(chapter1Header);
+
+    // Уровни 1-5
+    for (let levelNum = 1; levelNum <= 5; levelNum++) {
+      const level = this.levels[levelNum];
+      if (!level) continue;
+      
+      const isUnlocked = this.progress.unlockedLevels.includes(levelNum);
+
+      const card = document.createElement('div');
+      card.className = 'level-card';
+      card.dataset.level = levelNum;
+      card.innerHTML = `
+          <h3>${level.name}</h3>
+          <p>${level.slots ? level.slots.length + ' оборудования' : 'Настройки'}</p>
+          <p>⏱️ ${level.time} сек</p>
+          <div class="level-score">
+              ${this.progress.bestScores[levelNum] ? '🏆 ' + this.progress.bestScores[levelNum] : ''}
+          </div>
+          <div class="lock-icon ${isUnlocked ? 'hidden' : ''}"></div>`;
+
+      if (isUnlocked) {
+        card.addEventListener('click', () => this.startLevel(levelNum));
+      } else {
+        card.style.opacity = '0.6';
+      }
+      
+      this.elements.levelCardsContainer.appendChild(card);
+    }
+
+    // === БИЗНЕС ===
+    const businessHeader = document.createElement('div');
+    businessHeader.className = 'chapter-header';
+    businessHeader.innerHTML = `
+      <h2>💼 Бизнес-симулятор</h2>
+      <p>Создайте свою пивоварню</p>
+    `;
+    this.elements.levelCardsContainer.appendChild(businessHeader);
+
+    const businessCard = document.createElement('div');
+    businessCard.className = 'level-card business-card';
+    
+    // Проверяем завершён ли уровень 5
+    const isBusinessUnlocked = this.progress.unlockedLevels.includes(5);
+
+    businessCard.innerHTML = `
+    <div class="level-card-content">
+      <div class="level-card-info">
+        <h3>🏭 Начать бизнес</h3>
+        <p>Создайте свою пивоварню с нуля</p>
+        <div class="business-status">
+          ${isBusinessUnlocked ? '✅ Доступно' : '🔒 Завершите обучение'}
+        </div>
+      </div>
+    </div>
+  `;
+
+    if (isBusinessUnlocked) {
+      businessCard.addEventListener('click', () => this.startBusiness());
+      businessCard.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    } else {
+      businessCard.style.opacity = '0.6';
+      businessCard.style.background = '#666';
+    }
+    
+    this.elements.levelCardsContainer.appendChild(businessCard);
+
+    // === ГЛАВА 2 ===
+    const chapter2Header = document.createElement('div');
+    chapter2Header.className = 'chapter-header';
+    chapter2Header.innerHTML = `
+      <h2>🍺 Глава 2: Первая варка</h2>
+      <p>Мойка оборудования и первая варка</p>
+    `;
+    this.elements.levelCardsContainer.appendChild(chapter2Header);
+
+    const chapter2Card = document.createElement('div');
+    chapter2Card.className = 'level-card chapter2-card';
+    
+    // Проверяем куплено ли оборудование в бизнесе
+    const hasEquipment = this.state.business.purchasedFacilities.length > 0;
+    const isChapter2Unlocked = hasEquipment;
+
+    chapter2Card.innerHTML = `
+    <div class="level-card-content">
+      <div class="level-card-info">
+        <h3>🚀 Первая варка</h3>
+        <p>Мойка оборудования и запуск производства</p>
+        <div class="chapter-status">
+          ${isChapter2Unlocked ? '✅ Доступно' : '🔒 Завершите бизнес'}
+        </div>
+      </div>
+    </div>
+  `;
+
+    if (isChapter2Unlocked) {
+      chapter2Card.addEventListener('click', () => this.startChapter2());
+      chapter2Card.style.background = 'linear-gradient(135deg, #ff8c00 0%, #ff4500 100%)';
+    } else {
+      chapter2Card.style.opacity = '0.6';
+      chapter2Card.style.background = '#666';
+    }
+    
+    this.elements.levelCardsContainer.appendChild(chapter2Card);
+  }
+
   startLevel(levelNum) {
+    // Останавливаем любой предыдущий таймер
+    this.updateGlobalHeader(true);
+    
     // Останавливаем любой предыдущий таймер
     clearInterval(this.timer);
     
@@ -1428,43 +1596,43 @@ class BreweryGame {
   }
 
   createSettingsInterface(level) {
-  const settingsHTML = level.settings.map(setting => {
-    let unit = '°C';
-    if (setting.id === "malt-consumption") unit = 'кг';
-    if (setting.id === "wort-boiling-time") unit = 'мин';  // ДОБАВИЛИ ЭТУ СТРОКУ
-    if (setting.id === "wort-brewing-time") unit = 'ч';
-    if (setting.id === "maturation-time") unit = 'дн';
-    
-    const initialValue = Math.round((setting.min + setting.max) / 2);
-    
-    return `
-    <div class="setting-item">
-      <label for="${setting.id}">${setting.label}</label>
-      <div class="setting-controls">
-        <input type="range" id="${setting.id}" min="${setting.min}" max="${setting.max}" step="${setting.step}" value="${initialValue}" class="temp-slider">
-        <span class="temp-value">${initialValue}${unit}</span>
-      </div>
-    </div>`;
-  }).join('');
+    const settingsHTML = level.settings.map(setting => {
+      let unit = '°C';
+      if (setting.id === "malt-consumption") unit = 'кг';
+      if (setting.id === "wort-boiling-time") unit = 'мин';
+      if (setting.id === "wort-brewing-time") unit = 'ч';
+      if (setting.id === "maturation-time") unit = 'дн';
+      
+      const initialValue = Math.round((setting.min + setting.max) / 2);
+      
+      return `
+      <div class="setting-item">
+        <label for="${setting.id}">${setting.label}</label>
+        <div class="setting-controls">
+          <input type="range" id="${setting.id}" min="${setting.min}" max="${setting.max}" step="${setting.step}" value="${initialValue}" class="temp-slider">
+          <span class="temp-value">${initialValue}${unit}</span>
+        </div>
+      </div>`;
+    }).join('');
 
-  this.elements.settingsContainer.innerHTML = settingsHTML;
-  
-  level.settings.forEach(setting => {
-    const slider = document.getElementById(setting.id);
-    const valueDisplay = slider.nextElementSibling;
+    this.elements.settingsContainer.innerHTML = settingsHTML;
     
-    let unit = '°C';
-    if (setting.id === "malt-consumption") unit = 'кг';
-    if (setting.id === "wort-boiling-time") unit = 'мин';  // ДОБАВИЛИ ЭТУ СТРОКУ
-    if (setting.id === "wort-brewing-time") unit = 'ч';
-    if (setting.id === "maturation-time") unit = 'дн';
-    
-    slider.addEventListener('input', () => {
-      valueDisplay.textContent = `${slider.value}${unit}`;
-      this.elements.launchBtn.disabled = false;
+    level.settings.forEach(setting => {
+      const slider = document.getElementById(setting.id);
+      const valueDisplay = slider.nextElementSibling;
+      
+      let unit = '°C';
+      if (setting.id === "malt-consumption") unit = 'кг';
+      if (setting.id === "wort-boiling-time") unit = 'мин';
+      if (setting.id === "wort-brewing-time") unit = 'ч';
+      if (setting.id === "maturation-time") unit = 'дн';
+      
+      slider.addEventListener('input', () => {
+        valueDisplay.textContent = `${slider.value}${unit}`;
+        this.elements.launchBtn.disabled = false;
+      });
     });
-  });
-}
+  }
 
   createEquipmentSlots(level) {
     level.slots.forEach(slotConfig => {
@@ -1595,6 +1763,13 @@ class BreweryGame {
     this.elements.gameScreen.classList.add('hidden');
     const nextLevel = this.state.currentLevel + 1;
     
+    // ДОБАВЬ ЭТОТ КОД ДЛЯ СОХРАНЕНИЯ ПРОГРЕССА
+    if (nextLevel <= 5 && !this.progress.unlockedLevels.includes(nextLevel)) {
+        this.progress.unlockedLevels.push(nextLevel);
+        this.saveProgress();
+        console.log('✅ Уровень ' + nextLevel + ' сохранен в прогресс!');
+    }
+    
     // Если закончили уровень 5 - переходим к бизнесу
     if (this.state.currentLevel === 5) {
         this.endGame(true);
@@ -1603,7 +1778,7 @@ class BreweryGame {
     } else {
         this.endGame(true);
     }
-  }
+}
 
   showFeedback(message, type) {
     this.elements.feedbackMessage.textContent = message;
@@ -1820,17 +1995,17 @@ class BreweryGame {
     const level = this.levels[levelNum];
     
     if (levelNum === 1 || levelNum === 2 || levelNum === 4) {
-        // Уровни с настройками - показываем настройки и фон
-        this.createSettingsInterface(level);
-        this.elements.settingsContainer.classList.remove('hidden');
-        this.elements.breweryBackground.classList.remove('hidden');
-        this.updateBackgroundImage(levelNum);
+      // Уровни с настройками - показываем настройки и фон
+      this.createSettingsInterface(level);
+      this.elements.settingsContainer.classList.remove('hidden');
+      this.elements.breweryBackground.classList.remove('hidden');
+      this.updateBackgroundImage(levelNum);
     } else if (levelNum === 3 || levelNum === 5) {
-        // Уровни с оборудованием - показываем слоты и панель оборудования
-        this.createEquipmentSlots(level);
-        this.createEquipmentPanel(level);
-        this.elements.playgroundContainer.classList.remove('hidden');
-        this.elements.equipmentPanelContainer.classList.remove('hidden');
+      // Уровни с оборудованием - показываем слоты и панель оборудования
+      this.createEquipmentSlots(level);
+      this.createEquipmentPanel(level);
+      this.elements.playgroundContainer.classList.remove('hidden');
+      this.elements.equipmentPanelContainer.classList.remove('hidden');
     }
     
     // Всегда показываем кнопку подсказки
@@ -1839,81 +2014,15 @@ class BreweryGame {
 
   // === МЕТОДЫ ДЛЯ ЭКРАНА ОБОРУДОВАНИЯ ===
 
-  showFacilityEquipment(facilityType) {
-    console.log('=== showFacilityEquipment called ===');
-    console.log('facilityType:', facilityType);
-    clearInterval(this.timer);
-    this.state.gameStarted = false;
-    
-    
-    this.playSound('click');
-    
-    // ЯВНО СКРЫВАЕМ ВСЕ ЭКРАНЫ
-    const allScreens = [
-        this.elements.businessStartScreen,
-        this.elements.winScreen, 
-        this.elements.loseScreen,
-        this.elements.gameScreen,
-        this.elements.levelSelectScreen,
-        this.elements.startScreen
-    ];
-    
-    allScreens.forEach(screen => {
-        if (screen) screen.classList.add('hidden');
-    });
-    
-    const equipmentScreen = document.getElementById('facility-equipment-screen');
-    console.log('equipmentScreen found:', !!equipmentScreen);
-    
-    if (equipmentScreen) {
-    equipmentScreen.classList.remove('hidden');
-    console.log('Equipment screen should be visible now');
-    
-    // ТОЛЬКО ЕСЛИ equipmentScreen существует, ищем в нем таймер
-    const timerElement = equipmentScreen.querySelector('.timer');
-    if (timerElement) {
-        timerElement.style.display = 'none';
-    }
-}
-    
-    // Остальной код обновления интерфейса...
-    const facility = this.businessLevels[facilityType];
-    
-    // Обновляем заголовок
-    const facilityNameElement = document.getElementById('equipment-facility-name');
-    if (facilityNameElement) {
-        facilityNameElement.innerHTML = `Оснащение: <span class="facility-name-orange">${facility.name}</span>`;
-    }
-    
-    // Обновляем бюджет
-    const budget = this.getFacilityBudget(facilityType);
-    const equipmentDescription = document.querySelector('.equipment-description');
-    if (equipmentDescription) {
-        equipmentDescription.innerHTML = `
-            Теперь нужно закупить оборудование для вашей пивоварни. 
-            У вас есть <strong style="color: #10b981; font-weight: bold;">${budget} BP</strong> на оборудование.
-        `;
-    }
-    
-    document.getElementById('total-budget').textContent = budget + ' BP';
-    document.getElementById('total-cost').textContent = '0 BP';
-    document.getElementById('remaining-budget').textContent = budget + ' BP';
-    
-    // Инициализируем выбор оборудования
-    setTimeout(() => {
-        this.initEquipmentSelection(facilityType);
-    }, 100);
-}
-
   getFacilityBudget(facilityType) {
     const budgets = {
-        'preparation': 50,
-        'mashing': 100,
-        'fermentation': 150,
-        'bottling': 200,
-        'production': 250,
-        'advanced': 300,
-        'complex': 400
+      'preparation': 50,
+      'mashing': 100,
+      'fermentation': 150,
+      'bottling': 200,
+      'production': 250,
+      'advanced': 300,
+      'complex': 400
     };
     return budgets[facilityType] || 50;
   }
@@ -1928,10 +2037,10 @@ class BreweryGame {
     const equipmentOptions = document.querySelectorAll('.equipment-option-wide input');
     
     equipmentOptions.forEach(option => {
-        option.addEventListener('change', () => {
-            console.log('Изменение оборудования:', option.id, option.checked);
-            this.updateEquipmentSelection(facilityType);
-        });
+      option.addEventListener('change', () => {
+        console.log('Изменение оборудования:', option.id, option.checked);
+        this.updateEquipmentSelection(facilityType);
+      });
     });
     
     // Кнопка запуска производства
@@ -1939,11 +2048,11 @@ class BreweryGame {
     const backBtn = document.getElementById('back-to-facilities-btn');
     
     startBtn.addEventListener('click', () => {
-        this.startProduction(facilityType);
+      this.startProduction(facilityType);
     });
     
     backBtn.addEventListener('click', () => {
-        this.showBusinessStartScreen();
+      this.showBusinessStartScreen();
     });
     
     // Инициализируем первый расчет
@@ -1955,25 +2064,25 @@ class BreweryGame {
     
     // Автоматически выбираем обязательное оборудование в зависимости от помещения
     const basicEquipment = {
-        'preparation': ['mash-250', 'crusher-100', 'pump-1', 'chemical'],
-        'mashing': ['mash-500', 'filter-500', 'crusher-200', 'pump-4', 'chemical'],
-        'fermentation': ['mash-1000', 'filter-1000', 'crusher-300', 'pump-5', 'chemical'],
-        'bottling': ['mash-1000', 'filter-1000', 'crusher-300', 'pump-6', 'chemical'],
-        'production': ['mash-3000', 'filter-1000', 'crusher-500', 'pump-6', 'chemical'],
-        'advanced': ['mash-3000', 'filter-1000', 'crusher-500', 'pump-6', 'chemical'],
-        'complex': ['mash-5000', 'filter-1000', 'crusher-1000', 'pump-7', 'chemical']
+      'preparation': ['mash-250', 'crusher-100', 'pump-1', 'chemical'],
+      'mashing': ['mash-500', 'filter-500', 'crusher-200', 'pump-4', 'chemical'],
+      'fermentation': ['mash-1000', 'filter-1000', 'crusher-300', 'pump-5', 'chemical'],
+      'bottling': ['mash-1000', 'filter-1000', 'crusher-300', 'pump-6', 'chemical'],
+      'production': ['mash-3000', 'filter-1000', 'crusher-500', 'pump-6', 'chemical'],
+      'advanced': ['mash-3000', 'filter-1000', 'crusher-500', 'pump-6', 'chemical'],
+      'complex': ['mash-5000', 'filter-1000', 'crusher-1000', 'pump-7', 'chemical']
     };
     
     const equipmentIds = basicEquipment[facilityType] || basicEquipment['preparation'];
     
     equipmentIds.forEach(equipId => {
-        const input = document.getElementById(equipId);
-        if (input) {
-            input.checked = true;
-            console.log('Выбрано оборудование:', equipId);
-        } else {
-            console.log('Оборудование не найдено:', equipId);
-        }
+      const input = document.getElementById(equipId);
+      if (input) {
+        input.checked = true;
+        console.log('Выбрано оборудование:', equipId);
+      } else {
+        console.log('Оборудование не найдено:', equipId);
+      }
     });
   }
 
@@ -1986,27 +2095,27 @@ class BreweryGame {
     
     // Собираем выбранное оборудование с ПРАВИЛЬНЫМИ ценами
     selectedInputs.forEach(input => {
-    const equipElement = input.closest('.equipment-option-wide');
-    let price = parseInt(equipElement.dataset.price);
-    const name = equipElement.querySelector('strong').textContent;
-    const id = equipElement.dataset.id;
-    const type = equipElement.dataset.type;
-    
-    // ФИКС: Теплообменник всегда стоит 1 BP
-    if (id === 'heat-300') {
+      const equipElement = input.closest('.equipment-option-wide');
+      let price = parseInt(equipElement.dataset.price);
+      const name = equipElement.querySelector('strong').textContent;
+      const id = equipElement.dataset.id;
+      const type = equipElement.dataset.type;
+      
+      // ФИКС: Теплообменник всегда стоит 1 BP
+      if (id === 'heat-300') {
         price = 1;
-    }
-    
-    totalCost += price;
-    selectedEquipment.push({ name, price, id, type });
-});
+      }
+      
+      totalCost += price;
+      selectedEquipment.push({ name, price, id, type });
+    });
     
     console.log('Общая стоимость:', totalCost);
     console.log('Выбранное оборудование:', selectedEquipment);
     
     // Обновляем интерфейс
     this.updateEquipmentUI(totalCost, selectedEquipment, this.getFacilityBudget(facilityType), facilityType);
-}
+  }
 
   updateEquipmentUI(totalCost, selectedEquipment, budget, facilityType) {
     console.log('Обновление UI - стоимость:', totalCost, 'бюджет:', budget);
@@ -2018,21 +2127,21 @@ class BreweryGame {
     // Показываем выбранное оборудование
     const selectedList = document.getElementById('selected-equipment-wide');
     if (!selectedList) {
-        console.error('Элемент selected-equipment-wide не найден в DOM!');
-        return;
+      console.error('Элемент selected-equipment-wide не найден в DOM!');
+      return;
     }
     
     if (selectedEquipment.length > 0) {
-        selectedList.innerHTML = selectedEquipment.map(item => 
-            `<div>
-                <span>✅ ${item.name}</span>
-                <span class="equipment-item-price">${item.price} BP</span>
-            </div>`
-        ).join('');
-        console.log('Сводка оборудования обновлена');
+      selectedList.innerHTML = selectedEquipment.map(item => 
+        `<div>
+            <span>✅ ${item.name}</span>
+            <span class="equipment-item-price">${item.price} BP</span>
+        </div>`
+      ).join('');
+      console.log('Сводка оборудования обновлена');
     } else {
-        selectedList.innerHTML = '<p class="empty-selection-wide">Выберите оборудование выше...</p>';
-        console.log('Сводка оборудования пуста');
+      selectedList.innerHTML = '<p class="empty-selection-wide">Выберите оборудование выше...</p>';
+      console.log('Сводка оборудования пуста');
     }
     
     // ДА, ТАК - ПРОВЕРЯЕМ СОВМЕСТИМОСТЬ
@@ -2040,17 +2149,17 @@ class BreweryGame {
     const isCompatible = this.checkEquipmentCompatibility(selectedEquipment, facilityType);
     
     if (!isCompatible) {
-        compatibilityCheck.classList.remove('hidden');
+      compatibilityCheck.classList.remove('hidden');
     } else {
-        compatibilityCheck.classList.add('hidden');
+      compatibilityCheck.classList.add('hidden');
     }
     
     // Проверяем бюджет
     const budgetWarning = document.getElementById('budget-warning');
     if (totalCost > budget) {
-        budgetWarning.classList.remove('hidden');
+      budgetWarning.classList.remove('hidden');
     } else {
-        budgetWarning.classList.add('hidden');
+      budgetWarning.classList.add('hidden');
     }
     
     // Активируем кнопку если все ок
@@ -2062,8 +2171,9 @@ class BreweryGame {
     startBtn.disabled = !isValid;
     
     console.log('Кнопка запуска активна:', isValid);
-}
-checkEquipmentCompatibility(selectedEquipment, facilityType) {
+  }
+
+  checkEquipmentCompatibility(selectedEquipment, facilityType) {
     // Базовая проверка - есть ли все обязательное оборудование
     const hasMashTun = selectedEquipment.some(item => item.type === 'mash');
     const hasFilter = selectedEquipment.some(item => item.type === 'filter');
@@ -2075,14 +2185,13 @@ checkEquipmentCompatibility(selectedEquipment, facilityType) {
     const hasChemical = selectedEquipment.some(item => item.id === 'chemical');
     
     console.log('Проверка совместимости:', {
-        hasMashTun, hasFilter, hasWaterTank, hasCCT, 
-        hasChiller, hasSteam, hasHeatExchanger, hasChemical
+      hasMashTun, hasFilter, hasWaterTank, hasCCT, 
+      hasChiller, hasSteam, hasHeatExchanger, hasChemical
     });
     
     return hasMashTun && hasFilter && hasWaterTank && hasCCT && 
-           hasChiller && hasSteam && hasHeatExchanger && hasChemical;
-}
-
+      hasChiller && hasSteam && hasHeatExchanger && hasChemical;
+  }
 
   startProduction(facilityType) {
     console.log('Проверка оборудования для:', facilityType);
@@ -2094,57 +2203,57 @@ checkEquipmentCompatibility(selectedEquipment, facilityType) {
     const validation = this.validateEquipmentSet(selectedEquipment, facilityType);
     
     if (validation.isValid) {
-        // ПРАВИЛЬНЫЙ КОМПЛЕКТ
-        this.showEquipmentSuccess(facilityType, selectedEquipment, validation.score);
+      // ПРАВИЛЬНЫЙ КОМПЛЕКТ
+      this.showEquipmentSuccess(facilityType, selectedEquipment, validation.score);
     } else {
-        // НЕПРАВИЛЬНЫЙ КОМПЛЕКТ
-        this.showEquipmentError(validation.warnings);
+      // НЕПРАВИЛЬНЫЙ КОМПЛЕКТ
+      this.showEquipmentError(validation.warnings);
     }
-}
+  }
 
-// === ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ДЛЯ ПРОВЕРКИ ===
+  // === ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ДЛЯ ПРОВЕРКИ ===
 
-getSelectedEquipment() {
+  getSelectedEquipment() {
     const selected = [];
     
     const selectedInputs = document.querySelectorAll('#facility-equipment-screen input:checked');
     selectedInputs.forEach(input => {
-        const option = input.closest('.equipment-option-wide');
-        if (option) {
-            const name = option.querySelector('strong').textContent;
-            const id = option.dataset.id;
-            let price = parseInt(option.dataset.price);
-            let type = option.dataset.type;
-            
-            // ФИКС: Если type не указан, определяем автоматически
-            if (!type) {
-                if (name.includes('Заторный') || name.includes('сусловарочный')) type = 'mash';
-                else if (name.includes('Фильтрационный')) type = 'filter';
-                else if (name.includes('Бак горячей воды')) type = 'water';
-                else if (name.includes('ЦКТ')) type = 'cct';
-                else if (name.includes('Холодильный')) type = 'chiller';
-                else if (name.includes('Парогенератор')) type = 'steam';
-                else if (name.includes('Теплообменник')) type = 'heat';
-                else if (name.includes('Дробилка')) type = 'crusher';
-                else if (name.includes('Насос')) type = 'pump';
-                else if (name.includes('Химраствор')) type = 'chemical';
-                else type = 'other';
-            }
-            
-            // ФИКС: Теплообменник всегда 1 BP
-            if (id === 'heat-300') {
-                price = 1;
-            }
-            
-            selected.push({ name, price, id, type });
-            console.log('Добавлено оборудование:', name, 'type:', type, 'price:', price);
+      const option = input.closest('.equipment-option-wide');
+      if (option) {
+        const name = option.querySelector('strong').textContent;
+        const id = option.dataset.id;
+        let price = parseInt(option.dataset.price);
+        let type = option.dataset.type;
+        
+        // ФИКС: Если type не указан, определяем автоматически
+        if (!type) {
+          if (name.includes('Заторный') || name.includes('сусловарочный')) type = 'mash';
+          else if (name.includes('Фильтрационный')) type = 'filter';
+          else if (name.includes('Бак горячей воды')) type = 'water';
+          else if (name.includes('ЦКТ')) type = 'cct';
+          else if (name.includes('Холодильный')) type = 'chiller';
+          else if (name.includes('Парогенератор')) type = 'steam';
+          else if (name.includes('Теплообменник')) type = 'heat';
+          else if (name.includes('Дробилка')) type = 'crusher';
+          else if (name.includes('Насос')) type = 'pump';
+          else if (name.includes('Химраствор')) type = 'chemical';
+          else type = 'other';
         }
+        
+        // ФИКС: Теплообменник всегда 1 BP
+        if (id === 'heat-300') {
+          price = 1;
+        }
+        
+        selected.push({ name, price, id, type });
+        console.log('Добавлено оборудование:', name, 'type:', type, 'price:', price);
+      }
     });
     
     return selected;
-}
+  }
 
-validateEquipmentSet(selectedEquipment, facilityType) {
+  validateEquipmentSet(selectedEquipment, facilityType) {
     console.log('=== ВАЛИДАЦИЯ КОМПЛЕКТА ===');
     console.log('Оборудование для проверки:', selectedEquipment);
     
@@ -2163,56 +2272,56 @@ validateEquipmentSet(selectedEquipment, facilityType) {
     const hasChemical = selectedEquipment.some(item => item.id === 'chemical');
     
     console.log('Результаты проверки:', {
-        hasMashTun, hasFilter, hasWaterTank, hasCCT, 
-        hasChiller, hasSteam, hasHeatExchanger, hasChemical
+      hasMashTun, hasFilter, hasWaterTank, hasCCT, 
+      hasChiller, hasSteam, hasHeatExchanger, hasChemical
     });
     
     if (!hasMashTun) {
-        warnings.push('Отсутствует заторный аппарат');
-        isValid = false;
-        score -= 15;
+      warnings.push('Отсутствует заторный аппарат');
+      isValid = false;
+      score -= 15;
     }
     
     if (!hasFilter) {
-        warnings.push('Отсутствует фильтрационный аппарат');
-        isValid = false;
-        score -= 15;
+      warnings.push('Отсутствует фильтрационный аппарат');
+      isValid = false;
+      score -= 15;
     }
     
     if (!hasWaterTank) {
-        warnings.push('Отсутствует бак горячей воды');
-        isValid = false;
-        score -= 10;
+      warnings.push('Отсутствует бак горячей воды');
+      isValid = false;
+      score -= 10;
     }
     
     if (!hasCCT) {
-        warnings.push('Отсутствуют ЦКТ (ферментационные танки)');
-        isValid = false;
-        score -= 15;
+      warnings.push('Отсутствуют ЦКТ (ферментационные танки)');
+      isValid = false;
+      score -= 15;
     }
     
     if (!hasChiller) {
-        warnings.push('Отсутствует холодильный агрегат');
-        isValid = false;
-        score -= 10;
+      warnings.push('Отсутствует холодильный агрегат');
+      isValid = false;
+      score -= 10;
     }
     
     if (!hasSteam) {
-        warnings.push('Отсутствует парогенератор');
-        isValid = false;
-        score -= 10;
+      warnings.push('Отсутствует парогенератор');
+      isValid = false;
+      score -= 10;
     }
     
     if (!hasHeatExchanger) {
-    warnings.push('Отсутствует теплообменник');
-    isValid = false;
-    score -= 10;
-}
+      warnings.push('Отсутствует теплообменник');
+      isValid = false;
+      score -= 10;
+    }
     
     if (!hasChemical) {
-        warnings.push('Отсутствует химраствор для мойки');
-        isValid = false;
-        score -= 5;
+      warnings.push('Отсутствует химраствор для мойки');
+      isValid = false;
+      score -= 5;
     }
     
     // Проверяем бюджет
@@ -2220,23 +2329,23 @@ validateEquipmentSet(selectedEquipment, facilityType) {
     const budget = this.getFacilityBudget(facilityType);
     
     if (totalCost > budget) {
-        warnings.push(`Превышен бюджет! Потрачено: ${totalCost} BP, Доступно: ${budget} BP`);
-        isValid = false;
-        score -= 25;
+      warnings.push(`Превышен бюджет! Потрачено: ${totalCost} BP, Доступно: ${budget} BP`);
+      isValid = false;
+      score -= 25;
     }
     
     console.log('Итог валидации:', { isValid, warnings, score });
     return { isValid, warnings, score: Math.max(0, score) };
-}
+  }
 
-// === ЭКРАН УСПЕХА ===
-showEquipmentSuccess(facilityType, equipment, score) {
-  this.playSound('success');
-  
-  const facility = this.businessLevels[facilityType];
-  const totalCost = equipment.reduce((sum, item) => sum + item.price, 0);
-  
-  const message = `🎉 Отлично! Комплект собран правильно!
+  // === ЭКРАН УСПЕХА ===
+  showEquipmentSuccess(facilityType, equipment, score) {
+    this.playSound('success');
+    
+    const facility = this.businessLevels[facilityType];
+    const totalCost = equipment.reduce((sum, item) => sum + item.price, 0);
+    
+    const message = `🎉 Отлично! Комплект собран правильно!
 
 Вы успешно оснастили ${facility.name}
 за ${totalCost} BP
@@ -2247,23 +2356,22 @@ showEquipmentSuccess(facilityType, equipment, score) {
 
 ✅ Глава 1: "Основы пивоварения" завершена!`;
 
-  this.openInfoModal(message, [
-    {
-      label: '🚀 Начать Главу 2 →',
-      onClick: () => this.startChapter2(),
-      variant: 'primary'
-    },
-    {
-      label: '🏠 В главное меню', 
-      onClick: () => this.showStartScreen(),
-      variant: 'secondary'
-    }
-  ]);
-}
+    this.openInfoModal(message, [
+      {
+        label: '🚀 Начать Главу 2 →',
+        onClick: () => this.startChapter2(),
+        variant: 'primary'
+      },
+      {
+        label: '🏠 В главное меню', 
+        onClick: () => this.showStartScreen(),
+        variant: 'secondary'
+      }
+    ]);
+  }
 
-
-// === ЭКРАН ОШИБКИ ===
-showEquipmentError(warnings) {
+  // === ЭКРАН ОШИБКИ ===
+  showEquipmentError(warnings) {
     this.playSound('error');
     
     let message = `❌ Комплект требует доработки
@@ -2271,7 +2379,7 @@ showEquipmentError(warnings) {
 Обнаружены проблемы в подборе оборудования:`;
 
     warnings.forEach(warning => {
-        message += `\n• ${warning}`;
+      message += `\n• ${warning}`;
     });
 
     message += `
@@ -2284,187 +2392,226 @@ showEquipmentError(warnings) {
 "Хорошая пивоварня начинается с правильного оборудования!"`;
 
     this.openInfoModal(message, [
-        {
-            label: '↻ Вернуться к выбору',
-            onClick: () => this.closeHintModal(),
-            variant: 'secondary'
-        }
+      {
+        label: '↻ Вернуться к выбору',
+        onClick: () => this.closeHintModal(),
+        variant: 'secondary'
+      }
     ]);
-}
+  }
 
-startChapter2() {
-  console.log('Запуск Главы 2');
-  
-  // Сохраняем прогресс Главы 1
-  this.saveProgress();
-  
-  // Показываем сообщение о переходе
-  this.showFeedback('🚀 Переходим к Главе 2: Первая варка...', 'correct');
-  
-  // Плавный переход через 2 секунды
-  setTimeout(() => {
-    // Переходим на страницу Главы 2
-    window.location.href = 'chapter2.html';
-  }, 2000);
-}
+  startChapter2() {
+    console.log('Запуск Главы 2');
+    
+    // Сохраняем прогресс Главы 1
+    this.saveProgress();
+    
+    // Показываем сообщение о переходе
+    this.showFeedback('🚀 Переходим к Главе 2: Первая варка...', 'correct');
+    
+    // Плавный переход через 2 секунды
+    setTimeout(() => {
+      // Переходим на страницу Главы 2
+      window.location.href = 'chapter2.html';
+    }, 2000);
+  }
 
-} // ← ДОБАВЬ ЭТУ СКОБКУ
-// Авторизация - простой вариант
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-        const loginBtn = document.querySelector('.login-btn');
-        const registerBtn = document.querySelector('.register-btn');
-        
-        if (loginBtn) {
-            loginBtn.addEventListener('click', function() {
-                alert('Вход - в разработке!');
-            });
-        }
-        
-        if (registerBtn) {
-            registerBtn.addEventListener('click', function() {
-                alert('Регистрация - в разработке!');
-            });
-        }
-    }, 1000);
-});
+  startBusiness() {
+    this.showBusinessStartScreen();
+  }
+
+} // ← КОНЕЦ КЛАССА BreweryGame
+
 // Простая система авторизации
 class SimpleAuth {
-    constructor() {
-        this.users = JSON.parse(localStorage.getItem('brewery_users')) || {};
-        this.initAuth();
+  constructor() {
+    this.users = JSON.parse(localStorage.getItem('brewery_users')) || {};
+    this.initAuth();
+  }
+
+  initAuth() {
+    const loginBtn = document.getElementById('login-btn');
+    const registerBtn = document.getElementById('register-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (loginBtn && registerBtn) {
+      loginBtn.addEventListener('click', () => this.login());
+      registerBtn.addEventListener('click', () => this.register());
+    }
+    
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => this.logout());
+    }
+    
+    // Проверяем статус при загрузке
+    this.updateAuthUI();
+  }
+
+  showMessage(message, type = '') {
+    const messageEl = document.getElementById('auth-message');
+    if (messageEl) {
+      messageEl.textContent = message;
+      messageEl.className = `auth-message ${type}`;
+      
+      setTimeout(() => {
+        messageEl.textContent = '';
+        messageEl.className = 'auth-message';
+      }, 3000);
+    }
+  }
+
+  updateAuthUI() {
+    const authBlock = document.querySelector('.auth-block');
+    const authStatusBlock = document.getElementById('auth-status-block');
+    const currentUser = localStorage.getItem('current_user');
+    
+    if (currentUser && this.users[currentUser]) {
+      // Пользователь авторизован
+      authBlock.style.display = 'none';
+      authStatusBlock.classList.remove('hidden');
+      
+      // Обновляем email в блоке статуса
+      const emailDisplay = document.getElementById('user-email-display');
+      if (emailDisplay) {
+        emailDisplay.textContent = currentUser;
+      }
+    } else {
+      // Пользователь не авторизован
+      authBlock.style.display = 'block';
+      authStatusBlock.classList.add('hidden');
+    }
+  }
+
+  logout() {
+    localStorage.removeItem('current_user');
+    this.showMessage('Вы вышли из системы', 'success');
+    this.updateAuthUI();
+    
+    // Перезагружаем прогресс игры
+    game.loadProgress();
+    game.renderLevelCards();
+  }
+
+  login() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    if (!email || !password) {
+      this.showMessage('Заполните все поля', 'error');
+      return;
     }
 
-    initAuth() {
-        const loginBtn = document.getElementById('login-btn');
-        const registerBtn = document.getElementById('register-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        
-        if (loginBtn && registerBtn) {
-            loginBtn.addEventListener('click', () => this.login());
-            registerBtn.addEventListener('click', () => this.register());
-        }
-        
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => this.logout());
-        }
-        
-        // Проверяем статус при загрузке
-        this.updateAuthUI();
+    if (this.users[email] && this.users[email].password === password) {
+      this.showMessage('Успешный вход!', 'success');
+      this.loadUserProgress(email);
+      this.updateAuthUI();
+    } else {
+      this.showMessage('Неверный email или пароль', 'error');
+    }
+  }
+
+  register() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    if (!email || !password) {
+      this.showMessage('Заполните все поля', 'error');
+      return;
     }
 
-    showMessage(message, type = '') {
-        const messageEl = document.getElementById('auth-message');
-        if (messageEl) {
-            messageEl.textContent = message;
-            messageEl.className = `auth-message ${type}`;
-            
-            setTimeout(() => {
-                messageEl.textContent = '';
-                messageEl.className = 'auth-message';
-            }, 3000);
-        }
+    if (this.users[email]) {
+      this.showMessage('Пользователь уже существует', 'error');
+      return;
     }
 
-    updateAuthUI() {
-        const authBlock = document.querySelector('.auth-block');
-        const authStatusBlock = document.getElementById('auth-status-block');
-        const currentUser = localStorage.getItem('current_user');
-        
-        if (currentUser && this.users[currentUser]) {
-            // Пользователь авторизован
-            authBlock.style.display = 'none';
-            authStatusBlock.classList.remove('hidden');
-            
-            // Обновляем email в блоке статуса
-            const emailDisplay = document.getElementById('user-email-display');
-            if (emailDisplay) {
-                emailDisplay.textContent = currentUser;
-            }
-        } else {
-            // Пользователь не авторизован
-            authBlock.style.display = 'block';
-            authStatusBlock.classList.add('hidden');
-        }
+    this.users[email] = {
+      password: password,
+      progress: {
+        unlockedLevels: [1],
+        bestScores: {}
+      },
+      createdAt: new Date().toISOString()
+    };
+
+    localStorage.setItem('brewery_users', JSON.stringify(this.users));
+    this.showMessage('Аккаунт создан! Входите.', 'success');
+    this.updateAuthUI();
+  }
+
+  loadUserProgress(email) {
+    if (this.users[email] && this.users[email].progress) {
+      localStorage.setItem('current_user', email);
+      game.progress = this.users[email].progress;
+      game.saveProgress();
+      game.renderLevelCards();
     }
+  }
 
-    logout() {
-        localStorage.removeItem('current_user');
-        this.showMessage('Вы вышли из системы', 'success');
-        this.updateAuthUI();
-        
-        // Перезагружаем прогресс игры
-        game.loadProgress();
-        game.renderLevelCards();
+  saveUserProgress(email, progress) {
+    if (this.users[email]) {
+      this.users[email].progress = progress;
+      localStorage.setItem('brewery_users', JSON.stringify(this.users));
     }
+  }
+}
 
-    login() {
-        const email = document.getElementById('login-email').value.trim();
-        const password = document.getElementById('login-password').value;
-
-        if (!email || !password) {
-            this.showMessage('Заполните все поля', 'error');
-            return;
-        }
-
-        if (this.users[email] && this.users[email].password === password) {
-            this.showMessage('Успешный вход!', 'success');
-            this.loadUserProgress(email);
-            this.updateAuthUI();
-        } else {
-            this.showMessage('Неверный email или пароль', 'error');
-        }
-    }
-
-    register() {
-        const email = document.getElementById('login-email').value.trim();
-        const password = document.getElementById('login-password').value;
-
-        if (!email || !password) {
-            this.showMessage('Заполните все поля', 'error');
-            return;
-        }
-
-        if (this.users[email]) {
-            this.showMessage('Пользователь уже существует', 'error');
-            return;
-        }
-
-        this.users[email] = {
-            password: password,
-            progress: {
-                unlockedLevels: [1],
-                bestScores: {}
-            },
-            createdAt: new Date().toISOString()
-        };
-
-        localStorage.setItem('brewery_users', JSON.stringify(this.users));
-        this.showMessage('Аккаунт создан! Входите.', 'success');
-        this.updateAuthUI();
-    }
-
-    loadUserProgress(email) {
-        if (this.users[email] && this.users[email].progress) {
-            localStorage.setItem('current_user', email);
-            game.progress = this.users[email].progress;
-            game.saveProgress();
-            game.renderLevelCards();
-        }
-    }
-
-    saveUserProgress(email, progress) {
-        if (this.users[email]) {
-            this.users[email].progress = progress;
-            localStorage.setItem('brewery_users', JSON.stringify(this.users));
-        }
-    }
+// Функция для получения названия помещения
+function getFacilityName(type) {
+  const names = {
+    'preparation': 'Пивоварня ресторанного типа',
+    'mashing': 'Пивоварня с дистрибуцией', 
+    'fermentation': 'Пивоваренный завод',
+    'bottling': 'Пивоваренный комплекс',
+    'production': 'Пивоваренный концерн',
+    'advanced': 'Пивоваренная империя',
+    'complex': 'Международный пивоваренный альянс'
+  };
+  return names[type] || 'Неизвестное помещение';
 }
 
 // Инициализация авторизации
 document.addEventListener('DOMContentLoaded', function() {
-    window.auth = new SimpleAuth();
+  window.auth = new SimpleAuth();
 });
 
 // Создаем глобальную переменную для доступа из HTML
 const game = new BreweryGame();
+
+// Обработчик для бизнес-кнопок
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('business-action-btn')) {
+    console.log('🎯 КНОПКА АРЕНДОВАТЬ НАЖАТА!');
+    
+    const card = e.target.closest('.business-card');
+    if (card) {
+      const facilityType = card.dataset.type;
+      const price = parseInt(e.target.dataset.price);
+      
+      console.log('🏢 Переходим к оборудованию для:', facilityType, 'за', price, 'BP');
+      
+      // Останавливаем дальнейшую обработку
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Прямой вызов метода аренды
+      if (window.game && window.game.rentFacility) {
+        console.log('✅ Вызываем rentFacility');
+        window.game.rentFacility(facilityType, price);
+      } else {
+        console.log('⚠️ Game не найден, прямой переход к оборудованию');
+        // Если метод недоступен, сразу переходим к оборудованию
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('facility-equipment-screen').classList.remove('hidden');
+        
+        // Обновляем заголовок
+        const titleElement = document.getElementById('equipment-facility-name');
+        if (titleElement) {
+          const facilityName = getFacilityName(facilityType);
+          titleElement.innerHTML = `Оснащение: <span class="facility-name-orange">${facilityName}</span>`;
+        }
+      }
+    }
+  }
+});
+
+console.log('🔧 Бизнес-модуль загружен!');

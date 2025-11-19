@@ -3722,3 +3722,215 @@ body {
 .back-level-btn:hover {
     background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
 }
+/* Стили для общего хедера */
+.game-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #2c5530 0%, #1a3c1e 100%);
+    padding: 10px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+    border-bottom: 3px solid #4a7c59;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Левая часть - кнопка назад */
+.header-left .back-level-btn {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid #4a7c59;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.header-left .back-level-btn:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+}
+
+/* Центральная часть - бюджет */
+.budget-display {
+    background: rgba(255,255,255,0.1);
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 2px solid #4a7c59;
+}
+
+.budget-label {
+    color: #a8d5ba;
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.budget-value {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Правая часть - авторизация */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .game-header {
+        padding: 8px 15px;
+    }
+    
+    .budget-display {
+        order: -1; /* Бюджет сверху на мобильных */
+    }
+}
+/* Стили для авторизации в хедере */
+.header-right .auth-block {
+    display: flex;
+    align-items: center;
+}
+
+.header-right .auth-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-right .auth-input {
+    padding: 6px 10px;
+    border: 1px solid #4a7c59;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.9);
+    font-size: 12px;
+    width: 120px;
+}
+
+.header-right .auth-btn {
+    padding: 6px 12px;
+    background: #4a7c59;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.3s ease;
+}
+
+.header-right .auth-btn:hover {
+    background: #3a6c49;
+}
+
+.header-right .auth-message {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    padding: 8px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    font-size: 12px;
+    min-width: 200px;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .header-right .auth-form {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .header-right .auth-input {
+        width: 100px;
+        font-size: 11px;
+    }
+    
+    .header-right .auth-btn {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+}
+/* === ХЕДЕР ПОД ШИРИНУ АКТИВНОГО ЭКРАНА === */
+
+.game-header {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #2c5530 0%, #1a3c1e 100%);
+    padding: 10px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+    border-bottom: 3px solid #4a7c59;
+    width: 100%;
+    max-width: 900px; /* ← ОСНОВНАЯ ШИРИНА КАК У БОЛЬШИНСТВА ЭКРАНОВ */
+}
+
+/* Широкие экраны */
+#business-start-screen:not(.hidden) ~ .game-header,
+#facility-equipment-screen:not(.hidden) ~ .game-header {
+    max-width: 1200px;
+}
+
+/* Контейнер хедера */
+.header-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Содержимое хедера */
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .game-header {
+        max-width: 95% !important; /* На мобильных почти полная ширина */
+        padding: 8px 0;
+    }
+    
+    .header-container {
+        padding: 0 10px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Сдвигаем контент под хедер */
+body {
+    padding-top: 120px;
+}
+
+/* Стартовый экран без отступа */
+#start-screen {
+    padding-top: 0 !important;
+}
+.level-select-screen {
+    z-index: 1000;
+    position: relative;
+}
