@@ -4697,3 +4697,14 @@ body:has(#start-screen:not(.hidden)) .game-header {
 body:has(#start-screen:not(.hidden)) {
     padding-top: 0 !important;
 }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: auto;
+    background-color: white; /* ← МЕНЯЕМ НА БЕЛЫЙ */
+    user-select: none;
+    padding: 10px;
+}
