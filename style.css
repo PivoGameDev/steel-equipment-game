@@ -5171,3 +5171,108 @@ body {
         margin-bottom: 4px !important;
     }
 }
+/* === МОБИЛЬНАЯ ВЕРСИЯ ХЕДЕРА УРОВНЯ === */
+
+@media (max-width: 768px) {
+    #game-screen .game-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px !important;
+        flex-wrap: nowrap;
+        min-height: 25px !important;
+        padding: 0 5px;
+        gap: 8px;
+    }
+    
+    /* Левая часть - в одну строку */
+    #game-screen .header-left {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    /* Правая часть */
+    #game-screen .header-right {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        min-width: 0;
+    }
+    
+    /* Название уровня компактное */
+    #game-screen .level-name {
+        font-size: 12px !important;
+        font-weight: bold;
+        color: #3b82f6;
+        white-space: nowrap;
+        margin: 0 !important;
+        line-height: 1.1 !important;
+    }
+    
+    /* Таймер компактный */
+    #game-screen .timer {
+        font-size: 14px !important;
+        font-weight: bold;
+        color: #10b981;
+        white-space: nowrap;
+        margin: 0 !important;
+    }
+    
+    /* Сообщения обратной связи компактные */
+    #game-screen .feedback-message {
+        font-weight: bold;
+        font-size: 11px !important;
+        white-space: nowrap;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        text-align: right;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    #game-screen .game-header {
+        min-height: 22px !important;
+        gap: 5px;
+    }
+    
+    #game-screen .header-left {
+        gap: 8px;
+    }
+    
+    #game-screen .level-name {
+        font-size: 11px !important;
+    }
+    
+    #game-screen .timer {
+        font-size: 13px !important;
+    }
+    
+    #game-screen .feedback-message {
+        font-size: 10px !important;
+    }
+}
+
+/* Для экстремально маленьких */
+@media (max-width: 360px) {
+    #game-screen .header-left {
+        gap: 5px;
+    }
+    
+    #game-screen .level-name {
+        font-size: 10px !important;
+    }
+    
+    #game-screen .timer {
+        font-size: 12px !important;
+    }
+    
+    #game-screen .feedback-message {
+        font-size: 9px !important;
+    }
+}
