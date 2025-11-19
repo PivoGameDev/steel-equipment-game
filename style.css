@@ -5385,3 +5385,7 @@ body:has(#start-screen:not(.hidden)) #game-header {
         padding-top: 70px !important; /* Было 60px + 10px для "чёлки" */
     }
 }
+/* === ФИКС ОТСТУПА ДЛЯ IPHONE === */
+.game-header {
+    padding-bottom: 3px !important;
+}
