@@ -4921,3 +4921,19 @@ body {
         padding: 5px 6px !important;
     }
 }
+@media (max-width: 768px) {
+    .budget-display {
+        min-width: 85px !important; /* Было 70px */
+        max-width: 100px !important; /* Было 90px */
+        padding: 6px 10px !important; /* Добавляем отступы */
+    }
+}
+/* Добавляем отступ сверху для экрана выбора уровня */
+#level-select-screen {
+    padding-top: 25px !important; /* Было 15px */
+}
+
+/* Или добавляем отступ конкретно для заголовков глав */
+.chapter-header {
+    margin-top: 20px !important;
+}
