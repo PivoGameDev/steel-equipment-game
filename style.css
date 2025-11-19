@@ -5337,3 +5337,51 @@ body:has(#start-screen:not(.hidden)) #game-header {
         padding-top: 60px !important;
     }
 }
+/* === ФИКС ДЛЯ IPHONE X (НОВИЧОК) === */
+
+/* 1. Фиксированный хедер - добавляем отступ для "чёлки" */
+.game-header {
+    padding-top: 20px !important; /* Добавляем место для "чёлки" */
+}
+
+/* 2. Все основные экраны - добавляем отступ под хедер + "чёлка" */
+#level-select-screen,
+#game-screen, 
+#win-screen,
+#lose-screen,
+#business-start-screen,
+#facility-equipment-screen {
+    padding-top: 90px !important; /* Было 70px + 20px для "чёлки" */
+}
+
+/* 3. Для мобильных - немного меньше */
+@media (max-width: 768px) {
+    .game-header {
+        padding-top: 15px !important;
+    }
+    
+    #level-select-screen,
+    #game-screen,
+    #win-screen, 
+    #lose-screen,
+    #business-start-screen,
+    #facility-equipment-screen {
+        padding-top: 75px !important; /* Было 60px + 15px для "чёлки" */
+    }
+}
+
+/* 4. Для очень маленьких iPhone */
+@media (max-width: 380px) {
+    .game-header {
+        padding-top: 10px !important;
+    }
+    
+    #level-select-screen,
+    #game-screen,
+    #win-screen,
+    #lose-screen, 
+    #business-start-screen,
+    #facility-equipment-screen {
+        padding-top: 70px !important; /* Было 60px + 10px для "чёлки" */
+    }
+}
