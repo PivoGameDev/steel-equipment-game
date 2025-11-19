@@ -4973,4 +4973,26 @@ body {
 #business-start-screen,
 #facility-equipment-screen {
     padding-top: 70px !important;
+    /* Исправляем для мобильных - внутренний хедер игры */
+@media (max-width: 768px) {
+    #game-screen .game-header {
+        display: flex !important; /* Возвращаем отображение */
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        margin-top: 60px !important;
+        padding: 10px !important;
+    }
+    
+    /* Делаем закругление углов для игрового контейнера */
+    #game-screen .game-container,
+    #game-screen .settings-container,
+    #game-screen .playground-container {
+        border-radius: 12px !important;
+    }
+    
+    /* И для карточек настроек */
+    #game-screen .setting-item {
+        border-radius: 10px !important;
+    }
+}
 }
