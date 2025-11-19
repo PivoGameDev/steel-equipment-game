@@ -4996,3 +4996,44 @@ body {
     }
 }
 }
+@media (max-width: 768px) {
+    #game-screen .game-header {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-top: 60px !important;
+        padding: 10px 15px !important;
+        width: 100% !important;
+    }
+    
+    /* Левая часть - название уровня и таймер */
+    #game-screen .header-left {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        margin-left: 0 !important;
+        transform: none !important;
+    }
+    
+    /* Правая часть - оставляем пустой или для сообщений */
+    #game-screen .header-right {
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    /* Заголовок уровня */
+    #game-screen .level-name {
+        font-size: 16px !important;
+        font-weight: bold !important;
+        color: #3b82f6 !important;
+        margin-bottom: 2px !important;
+    }
+    
+    /* Таймер */
+    #game-screen .timer {
+        font-size: 18px !important;
+        font-weight: bold !important;
+        color: #10b981 !important;
+    }
+}
