@@ -5402,95 +5402,110 @@ body:has(#start-screen:not(.hidden)) #game-header {
     
     .header-content {
         height: 39px !important;
-        gap: 6px !important; /* Уменьшаем общий gap чтобы вместилось */
+        gap: 6px !important;
+        justify-content: space-between !important;
     }
     
     /* Левая часть - кнопка назад (переименовываем в "Уровни") */
     .header-left {
-        min-width: 70px !important; /* Сильно уменьшаем ширину */
-        max-width: 70px !important;
+        min-width: 60px !important;
+        max-width: 60px !important;
+        flex-shrink: 0;
     }
     
+    /* ПРАВИЛЬНОЕ переименование кнопки на мобильных */
     .header-left .back-level-btn {
         padding: 6px 8px !important;
         font-size: 11px !important;
         height: 32px !important;
+        width: 100% !important;
+        position: relative;
+    }
+    
+    /* Скрываем оригинальный текст и показываем "Уровни" */
+    .header-left .back-level-btn span {
+        display: none !important;
+    }
+    
+    .header-left .back-level-btn::after {
+        content: "Уровни";
+        font-size: 11px !important;
+        font-weight: 600;
+    }
+    
+    /* Центр - бюджет (увеличиваем обводку) */
+    .header-center {
+        flex: 0 0 auto;
+        min-width: 85px !important;
+    }
+    
+    .budget-display {
+        padding: 6px 10px !important;
+        height: 32px !important;
+        margin: 0 !important;
+        min-width: 85px !important;
+        max-width: 85px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         white-space: nowrap !important;
         overflow: hidden !important;
     }
     
-    /* Переименовываем кнопку на мобильных */
-    .header-left .back-level-btn::before {
-        content: "Уровни";
-    }
-    
-    /* Скрываем оригинальный текст на мобильных */
-    .header-left .back-level-btn {
-        font-size: 0 !important; /* Скрываем оригинальный текст */
-    }
-    
-    /* Центр - бюджет (делаем компактнее) */
-    .budget-display {
-        padding: 6px 8px !important;
-        height: 32px !important;
-        margin: 0 3px !important;
-        min-width: 80px !important;
-        max-width: 80px !important;
-    }
-    
     .budget-label {
         font-size: 11px !important;
-        margin-right: 2px !important;
+        margin-right: 3px !important;
+        display: inline !important;
     }
     
     .budget-value {
         font-size: 11px !important;
+        display: inline !important;
     }
     
-    /* Правая часть - авторизация (компактнее) */
+    /* Правая часть - авторизация */
     .header-right {
-        min-width: 80px !important;
-        max-width: 80px !important;
-        gap: 4px !important;
+        min-width: 65px !important;
+        max-width: 65px !important;
+        flex-shrink: 0;
     }
     
     .login-header-btn {
         padding: 6px 8px !important;
         font-size: 11px !important;
         height: 32px !important;
-        min-width: 60px !important;
+        width: 100% !important;
+        min-width: auto !important;
     }
     
-    /* Статус авторизации (супер компактный) */
+    /* Статус авторизации (компактный) */
     .auth-status-block {
         padding: 4px 6px !important;
         height: 32px !important;
+        width: 100% !important;
         min-width: 0 !important;
     }
     
     .auth-status-content {
         gap: 4px !important;
+        justify-content: center !important;
     }
     
+    /* Скрываем текст приветствия на мобильных */
     .auth-greeting {
-        font-size: 9px !important;
-        display: none !important; /* Скрываем приветствие на узких экранах */
-    }
-    
-    #user-email-display {
-        font-size: 9px !important;
-        display: none !important; /* Скрываем email на узких экранах */
+        display: none !important;
     }
     
     .logout-btn {
-        padding: 4px 6px !important;
+        padding: 4px 8px !important;
         font-size: 10px !important;
         height: 24px !important;
-        min-width: 50px !important;
+        width: 100% !important;
+        min-width: auto !important;
     }
 }
 
-/* Для очень узких экранов (iPhone SE и подобные) */
+/* Для очень узких экранов (iPhone SE) */
 @media (max-width: 360px) {
     .game-header {
         padding: 6px 8px !important;
@@ -5499,12 +5514,11 @@ body:has(#start-screen:not(.hidden)) #game-header {
     
     .header-content {
         gap: 4px !important;
-        height: 38px !important;
     }
     
     .header-left {
-        min-width: 60px !important;
-        max-width: 60px !important;
+        min-width: 55px !important;
+        max-width: 55px !important;
     }
     
     .header-left .back-level-btn {
@@ -5513,32 +5527,40 @@ body:has(#start-screen:not(.hidden)) #game-header {
         height: 28px !important;
     }
     
+    .header-center {
+        min-width: 75px !important;
+    }
+    
     .budget-display {
-        padding: 5px 6px !important;
+        padding: 5px 8px !important;
         height: 28px !important;
-        min-width: 70px !important;
-        max-width: 70px !important;
+        min-width: 75px !important;
+        max-width: 75px !important;
     }
     
     .budget-label, .budget-value {
         font-size: 10px !important;
     }
     
+    .header-right {
+        min-width: 55px !important;
+        max-width: 55px !important;
+    }
+    
     .login-header-btn {
         padding: 5px 6px !important;
         height: 28px !important;
         font-size: 10px !important;
-        min-width: 50px !important;
     }
 }
 
 /* Восстанавливаем оригинальный текст на ПК */
 @media (min-width: 769px) {
-    .header-left .back-level-btn::before {
+    .header-left .back-level-btn::after {
         content: "" !important;
     }
     
-    .header-left .back-level-btn {
-        font-size: 14px !important; /* Восстанавливаем оригинальный текст */
+    .header-left .back-level-btn span {
+        display: inline !important;
     }
 }
