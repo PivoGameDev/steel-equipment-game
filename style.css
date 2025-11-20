@@ -5389,3 +5389,127 @@ body:has(#start-screen:not(.hidden)) #game-header {
 .game-header {
     padding-bottom: 3px !important;
 }
+/* === ИСПРАВЛЕНИЯ ДЛЯ МОБИЛЬНОГО ХЕДЕРА === */
+@media (max-width: 768px) {
+    .game-header {
+        height: 55px !important; /* Увеличиваем высоту */
+        padding: 8px 12px !important; /* Больше отступов по бокам */
+    }
+    
+    .header-container {
+        padding: 0 8px !important; /* Увеличиваем внутренние отступы */
+    }
+    
+    .header-content {
+        height: 39px !important; /* Увеличиваем высоту контента */
+        gap: 10px !important; /* Увеличиваем расстояние между элементами */
+    }
+    
+    /* Левая часть - кнопка назад */
+    .header-left {
+        min-width: 125px !important;
+        margin-left: 0 !important; /* Убираем отрицательный отступ */
+    }
+    
+    .header-left .back-level-btn {
+        padding: 7px 10px !important; /* Больше отступов в кнопке */
+        font-size: 12px !important;
+        height: 34px !important; /* Выше кнопка */
+        border-radius: 6px !important;
+    }
+    
+    /* Центр - бюджет */
+    .budget-display {
+        padding: 7px 12px !important; /* Больше отступов */
+        height: 34px !important; /* Выше блок */
+        margin: 0 5px !important;
+        min-width: 90px !important; /* Шире блок */
+        border-radius: 6px !important;
+    }
+    
+    .budget-label {
+        font-size: 12px !important;
+        margin-right: 4px !important;
+    }
+    
+    .budget-value {
+        font-size: 12px !important;
+    }
+    
+    /* Правая часть - авторизация */
+    .header-right {
+        min-width: 110px !important;
+        gap: 8px !important;
+    }
+    
+    /* Кнопка Войти */
+    .login-header-btn {
+        padding: 7px 12px !important;
+        font-size: 12px !important;
+        height: 34px !important;
+        border-radius: 6px !important;
+    }
+    
+    /* Статус авторизации */
+    .auth-status-block {
+        padding: 6px 10px !important;
+        height: 34px !important;
+        border-radius: 6px !important;
+    }
+    
+    .auth-greeting {
+        font-size: 11px !important;
+    }
+    
+    .logout-btn {
+        padding: 5px 8px !important;
+        font-size: 11px !important;
+        height: 24px !important;
+        border-radius: 4px !important;
+    }
+}
+
+/* Особые правки для iPhone */
+@media (max-width: 380px) {
+    .game-header {
+        padding: 8px 10px !important;
+        height: 52px !important;
+    }
+    
+    .header-content {
+        gap: 8px !important;
+        height: 36px !important;
+    }
+    
+    .header-left {
+        min-width: 115px !important;
+    }
+    
+    .header-left .back-level-btn {
+        padding: 6px 8px !important;
+        font-size: 11px !important;
+        height: 32px !important;
+    }
+    
+    .budget-display {
+        padding: 6px 10px !important;
+        height: 32px !important;
+        min-width: 85px !important;
+    }
+    
+    .login-header-btn {
+        padding: 6px 10px !important;
+        height: 32px !important;
+    }
+    
+    .auth-status-block {
+        padding: 5px 8px !important;
+        height: 32px !important;
+    }
+}
+
+/* Гарантируем что хедер будет поверх всего контента */
+.game-header {
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Добавляем тень для лучшего отделения */
+}
