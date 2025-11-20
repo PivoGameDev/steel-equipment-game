@@ -5402,19 +5402,19 @@ body:has(#start-screen:not(.hidden)) #game-header {
     
     .header-content {
         height: 39px !important;
-        gap: 6px !important;
+        gap: 8px !important;
         justify-content: space-between !important;
     }
     
     /* Левая часть - кнопка назад (переименовываем в "Уровни") */
     .header-left {
-        min-width: 60px !important;
-        max-width: 60px !important;
+        min-width: 65px !important;
+        max-width: 65px !important;
         flex-shrink: 0;
     }
     
     /* ПРАВИЛЬНОЕ переименование кнопки на мобильных */
-    .header-left .back-level-btn {
+    #global-back-btn {
         padding: 6px 8px !important;
         font-size: 11px !important;
         height: 32px !important;
@@ -5423,55 +5423,61 @@ body:has(#start-screen:not(.hidden)) #game-header {
     }
     
     /* Скрываем оригинальный текст и показываем "Уровни" */
-    .header-left .back-level-btn span {
+    #global-back-btn span {
         display: none !important;
     }
     
-    .header-left .back-level-btn::after {
+    #global-back-btn::after {
         content: "Уровни";
         font-size: 11px !important;
         font-weight: 600;
+        color: #1f2937;
     }
     
-    /* Центр - бюджет (увеличиваем обводку) */
+    /* Центр - бюджет (растягивающаяся рамка) */
     .header-center {
-        flex: 0 0 auto;
-        min-width: 85px !important;
+        flex: 1 !important; /* Растягивается по доступному пространству */
+        min-width: 90px !important;
+        max-width: 120px !important;
+        display: flex;
+        justify-content: center;
     }
     
     .budget-display {
         padding: 6px 10px !important;
         height: 32px !important;
         margin: 0 !important;
-        min-width: 85px !important;
-        max-width: 85px !important;
+        min-width: 90px !important;
+        max-width: 120px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         white-space: nowrap !important;
-        overflow: hidden !important;
+        flex-shrink: 1;
     }
     
     .budget-label {
         font-size: 11px !important;
         margin-right: 3px !important;
         display: inline !important;
+        flex-shrink: 0;
     }
     
     .budget-value {
         font-size: 11px !important;
         display: inline !important;
-    }
-    
-    /* Правая часть - авторизация */
-    .header-right {
-        min-width: 65px !important;
-        max-width: 65px !important;
         flex-shrink: 0;
     }
     
-    .login-header-btn {
-        padding: 6px 8px !important;
+    /* Правая часть - авторизация (уже) */
+    .header-right {
+        min-width: 60px !important;
+        max-width: 60px !important;
+        flex-shrink: 0;
+    }
+    
+    #header-login-btn {
+        padding: 6px 8px !important; /* Отступы 6px сверху/снизу, 8px по бокам */
         font-size: 11px !important;
         height: 32px !important;
         width: 100% !important;
@@ -5479,7 +5485,7 @@ body:has(#start-screen:not(.hidden)) #game-header {
     }
     
     /* Статус авторизации (компактный) */
-    .auth-status-block {
+    #auth-status-block {
         padding: 4px 6px !important;
         height: 32px !important;
         width: 100% !important;
@@ -5496,7 +5502,7 @@ body:has(#start-screen:not(.hidden)) #game-header {
         display: none !important;
     }
     
-    .logout-btn {
+    #logout-btn {
         padding: 4px 8px !important;
         font-size: 10px !important;
         height: 24px !important;
@@ -5513,29 +5519,30 @@ body:has(#start-screen:not(.hidden)) #game-header {
     }
     
     .header-content {
-        gap: 4px !important;
+        gap: 6px !important;
     }
     
     .header-left {
-        min-width: 55px !important;
-        max-width: 55px !important;
+        min-width: 60px !important;
+        max-width: 60px !important;
     }
     
-    .header-left .back-level-btn {
+    #global-back-btn {
         padding: 5px 6px !important;
         font-size: 10px !important;
         height: 28px !important;
     }
     
     .header-center {
-        min-width: 75px !important;
+        min-width: 80px !important;
+        max-width: 100px !important;
     }
     
     .budget-display {
         padding: 5px 8px !important;
         height: 28px !important;
-        min-width: 75px !important;
-        max-width: 75px !important;
+        min-width: 80px !important;
+        max-width: 100px !important;
     }
     
     .budget-label, .budget-value {
@@ -5547,7 +5554,7 @@ body:has(#start-screen:not(.hidden)) #game-header {
         max-width: 55px !important;
     }
     
-    .login-header-btn {
+    #header-login-btn {
         padding: 5px 6px !important;
         height: 28px !important;
         font-size: 10px !important;
@@ -5556,11 +5563,11 @@ body:has(#start-screen:not(.hidden)) #game-header {
 
 /* Восстанавливаем оригинальный текст на ПК */
 @media (min-width: 769px) {
-    .header-left .back-level-btn::after {
+    #global-back-btn::after {
         content: "" !important;
     }
     
-    .header-left .back-level-btn span {
+    #global-back-btn span {
         display: inline !important;
     }
 }
