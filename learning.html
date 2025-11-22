@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обучение пивоварению</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Глобальный хедер -->
+    <header id="game-header" class="game-header">
+        <div class="header-container">
+            <div class="header-content">
+                <div class="header-left">
+                    <button id="global-back-btn" class="back-level-btn">← Назад</button>
+                </div>
+                <div class="header-center">
+                    <div class="budget-display">
+                        <span class="budget-label">Бюджет:</span>
+                        <span class="budget-value" id="global-budget">100 BP</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button id="header-login-btn" class="login-header-btn">Войти</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Контент обучения -->
+<div id="start-screen" class="screen">
+    <div class="main-content">
+        <div class="logo-container">
+            <img src="assets/images/logo.png" alt="Логотип пивного завода" class="game-logo">
+        </div>
+        <div class="game-titles">
+            <h1 class="game-title">ОБУЧЕНИЕ</h1>
+            <h1 class="game-name">Основы пивоварения</h1>
+        </div>
+        <p class="welcome-text">Изучите оборудование и процессы пивоварения от подготовки сырья до брожения!</p>
+        <button id="start-learning-btn">Начать обучение</button>
+    </div>
+</div>
+
+    <!-- Экран выбора уровня обучения -->
+    <div id="level-select-screen" class="screen hidden">
+        <h1 class="level-select-title">Выберите уровень обучения</h1>
+        <div class="level-cards">
+            <!-- Уровни 1-5 будут сгенерированы скриптом -->
+        </div>
+        <button id="back-to-menu">В главное меню</button>
+    </div>
+
+    <!-- Игровой экран -->
+    <div id="game-screen" class="screen hidden">
+        <!-- ТВОЯ СТАРАЯ РАЗМЕТКА ИГРОВОГО ЭКРАНА -->
+        <div class="game-header">
+            <div class="header-left">
+                <p class="level-name">Уровень: Новичок</p>
+                <p class="timer">05:00</p>
+            </div>
+            <div class="header-right">
+                <p class="feedback-message"></p>
+            </div>
+        </div>
+        
+        <div class="level-description">
+            <p id="level-desc-text">Описание уровня загружается...</p>
+        </div>
+        
+        <div class="game-container">
+            <div class="brewery-background hidden">
+                <img src="assets/images/brewery-background.png" alt="Оборудование пивзавода">
+            </div>
+            <div class="playground-container hidden">
+                <div class="playground"></div>
+            </div>
+            
+            <div class="settings-container"></div>
+            
+            <div class="equipment-panel-container hidden">
+                <div class="equipment-panel"></div>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <button id="hint-btn" class="hidden">Подсказка</button>
+            <button id="launch-btn" disabled>Далее →</button>
+        </div>
+    </div>
+
+    <!-- Экран победы -->
+    <div id="win-screen" class="screen hidden">
+        <div class="win-content">
+            <h1 class="win-text">Поздравляем!</h1>
+            <p>Вы завершили обучение за <span id="time-spent">00:00</span>!</p>
+            <p>Ваш счет: <span id="score-earned">100</span> баллов</p>
+            <button id="continue-to-business" class="restart-btn">Начать бизнес →</button>
+        </div>
+    </div>
+
+    <!-- Экран проигрыша -->
+<div id="lose-screen" class="screen hidden">
+    <div class="win-content">
+        <h1>Время вышло!</h1>
+        <p>Попробуйте еще раз.</p>
+        <button class="restart-btn">Попробовать снова</button>
+    </div>
+</div>
+
+<script src="game.js"></script>
+<script src="learning-module.js"></script>
+<script>
+    // Инициализация обучения
+    const learningGame = new LearningGame();
+    
+    // Обработчики для кнопок
+    document.getElementById('start-learning-btn').addEventListener('click', function() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('level-select-screen').classList.remove('hidden');
+    });
+    
+    document.getElementById('back-to-menu').addEventListener('click', function() {
+        window.location.href = 'index.html';
+    });
+    
+    document.getElementById('continue-to-business').addEventListener('click', function() {
+        // Сохраняем прогресс завершения обучения
+        const progress = JSON.parse(localStorage.getItem('breweryGameProgress') || '{}');
+        progress.learningCompleted = true;
+        localStorage.setItem('breweryGameProgress', JSON.stringify(progress));
+        
+        // Переходим в бизнес
+        window.location.href = 'business.html';
+    });
+</script>
+<style>
+    /* ЭКСТРЕННЫЙ ФИКС ЛОГОТИПА */
+    .game-logo {
+        width: 280px !important;
+        height: 280px !important;
+        max-width: 280px !important;
+        max-height: 280px !important;
+    }
+    .logo-container {
+        width: 300px !important;
+        height: 320px !important;
+    }
+</style>
+</body>
+</html>

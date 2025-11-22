@@ -1,8 +1,11 @@
 // @ts-nocheck
-// @ts-nocheck
-// Улучшенный основной класс игры с «умным» поиском картинок
+// Улучшенный основной класс игры с правильным управлением экранами
 class BreweryGame {
   constructor() {
+    // СБРАСЫВАЕМ ПРОГРЕСС ДЛЯ ТЕСТИРОВАНИЯ
+    console.log('🔄 СБРАСЫВАЕМ ПРОГРЕСС ДЛЯ ТЕСТИРОВАНИЯ...');
+    localStorage.removeItem('breweryGameProgress');
+    
     this.levels = {
       1: {
         name: "Подготовка сырья",
@@ -94,7 +97,7 @@ class BreweryGame {
         threshold3: 30,
         threshold2: 60,
         description: "Пиво почти готово! Осталось собрать линию охлаждения и дображивания. Выбери только необходимое оборудование для финального этапа. Помни - здесь важна не только последовательность, но и правильный выбор аппаратов.",
-        hint: "Правильный порядок: .. → Чилер → .."
+        hint: "Правильный порядок: .. → Чиллер → .."
       }
     };
 
@@ -184,10 +187,16 @@ class BreweryGame {
       business: {
         balance: 100,  // Стартовый капитал 100 BP
         purchasedFacilities: []
-      }
+      },
+      myFactoryUnlocked: false
     };
 
-    this.progress = { unlockedLevels: [1], bestScores: {} };
+    // ФИКС: Правильная инициализация прогресса
+    this.progress = { 
+      unlockedLevels: [1],  // Только первый уровень открыт
+      bestScores: {} 
+    };
+    
     this.hintPulseInterval = null;
     this.hintPulseEnabled = true;
 
@@ -202,6 +211,9 @@ class BreweryGame {
     this.selectionMode = true;
     this.levelReview = {1:{}, 2:{}, 3:{}, 4:{}, 5:{}};
 
+    // ИНИЦИАЛИЗАЦИЯ ЭКРАНОВ - ИСПРАВЛЕННАЯ ВЕРСИЯ
+    this.initializeScreens();
+
     this.initEventListeners();
     this.loadProgress();
     this.renderLevelCards();
@@ -211,12 +223,32 @@ class BreweryGame {
     setTimeout(() => {
       this.initIntroAnimation();
     }, 500);
-    this.showStartScreen();
 
     // ИНИЦИАЛИЗИРУЕМ БЮДЖЕТ ПРИ ЗАПУСКЕ
     setTimeout(() => {
       this.updateBudgetEverywhere();
     }, 1000);
+  }
+
+  // НОВЫЙ МЕТОД: Правильная инициализация экранов
+  initializeScreens() {
+    console.log('🖥️ Инициализация экранов...');
+    
+    // Сначала скрываем ВСЕ экраны
+    const allScreens = document.querySelectorAll('.screen');
+    allScreens.forEach(screen => {
+      screen.classList.add('hidden');
+      console.log(`📱 Скрыт: ${screen.id}`);
+    });
+    
+    // Потом показываем ТОЛЬКО стартовый экран
+    if (this.elements.startScreen) {
+      this.elements.startScreen.classList.remove('hidden');
+      console.log('🎮 Показан стартовый экран');
+    }
+    
+    // Убеждаемся что глобальный хедер скрыт
+    this.updateGlobalHeader(false);
   }
 
   // Метод для обновления бюджета во всех местах
@@ -456,7 +488,9 @@ class BreweryGame {
       playgroundContainer: document.querySelector('.playground-container'),
       globalHeader: document.getElementById('game-header'),
       globalBackBtn: document.getElementById('global-back-btn'), 
-      globalBudget: document.getElementById('global-budget')
+      globalBudget: document.getElementById('global-budget'),
+      myFactoryBtn: document.getElementById('my-factory-btn'),
+      myFactoryScreen: document.getElementById('my-factory-screen')
     };
 
     this.sounds = {
@@ -507,8 +541,12 @@ class BreweryGame {
     this.playSound('click');
     this.updateGlobalHeader(true);
     
-    this.elements.winScreen.classList.add('hidden');
-    this.elements.loseScreen.classList.add('hidden');
+    // Скрываем все экраны
+    document.querySelectorAll('.screen').forEach(screen => {
+      screen.classList.add('hidden');
+    });
+    
+    // Показываем только бизнес-экран
     this.elements.businessStartScreen.classList.remove('hidden');
     
     // ОБНОВЛЯЕМ БЮДЖЕТ ПРИ ПОКАЗЕ ЭКРАНА
@@ -691,12 +729,32 @@ class BreweryGame {
 
   initEventListeners() {
     this.elements.startBtn.addEventListener('click', () => this.showLevelSelect());
-    this.elements.backToMenuBtn.addEventListener('click', () => this.showStartScreen());
+    
+    
+    // Обработчик для кнопки "Мой завод" в хедере
+    if (this.elements.myFactoryBtn) {
+      this.elements.myFactoryBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('🎯 КНОПКА МОЙ ЗАВОД В ХЕДЕРЕ НАЖАТА!');
+        
+        if (!this.state.myFactoryUnlocked) {
+          this.showFeedback('Сначала завершите оснащение завода!', 'incorrect');
+          return;
+        }
+        this.showMyFactory();
+      });
+    }
     
     if (this.elements.globalBackBtn) {
       this.elements.globalBackBtn.addEventListener('click', () => {
         this.showLevelSelect();
       });
+    }
+    
+    // Обработчик для кнопки "Назад" на экране завода
+    const backFromFactoryBtn = document.getElementById('back-from-factory');
+    if (backFromFactoryBtn) {
+        backFromFactoryBtn.addEventListener('click', () => this.showLevelSelect());
     }
     
     this.elements.launchBtn.addEventListener('click', () => this.checkSolution());
@@ -915,23 +973,28 @@ class BreweryGame {
     this.deselectEquipment();
   }
 
+  // ФИКС: Правильная загрузка прогресса
   loadProgress() {
     const saved = localStorage.getItem('breweryGameProgress');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        this.progress.unlockedLevels = parsed.unlockedLevels || [1];
+        this.progress.unlockedLevels = parsed.unlockedLevels || [1]; // Только первый уровень открыт
         this.progress.bestScores = parsed.bestScores || {};
         
-        if (this.progress.unlockedLevels.length > 1 && !this.progress.unlockedLevels.includes(1)) {
+        // ФИКС: Убеждаемся, что уровень 1 всегда открыт
+        if (!this.progress.unlockedLevels.includes(1)) {
           this.progress.unlockedLevels = [1];
         }
+        
+        console.log('📁 Загружен прогресс:', this.progress.unlockedLevels);
       } catch (e) { 
         console.error('Ошибка загрузки прогресса:', e);
         this.progress.unlockedLevels = [1];
       }
     } else {
       this.progress.unlockedLevels = [1];
+      console.log('📁 Создан новый прогресс с уровнем 1');
     }
   }
 
@@ -940,6 +1003,17 @@ class BreweryGame {
   }
 
   startGame() {
+    // ДОБАВЬ ЭТОТ КОД В САМОЕ НАЧАЛО МЕТОДА
+    console.log("🛑 ПРИНУДИТЕЛЬНАЯ ОСТАНОВКА ТАЙМЕРА");
+    if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+    }
+    
+    // Останавливаем ВСЕ возможные таймеры
+    for (let i = 1; i < 99999; i++) {
+        clearInterval(i);
+    }
     this.state.gameStarted = true;
     this.state.equipmentPlaced = 0;
     this.state.hintUsed = false;
@@ -1244,16 +1318,16 @@ class BreweryGame {
     this.stopHintPulse();
 
     if (isWin) {
-    // === ПРОСТОЙ ФИКС ДЛЯ РАЗБЛОКИРОВКИ ===
-    const nextLevel = this.state.currentLevel + 1;
-    if (nextLevel <= 5) {
-      this.progress.unlockedLevels.push(nextLevel);
-      // Убираем дубликаты на всякий случай
-      this.progress.unlockedLevels = [...new Set(this.progress.unlockedLevels)];
-      this.saveProgress();
-      console.log('✅ Уровень ' + nextLevel + ' разблокирован!');
-    }
-    // === КОНЕЦ ФИКСА ===
+      // ФИКС: Правильная разблокировка уровней
+      const nextLevel = this.state.currentLevel + 1;
+      if (nextLevel <= 5 && !this.progress.unlockedLevels.includes(nextLevel)) {
+        this.progress.unlockedLevels.push(nextLevel);
+        // Убираем дубликаты на всякий случай
+        this.progress.unlockedLevels = [...new Set(this.progress.unlockedLevels)];
+        this.saveProgress();
+        console.log('✅ Уровень ' + nextLevel + ' разблокирован!');
+      }
+
       const emailForm = document.getElementById('email-form');
       const sendBtn = document.getElementById('send-results-btn');
       
@@ -1395,24 +1469,31 @@ class BreweryGame {
       this.progress.bestScores[this.state.currentLevel] = score;
     }
     
-    // Разблокируем следующий уровень только для обучения (1-5)
+    // ФИКС: Разблокируем следующий уровень только для обучения (1-5)
     const nextLevel = this.state.currentLevel + 1;
     if (nextLevel <= 5 && !this.progress.unlockedLevels.includes(nextLevel)) {
       this.progress.unlockedLevels.push(nextLevel);
+      this.saveProgress();
+      console.log('🔓 Разблокирован уровень:', nextLevel);
     }
-    this.saveProgress();
+    
     this.renderLevelCards();
   }
 
   showStartScreen() {
+    console.log('🎮 Показ стартового экрана');
     this.playSound('click');
-    this.updateGlobalHeader(false);
-    this.elements.levelSelectScreen.classList.add('hidden');
-    this.elements.gameScreen.classList.add('hidden');
-    this.elements.winScreen.classList.add('hidden');
-    this.elements.loseScreen.classList.add('hidden');
-    this.elements.businessStartScreen.classList.add('hidden');
+    
+    // Скрываем ВСЕ экраны
+    document.querySelectorAll('.screen').forEach(screen => {
+      screen.classList.add('hidden');
+    });
+    
+    // Показываем ТОЛЬКО стартовый экран
     this.elements.startScreen.classList.remove('hidden');
+    this.updateGlobalHeader(false);
+    
+    // Анимация
     const overlay = document.getElementById('animation-overlay');
     const mainContent = document.getElementById('main-content');
     
@@ -1427,25 +1508,25 @@ class BreweryGame {
   }
 
   showLevelSelect() {
+    console.log('🎮 Показ экрана выбора уровня');
+    this.playSound('click');
+    
     // Сначала скрываем ВСЕ экраны
     document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.add('hidden');
+      screen.classList.add('hidden');
     });
+    
     // Потом показываем нужный
     this.elements.levelSelectScreen.classList.remove('hidden');
-    this.playSound('click');
     this.updateGlobalHeader(true);
-    this.elements.startScreen.classList.add('hidden');
-    this.elements.levelSelectScreen.classList.remove('hidden');
     
-    // ДОБАВЬ ЭТУ СТРОЧКУ - ОБНОВЛЯЕМ КАРТОЧКИ ПЕРЕД ПОКАЗОМ
+    // ОБНОВЛЯЕМ КАРТОЧКИ ПЕРЕД ПОКАЗОМ
     this.renderLevelCards();
-    
-    this.renderLevelCards();
-}
+  }
 
+  // ФИКС: Правильная отрисовка карточек уровней
   renderLevelCards() {
-    console.log('Отрисовываю карточки, разблокировано:', this.progress.unlockedLevels);
+    console.log('🎮 Отрисовываю карточки, разблокировано:', this.progress.unlockedLevels);
     this.elements.levelCardsContainer.innerHTML = '';
     
     // === ГЛАВА 1: ОБУЧЕНИЕ ===
@@ -1467,14 +1548,17 @@ class BreweryGame {
       const card = document.createElement('div');
       card.className = 'level-card';
       card.dataset.level = levelNum;
+      
       card.innerHTML = `
-          <h3>${level.name}</h3>
-          <p>${level.slots ? level.slots.length + ' оборудования' : 'Настройки'}</p>
-          <p>⏱️ ${level.time} сек</p>
-          <div class="level-score">
-              ${this.progress.bestScores[levelNum] ? '🏆 ' + this.progress.bestScores[levelNum] : ''}
-          </div>
-          <div class="lock-icon ${isUnlocked ? 'hidden' : ''}"></div>`;
+    <h3>${level.name}</h3>
+    <div class="level-type">${level.slots ? level.slots.length + ' оборудования' : 'Настройки'}</div>
+    <div class="level-time">⏱️ ${level.time} сек</div>
+    ${this.progress.bestScores[levelNum] ? 
+        `<div class="level-score">🏆 ${this.progress.bestScores[levelNum]}</div>` : 
+        ''
+    }
+    <div class="lock-icon ${isUnlocked ? 'hidden' : ''}"></div>
+`;
 
       if (isUnlocked) {
         card.addEventListener('click', () => this.startLevel(levelNum));
@@ -1487,7 +1571,7 @@ class BreweryGame {
 
     // === БИЗНЕС ===
     const businessHeader = document.createElement('div');
-    businessHeader.className = 'chapter-header';
+businessHeader.className = 'chapter-header business';
     businessHeader.innerHTML = `
       <h2>💼 Бизнес-симулятор</h2>
       <p>Создайте свою пивоварню</p>
@@ -1501,16 +1585,12 @@ class BreweryGame {
     const isBusinessUnlocked = this.progress.unlockedLevels.includes(5);
 
     businessCard.innerHTML = `
-    <div class="level-card-content">
-      <div class="level-card-info">
-        <h3>🏭 Начать бизнес</h3>
-        <p>Создайте свою пивоварню с нуля</p>
-        <div class="business-status">
-          ${isBusinessUnlocked ? '✅ Доступно' : '🔒 Завершите обучение'}
-        </div>
-      </div>
-    </div>
-  `;
+  <h3>🏭 Начать бизнес</h3>
+  <p>Создайте свою пивоварню с нуля</p>
+  <div class="business-status">
+    ${isBusinessUnlocked ? '✅ Доступно' : '🔒 Завершите обучение'}
+  </div>
+`;
 
     if (isBusinessUnlocked) {
       businessCard.addEventListener('click', () => this.startBusiness());
@@ -1534,9 +1614,8 @@ class BreweryGame {
     const chapter2Card = document.createElement('div');
     chapter2Card.className = 'level-card chapter2-card';
     
-    // Проверяем куплено ли оборудование в бизнесе
-    const hasEquipment = this.state.business.purchasedFacilities.length > 0;
-    const isChapter2Unlocked = hasEquipment;
+    // ФИКС: Глава 2 доступна после покупки оборудования
+    const isChapter2Unlocked = this.state.myFactoryUnlocked;
 
     chapter2Card.innerHTML = `
     <div class="level-card-content">
@@ -1559,6 +1638,7 @@ class BreweryGame {
     }
     
     this.elements.levelCardsContainer.appendChild(chapter2Card);
+
   }
 
   startLevel(levelNum) {
@@ -1571,29 +1651,29 @@ class BreweryGame {
     this.playSound('click');
     this.state.currentLevel = levelNum;
     const level = this.levels[levelNum];
+    
+    // ФИКС: Сбрасываем игровой экран
     this.elements.playground.innerHTML = '';
     this.elements.equipmentPanel.innerHTML = '';
     this.elements.settingsContainer.innerHTML = '';
     this.elements.levelNameDisplay.textContent = `Уровень: ${level.name}`;
+    
+    // ФИКС: Правильная инициализация локального хедера
+    this.elements.timerDisplay.textContent = this.formatTime(level.time);
+    this.elements.feedbackMessage.textContent = '';
+    this.elements.feedbackMessage.className = 'feedback-message';
+    
     this.elements.levelDescText.textContent = level.description;
 
-    if ((levelNum === 1 || levelNum === 3) && this.isMobile()) {
-      this.elements.settingsContainer.classList.add('compact');
-      if (this.isVerySmallScreen()) {
-        this.elements.settingsContainer.classList.add('super-compact');
-      } else {
-        this.elements.settingsContainer.classList.remove('super-compact');
-      }
-    } else {
-      this.elements.settingsContainer.classList.remove('compact', 'super-compact');
-    }
-
+    // ФИКС: Сбрасываем стили игрового экрана
+    this.elements.gameScreen.style.paddingTop = '70px'; // Только для глобального хедера
+    
     this.updateLevelDisplay(levelNum);
 
     this.elements.levelSelectScreen.classList.add('hidden');
     this.elements.gameScreen.classList.remove('hidden');
     this.startGame();
-  }
+}
 
   createSettingsInterface(level) {
     const settingsHTML = level.settings.map(setting => {
@@ -2345,6 +2425,9 @@ class BreweryGame {
     const facility = this.businessLevels[facilityType];
     const totalCost = equipment.reduce((sum, item) => sum + item.price, 0);
     
+    // ФИКС: Активируем кнопку "Мой завод"
+    this.activateMyFactoryButton();
+    
     const message = `🎉 Отлично! Комплект собран правильно!
 
 Вы успешно оснастили ${facility.name}
@@ -2354,21 +2437,25 @@ class BreweryGame {
 
 "Правильный подбор оборудования - залог качественного пива!"
 
-✅ Глава 1: "Основы пивоварения" завершена!`;
+🏭 Теперь вы можете перейти на страницу "Мой завод" для управления производством!`;
 
     this.openInfoModal(message, [
-      {
-        label: '🚀 Начать Главу 2 →',
-        onClick: () => this.startChapter2(),
-        variant: 'primary'
-      },
-      {
-        label: '🏠 В главное меню', 
-        onClick: () => this.showStartScreen(),
-        variant: 'secondary'
-      }
+        {
+            label: '🏭 Перейти на Мой завод →',
+            onClick: () => {
+              // Активируем доступ и показываем фабрику
+              this.activateMyFactoryButton();
+              this.showMyFactory(); // ПРЯМОЙ ПЕРЕХОД НА ЗАВОД
+            },
+            variant: 'primary'
+        },
+        {
+            label: '🏠 В главное меню', 
+            onClick: () => this.showStartScreen(),
+            variant: 'secondary'
+        }
     ]);
-  }
+}
 
   // === ЭКРАН ОШИБКИ ===
   showEquipmentError(warnings) {
@@ -2420,159 +2507,146 @@ class BreweryGame {
     this.showBusinessStartScreen();
   }
 
+  // ФИКС: Метод для активации кнопки "Мой завод"
+  activateMyFactoryButton() {
+    console.log('🔧 АКТИВИРУЕМ КНОПКУ МОЙ ЗАВОД...');
+    this.state.myFactoryUnlocked = true;
+    
+    const factoryBtn = document.getElementById('my-factory-btn');
+    console.log('🔍 Найдена кнопка:', factoryBtn);
+    
+    if (factoryBtn) {
+      factoryBtn.disabled = false;
+      factoryBtn.style.opacity = '1';
+      factoryBtn.style.cursor = 'pointer';
+      console.log('✅ Кнопка "Мой завод" активирована!');
+      
+      // Обновляем карточки чтобы Глава 2 стала доступной
+      this.renderLevelCards();
+    } else {
+      console.log('❌ Кнопка my-factory-btn не найдена!');
+    }
+  }
+
+  showMyFactory() {
+    console.log('🔧 ПОКАЗЫВАЕМ МОЙ ЗАВОД');
+    this.playSound('click');
+    
+    // ГАРАНТИРОВАННО СКРЫВАЕМ ВСЕ ЭКРАНЫ
+    document.querySelectorAll('.screen').forEach(screen => {
+        if (screen.id !== 'my-factory-screen') {
+            screen.classList.add('hidden');
+        }
+    });
+    
+    // ПОКАЗЫВАЕМ ТОЛЬКО МОЙ ЗАВОД
+    const factoryScreen = document.getElementById('my-factory-screen');
+    if (factoryScreen) {
+        factoryScreen.classList.remove('hidden');
+        console.log('✅ Экран "Мой завод" показан');
+    }
+}
+
+  showRealFactory() {
+    const factoryContent = document.querySelector('#my-factory-screen .win-content');
+    if (!factoryContent) return;
+    
+    // Показываем реальный контент завода
+    factoryContent.innerHTML = `
+        <h1>🏭 Мой завод</h1>
+        <p class="business-description">
+            Здесь вы можете управлять своим пивоваренным оборудованием.
+        </p>
+        
+        <div class="my-factory-content">
+            <div class="factory-stats">
+                <h3>📊 Статистика завода</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Тип помещения:</span>
+                        <span class="stat-value" id="factory-type">Пивоварня ресторанного типа</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Оборудование:</span>
+                        <span class="stat-value" id="equipment-count">8 шт</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Общая стоимость:</span>
+                        <span class="stat-value" id="total-equipment-cost">50 BP</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="equipment-list">
+                <h3>⚙️ Мое оборудование</h3>
+                <div id="my-equipment-container" class="my-equipment-container">
+                    <div class="equipment-item">
+                        <span>✅ Заторный аппарат 250л</span>
+                        <span class="equipment-price">8 BP</span>
+                    </div>
+                    <div class="equipment-item">
+                        <span>✅ Дробилка солода 100кг/ч</span>
+                        <span class="equipment-price">4 BP</span>
+                    </div>
+                    <div class="equipment-item">
+                        <span>✅ Насос (1 шт)</span>
+                        <span class="equipment-price">2 BP</span>
+                    </div>
+                    <div class="equipment-item">
+                        <span>✅ Химраствор для мойки</span>
+                        <span class="equipment-price">0 BP</span>
+                    </div>
+                    <div class="equipment-item">
+                        <span>✅ Теплообменник 300л/ч</span>
+                        <span class="equipment-price">1 BP</span>
+                    </div>
+                    <div class="equipment-item">
+                        <span>✅ Фильтрационный аппарат 250л</span>
+                        <span class="equipment-price">6 BP</span>
+                    </div>
+                    <div class="equipment-item">
+                        <span>✅ Бак горячей воды 500л</span>
+                        <span class="equipment-price">5 BP</span>
+                    </div>
+                    <div class="equipment-item">
+                        <span>✅ ЦКТ 500л</span>
+                        <span class="equipment-price">10 BP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="factory-controls">
+            <button id="back-from-factory" class="equipment-action-btn secondary">
+                ← Назад к игре
+            </button>
+            <button id="manage-production" class="equipment-action-btn primary" disabled>
+                🚀 Управление производством (скоро)
+            </button>
+        </div>
+    `;
+    
+    // Обработчик для кнопки назад
+    document.getElementById('back-from-factory').addEventListener('click', () => {
+        this.showLevelSelect();
+    });
+  }
+
+  // Метод для обновления отображения на странице "Мой завод"
+  updateMyFactoryDisplay() {
+    console.log('🏭 Обновляем отображение моего завода');
+    
+    // Пока просто логируем - наполним реальными данными позже
+    const factoryType = document.getElementById('factory-type');
+    const equipmentCount = document.getElementById('equipment-count');
+    const totalCost = document.getElementById('total-equipment-cost');
+    
+    if (factoryType) factoryType.textContent = 'Пивоварня ресторанного типа';
+    if (equipmentCount) equipmentCount.textContent = '8 шт';
+    if (totalCost) totalCost.textContent = '36 BP';
+  }
+
 } // ← КОНЕЦ КЛАССА BreweryGame
-
-// Простая система авторизации
-class SimpleAuth {
-  constructor() {
-    this.users = JSON.parse(localStorage.getItem('brewery_users')) || {};
-    this.initAuth();
-  }
-
-  initAuth() {
-    const loginBtn = document.getElementById('login-btn');
-    const registerBtn = document.getElementById('register-btn');
-    const logoutBtn = document.getElementById('logout-btn');
-    
-    if (loginBtn && registerBtn) {
-      loginBtn.addEventListener('click', () => this.login());
-      registerBtn.addEventListener('click', () => this.register());
-    }
-    
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => this.logout());
-    }
-    
-    // Проверяем статус при загрузке
-    this.updateAuthUI();
-  }
-
-  showMessage(message, type = '') {
-    const messageEl = document.getElementById('auth-message');
-    if (messageEl) {
-      messageEl.textContent = message;
-      messageEl.className = `auth-message ${type}`;
-      
-      setTimeout(() => {
-        messageEl.textContent = '';
-        messageEl.className = 'auth-message';
-      }, 3000);
-    }
-  }
-
-  updateAuthUI() {
-    const authBlock = document.querySelector('.auth-block');
-    const authStatusBlock = document.getElementById('auth-status-block');
-    const currentUser = localStorage.getItem('current_user');
-    
-    if (currentUser && this.users[currentUser]) {
-      // Пользователь авторизован
-      authBlock.style.display = 'none';
-      authStatusBlock.classList.remove('hidden');
-      
-      // Обновляем email в блоке статуса
-      const emailDisplay = document.getElementById('user-email-display');
-      if (emailDisplay) {
-        emailDisplay.textContent = currentUser;
-      }
-    } else {
-      // Пользователь не авторизован
-      authBlock.style.display = 'block';
-      authStatusBlock.classList.add('hidden');
-    }
-  }
-
-  logout() {
-    localStorage.removeItem('current_user');
-    this.showMessage('Вы вышли из системы', 'success');
-    this.updateAuthUI();
-    
-    // Перезагружаем прогресс игры
-    game.loadProgress();
-    game.renderLevelCards();
-  }
-
-  login() {
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-password').value;
-
-    if (!email || !password) {
-      this.showMessage('Заполните все поля', 'error');
-      return;
-    }
-
-    if (this.users[email] && this.users[email].password === password) {
-      this.showMessage('Успешный вход!', 'success');
-      this.loadUserProgress(email);
-      this.updateAuthUI();
-    } else {
-      this.showMessage('Неверный email или пароль', 'error');
-    }
-  }
-
-  register() {
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-password').value;
-
-    if (!email || !password) {
-      this.showMessage('Заполните все поля', 'error');
-      return;
-    }
-
-    if (this.users[email]) {
-      this.showMessage('Пользователь уже существует', 'error');
-      return;
-    }
-
-    this.users[email] = {
-      password: password,
-      progress: {
-        unlockedLevels: [1],
-        bestScores: {}
-      },
-      createdAt: new Date().toISOString()
-    };
-
-    localStorage.setItem('brewery_users', JSON.stringify(this.users));
-    this.showMessage('Аккаунт создан! Входите.', 'success');
-    this.updateAuthUI();
-  }
-
-  loadUserProgress(email) {
-    if (this.users[email] && this.users[email].progress) {
-      localStorage.setItem('current_user', email);
-      game.progress = this.users[email].progress;
-      game.saveProgress();
-      game.renderLevelCards();
-    }
-  }
-
-  saveUserProgress(email, progress) {
-    if (this.users[email]) {
-      this.users[email].progress = progress;
-      localStorage.setItem('brewery_users', JSON.stringify(this.users));
-    }
-  }
-}
-
-// Функция для получения названия помещения
-function getFacilityName(type) {
-  const names = {
-    'preparation': 'Пивоварня ресторанного типа',
-    'mashing': 'Пивоварня с дистрибуцией', 
-    'fermentation': 'Пивоваренный завод',
-    'bottling': 'Пивоваренный комплекс',
-    'production': 'Пивоваренный концерн',
-    'advanced': 'Пивоваренная империя',
-    'complex': 'Международный пивоваренный альянс'
-  };
-  return names[type] || 'Неизвестное помещение';
-}
-
-// Инициализация авторизации
-document.addEventListener('DOMContentLoaded', function() {
-  window.auth = new SimpleAuth();
-});
 
 // Создаем глобальную переменную для доступа из HTML
 const game = new BreweryGame();
@@ -2614,44 +2688,162 @@ document.addEventListener('click', function(e) {
   }
 });
 
+// Функция для получения названия помещения
+function getFacilityName(type) {
+  const names = {
+    'preparation': 'Пивоварня ресторанного типа',
+    'mashing': 'Пивоварня с дистрибуцией', 
+    'fermentation': 'Пивоваренный завод',
+    'bottling': 'Пивоваренный комплекс',
+    'production': 'Пивоваренный концерн',
+    'advanced': 'Пивоваренная империя',
+    'complex': 'Международный пивоваренный альянс'
+  };
+  return names[type] || 'Неизвестное помещение';
+}
+
 console.log('🔧 Бизнес-модуль загружен!');
-// Обработчики для новой авторизации
-document.getElementById('header-login-btn').addEventListener('click', function() {
-    document.getElementById('auth-modal').classList.remove('hidden');
-});
-
-// Закрытие модального окна
-document.querySelector('#auth-modal .close-modal').addEventListener('click', function() {
-    document.getElementById('auth-modal').classList.add('hidden');
-});
-
-// Вход через модальное окно
-document.getElementById('modal-login-btn').addEventListener('click', function() {
-    const email = document.getElementById('modal-login-email').value;
-    const password = document.getElementById('modal-login-password').value;
+// УБОЙНЫЙ ФИКС: Принудительно убираем все отступы у стартового экрана
+setTimeout(() => {
+    const startScreen = document.getElementById('start-screen');
+    const mainContent = document.getElementById('main-content');
     
-    // Здесь будет логика входа
-    if (email && password) {
-        // Успешный вход
-        document.getElementById('auth-modal').classList.add('hidden');
-        document.getElementById('header-login-btn').classList.add('hidden');
-        document.getElementById('auth-status-block').classList.remove('hidden');
-        document.getElementById('user-email-display').textContent = email;
-        
-        // Очищаем поля
-        document.getElementById('modal-login-email').value = '';
-        document.getElementById('modal-login-password').value = '';
+    if (startScreen) {
+        startScreen.style.padding = '0';
+        startScreen.style.margin = '0';
+        startScreen.style.top = '0';
+        startScreen.style.borderRadius = '0';
+        startScreen.style.height = '100vh';
     }
-});
-
-// Регистрация через модальное окно
-document.getElementById('modal-register-btn').addEventListener('click', function() {
-    const email = document.getElementById('modal-login-email').value;
-    const password = document.getElementById('modal-login-password').value;
     
-    // Здесь будет логика регистрации
-    if (email && password) {
-        document.getElementById('modal-auth-message').textContent = 'Регистрация успешна!';
-        document.getElementById('modal-auth-message').style.color = 'green';
+    if (mainContent) {
+        mainContent.style.padding = '0';
+        mainContent.style.margin = '0';
+        mainContent.style.height = '100%';
     }
+    
+    document.body.style.padding = '0';
+    document.body.style.margin = '0';
+}, 100);
+
+// Пошел понос!!!!!!!!!!!!!!!!!!!!!
+
+// В обработчике кнопки "Мой завод"
+document.getElementById('my-factory-btn').addEventListener('click', function() {
+    hideAllScreens();
+    document.getElementById('my-factory-screen').classList.remove('hidden');
+    document.getElementById('game-header').classList.remove('hidden');
 });
+// ==================================================
+// БОЛЬШОЙ БЛОК: ФУНКЦИИ ДЛЯ БЮДЖЕТА И ПОКУПОК
+// ==================================================
+
+// ФУНКЦИЯ 1: ПОКУПКА ОБОРУДОВАНИЯ (ОБНУЛЯЕТ БЮДЖЕТ)
+function completeEquipmentPurchase() {
+    console.log("=== НАЧАЛО ПОКУПКИ ОБОРУДОВАНИЯ ===");
+    
+    // 1. Получаем текущий бюджет из памяти
+    let currentBudget = parseInt(localStorage.getItem('globalBudget') || 100);
+    console.log("💰 Бюджет до покупки оборудования:", currentBudget + " BP");
+    
+    // 2. ОБНУЛЯЕМ БЮДЖЕТ (все деньги ушли на оборудование)
+    currentBudget = 0;
+    
+    // 3. Сохраняем обнуленный бюджет
+    localStorage.setItem('globalBudget', currentBudget);
+    console.log("💸 Бюджет после покупки оборудования:", currentBudget + " BP");
+    
+    // 4. Обновляем цифру в хедере
+    updateBudgetDisplay();
+    
+    // 5. Показываем сообщение
+    alert("🎉 Оборудование успешно куплено! Бюджет использован полностью.");
+    
+    // 6. Переходим на экран "Мой завод"
+    hideAllScreens();
+    document.getElementById('my-factory-screen').classList.remove('hidden');
+    
+    console.log("=== ПОКУПКА ЗАВЕРШЕНА ===");
+}
+
+// ФУНКЦИЯ 2: АРЕНДА ПОМЕЩЕНИЯ (50 BP)
+function rentFacility() {
+    console.log("=== НАЧАЛО АРЕНДЫ ПОМЕЩЕНИЯ ===");
+    
+    // 1. Получаем текущий бюджет (стартовый 100 BP)
+    let currentBudget = parseInt(localStorage.getItem('globalBudget') || 100);
+    console.log("💰 Бюджет до аренды:", currentBudget + " BP");
+    
+    // 2. Снимаем 50 BP за аренду
+    currentBudget = currentBudget - 50;
+    
+    // 3. Сохраняем остаток (50 BP)
+    localStorage.setItem('globalBudget', currentBudget);
+    console.log("🏠 Бюджет после аренды:", currentBudget + " BP");
+    
+    // 4. Обновляем отображение
+    updateBudgetDisplay();
+    
+    // 5. Переходим к выбору оборудования
+    hideAllScreens();
+    document.getElementById('facility-equipment-screen').classList.remove('hidden');
+    
+    console.log("=== АРЕНДА ЗАВЕРШЕНА ===");
+}
+
+// ФУНКЦИЯ 3: ОБНОВЛЕНИЕ ОТОБРАЖЕНИЯ БЮДЖЕТА
+function updateBudgetDisplay() {
+    // 1. Получаем бюджет из памяти
+    const budget = parseInt(localStorage.getItem('globalBudget') || 0);
+    
+    // 2. Находим элемент где отображается бюджет
+    const budgetElement = document.getElementById('global-budget');
+    
+    // 3. Обновляем текст
+    if (budgetElement) {
+        budgetElement.textContent = budget + ' BP';
+        console.log("📊 Бюджет обновлен:", budget + ' BP');
+    }
+}
+
+// ==================================================
+// БЛОК: НАСТРОЙКА ОБРАБОТЧИКОВ КНОПОК
+// ==================================================
+
+// Ждем когда вся страница загрузится
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("=== НАСТРОЙКА ОБРАБОТЧИКОВ БЮДЖЕТА ===");
+    
+    // ОБРАБОТЧИК 1: Кнопка "Купить оборудование"
+    const buyEquipmentBtn = document.getElementById('start-production-btn');
+    if (buyEquipmentBtn) {
+        buyEquipmentBtn.addEventListener('click', completeEquipmentPurchase);
+        console.log("✅ Обработчик для кнопки 'Купить оборудование' настроен");
+    }
+    
+    // ОБРАБОТЧИК 2: Кнопка аренды помещения "Арендовать за 50 BP"
+    const rentButtons = document.querySelectorAll('.business-action-btn[data-type="preparation"]');
+    rentButtons.forEach(button => {
+        button.addEventListener('click', rentFacility);
+        console.log("✅ Обработчик для кнопки аренды настроен");
+    });
+    
+    console.log("=== ВСЕ ОБРАБОТЧИКИ НАСТРОЕНЫ ===");
+});
+// ПРОСТОЙ ФИКС ТАЙМЕРА - НЕ ЛОМАЕТ ЛОГИКУ ИГРЫ
+let originalSetInterval = window.setInterval;
+
+window.setInterval = function(callback, delay) {
+    // Если это игровой таймер - проверяем экран
+    const wrappedCallback = function() {
+        const gameScreen = document.getElementById('game-screen');
+        if (!gameScreen || gameScreen.classList.contains('hidden')) {
+            return; // Не выполняем если не на игровом экране
+        }
+        callback();
+    };
+    
+    return originalSetInterval(wrappedCallback, delay);
+};
+
+console.log("✅ Безопасный фикс таймера активирован");

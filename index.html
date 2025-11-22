@@ -8,11 +8,16 @@
 </head>
 <body>
 <header id="game-header" class="game-header hidden">
-    <div class="header-container"> <!-- ← ДОБАВИЛ ЭТОТ КОНТЕЙНЕР -->
+    <div class="header-container">
         <div class="header-content">
             <!-- Левая часть: кнопка назад -->
             <div class="header-left">
                 <button id="global-back-btn" class="back-level-btn">← Назад к выбору уровня</button>
+            </div>
+            
+            <!-- НОВАЯ КНОПКА: Мой завод -->
+            <div class="header-my-factory">
+                <button id="my-factory-btn" class="my-factory-btn" disabled>🏭 Мой завод</button>
             </div>
             
             <!-- Центральная часть: бюджет -->
@@ -24,21 +29,19 @@
             </div>
             
             <!-- Правая часть: авторизация -->
-<div class="header-right">
-    <!-- Показывается когда пользователь НЕ авторизован -->
-    <button id="header-login-btn" class="login-header-btn">Войти</button>
-    
-    <!-- Показывается когда пользователь авторизован -->
-    <div id="auth-status-block" class="auth-status-block hidden">
-        <div class="auth-status-content">
-            <p class="auth-greeting">Здравствуйте, <span id="user-email-display">user@example.com</span>!</p>
-            <button id="logout-btn" class="logout-btn">Выйти</button>
-        </div>
-    </div>
-</div>
+            <div class="header-right">
+                <button id="header-login-btn" class="login-header-btn">Войти</button>
+                <div id="auth-status-block" class="auth-status-block hidden">
+                    <div class="auth-status-content">
+                        <p class="auth-greeting">Здравствуйте, <span id="user-email-display">user@example.com</span>!</p>
+                        <button id="logout-btn" class="logout-btn">Выйти</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </header>
+
     <!-- Стартовый экран -->
     <div id="start-screen" class="screen">
         <!-- Черный фон для анимации -->
@@ -46,7 +49,6 @@
             <div class="logo-animation-container">
                 <img src="assets/images/logo.png" alt="Логотип" class="logo-animated">
             </div>
-            
         </div>
         
         <!-- Основной контент (пока скрыт) -->
@@ -64,38 +66,27 @@
     </div>
 
     <!-- Экран выбора уровня -->
-<div id="level-select-screen" class="screen hidden">
-    <!-- БЛОК АВТОРИЗАЦИИ -->
-<!-- Блок статуса авторизации (показывается когда пользователь вошел) -->
-<div id="auth-status-block" class="auth-status-block hidden">
-    <div class="auth-status-content">
-        <p class="auth-greeting">Здравствуйте, <span id="user-email-display">user@example.com</span>!</p>
-        <button id="logout-btn" class="logout-btn">Выйти</button>
-    </div>
-</div>
-    
-    <h1 class="level-select-title">Выберите уровень</h1>
+    <div id="level-select-screen" class="screen hidden">
         <div class="level-cards">
             <!-- Уровни будут сгенерированы скриптом -->
         </div>
-        <button id="back-to-menu">Назад</button>
     </div>
 
     <!-- Игровой экран -->
-    <div id="game-screen" class="screen hidden" style="height: auto; display: flex; flex-direction: column;">
-    <div class="game-header">
-    <div class="header-left">
-        <p class="level-name">Уровень: Новичок</p>
-        <p class="timer">05:00</p>
-    </div>
-    <div class="header-right">
-        <p class="feedback-message"></p>
-    </div>
-</div>
-        
-        <div class="level-description">
-            <p id="level-desc-text">Описание уровня загружается...</p>
+<div id="game-screen" class="screen hidden">
+    <div class="game-header"> <!-- Локальный хедер -->
+        <div class="header-left">
+            <p class="level-name">Уровень: Новичок</p>
+            <p class="timer">05:00</p>
         </div>
+        <div class="header-right">
+            <p class="feedback-message"></p>
+        </div>
+    </div>
+    
+    <div class="level-description"> <!-- Описание уровня -->
+        <p id="level-desc-text">Описание уровня загружается...</p>
+    </div>
         
         <div class="game-container">
             <!-- Для уровней 1 и 3: ТОЛЬКО настройки -->
@@ -115,11 +106,10 @@
             </div>
         </div>
         
-        <div class="game-controls" style="margin-top: auto;">
-    <button id="hint-btn" class="hidden">Подсказка</button>
-    <button id="launch-btn" disabled>Далее →</button>
-</div>
-        
+        <div class="game-controls">
+            <button id="hint-btn" class="hidden">Подсказка</button>
+            <button id="launch-btn" disabled>Далее →</button>
+        </div>
     </div>
 
     <!-- Экран победы -->
@@ -129,11 +119,12 @@
             <p>Вы справились за <span id="time-spent">00:00</span>!</p>
             <p>Ваш счет: <span id="score-earned">100</span> баллов</p>
             
-            <form id="email-form" class="email-form" action="https://formspree.io/f/mzzyplzq" method="POST">
+            <form id="email-form" class="email-form" action="https://formspree.io/f/mzzyplzq" method="POST" autocomplete="off">
                 <p>Получите детальный отчет о вашем результате!</p>
                 
                 <input type="email" name="email" id="user-email" 
-                       placeholder="Введите ваш email" class="email-input" required>
+                       placeholder="Введите ваш email" class="email-input" 
+                       autocomplete="email" required>
                 
                 <!-- Скрытые поля с данными игры -->
                 <input type="hidden" name="_subject" id="email-subject">
@@ -150,6 +141,7 @@
             </form>
             
             <div id="level-details"></div>
+            <button id="continue-to-business" class="restart-btn" style="margin: 10px; background: linear-gradient(135deg, #ff8c00 0%, #ff4500 100%);">Начать свой бизнес →</button>
         </div>
         <div class="confetti"></div>
     </div>
@@ -166,203 +158,128 @@
     </div>
 
     <!-- ЭКРАН: Начало бизнеса -->
-<div id="business-start-screen" class="screen hidden">
-    <div class="win-content">
-        <h1>Поздравляем с успешным обучением!</h1>
-        <p class="business-description">
-            Твой стартовый капитал — <strong><span class="highlight-points">100 Brewery Points</span></strong>.
-        </p>
-        <p class="business-description">
-            Все великие пивоварни начинали с малого. Вот твои варианты на старте:
-        </p>
-        
-        <div class="business-options">
-            <!-- КАРТОЧКА 1: Пивоварня ресторанного типа -->
-            <div class="business-card available" data-type="preparation">
-                <!-- ИКОНКА -->
-                <div class="business-image preparation-image"></div>
-                
-                <!-- ЗАГОЛОВОК -->
-                <h3>Пивоварня ресторанного типа</h3>
-                
-                <!-- ОПИСАНИЕ -->
-                <p class="business-card-desc">
-                    <strong>Площадь:</strong> 50м²<br>
-                    <strong>Базовая производительность:</strong> 1,500 л/мес<br>
-                    <strong>Максимальная производительность:</strong> 10,000 л/мес<br>
-                    <strong>Оснащение:</strong> 2-в-1 система, 1 сотрудник
-                </p>
-                
-                <!-- ЦЕНА -->
-                <div class="business-price">Стоимость аренды: 50 BP</div>
-                
-                <!-- БАЛАНС -->
-                <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
-                
-                <!-- КНОПКА -->
-               <button class="business-action-btn" data-price="50" data-type="preparation">
-    Арендовать за 50 BP
-</button>
-            </div>
+    <div id="business-start-screen" class="screen hidden">
+        <div class="win-content">
+            <h1>Теперь Вы готовы начать свой бизнес!</h1>
+            <p class="business-description">
+                Все великие пивоварни начинали с малого. Вот твои варианты на старте:
+            </p>
+            
+            <div class="business-options">
+                <!-- КАРТОЧКА 1: Пивоварня ресторанного типа -->
+                <div class="business-card available" data-type="preparation">
+                    <div class="business-image preparation-image"></div>
+                    <h3>Пивоварня ресторанного типа</h3>
+                    <p class="business-card-desc">
+                        <strong>Площадь:</strong> 50м²<br>
+                        <strong>Базовая производительность:</strong> 1,500 л/мес<br>
+                        <strong>Максимальная производительность:</strong> 10,000 л/мес<br>
+                        <strong>Оснащение:</strong> 2-в-1 система, 1 сотрудник
+                    </p>
+                    <div class="business-price">Стоимость аренды: 50 BP</div>
+                    <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
+                    <button class="business-action-btn" data-price="50" data-type="preparation">
+                        Арендовать за 50 BP
+                    </button>
+                </div>
 
-            <!-- КАРТОЧКА 2: Пивоварня с дистрибуцией -->
-            <div class="business-card locked" data-type="mashing">
-                <!-- ИКОНКА -->
-                <div class="business-image mashing-image"></div>
-                
-                <!-- ЗАГОЛОВОК -->
-                <h3>Пивоварня с дистрибуцией 🔒</h3>
-                
-                <!-- ОПИСАНИЕ -->
-                <p class="business-card-desc">
-                    <strong>Площадь:</strong> 100м²<br>
-                    <strong>Базовая производительность:</strong> 4,000 л/мес<br>
-                    <strong>Максимальная производительность:</strong> 25,000 л/мес<br>
-                    <strong>Оснащение:</strong> Автоматические системы, 4 сотрудника
-                </p>
-                
-                <!-- ЦЕНА -->
-                <div class="business-price">Стоимость аренды: 150 BP</div>
-                
-                <!-- БАЛАНС -->
-                <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
-                
-                <!-- КНОПКА (скрыта для заблокированных) -->
-            </div>
+                <!-- Остальные карточки бизнеса -->
+                <div class="business-card locked" data-type="mashing">
+                    <div class="business-image mashing-image"></div>
+                    <h3>Пивоварня с дистрибуцией 🔒</h3>
+                    <p class="business-card-desc">
+                        <strong>Площадь:</strong> 100м²<br>
+                        <strong>Базовая производительность:</strong> 4,000 л/мес<br>
+                        <strong>Максимальная производительность:</strong> 25,000 л/мес<br>
+                        <strong>Оснащение:</strong> Автоматические системы, 4 сотрудника
+                    </p>
+                    <div class="business-price">Стоимость аренды: 150 BP</div>
+                    <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
+                </div>
 
-            <!-- КАРТОЧКА 3: Пивоваренный завод -->
-            <div class="business-card locked" data-type="fermentation">
-                <!-- ИКОНКА -->
-                <div class="business-image fermentation-image"></div>
-                
-                <!-- ЗАГОЛОВОК -->
-                <h3>Пивоваренный завод 🔒</h3>
-                
-                <!-- ОПИСАНИЕ -->
-                <p class="business-card-desc">
-                    <strong>Площадь:</strong> 200м²<br>
-                    <strong>Базовая производительность:</strong> 8,000 л/мес<br>
-                    <strong>Максимальная производительность:</strong> 50,000 л/мес<br>
-                    <strong>Оснащение:</strong> Контролируемые танки, 5 сотрудников
-                </p>
-                
-                <!-- ЦЕНА -->
-                <div class="business-price">Стоимость аренды: 300 BP</div>
-                
-                <!-- БАЛАНС -->
-                <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
-            </div>
+                <div class="business-card locked" data-type="fermentation">
+                    <div class="business-image fermentation-image"></div>
+                    <h3>Пивоваренный завод 🔒</h3>
+                    <p class="business-card-desc">
+                        <strong>Площадь:</strong> 200м²<br>
+                        <strong>Базовая производительность:</strong> 8,000 л/мес<br>
+                        <strong>Максимальная производительность:</strong> 50,000 л/мес<br>
+                        <strong>Оснащение:</strong> Контролируемые танки, 5 сотрудников
+                    </p>
+                    <div class="business-price">Стоимость аренды: 300 BP</div>
+                    <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
+                </div>
 
-            <!-- КАРТОЧКА 4: Пивоваренный комплекс -->
-            <div class="business-card locked" data-type="bottling">
-                <!-- ИКОНКА -->
-                <div class="business-image bottling-image"></div>
-                
-                <!-- ЗАГОЛОВОК -->
-                <h3>Пивоваренный комплекс 🔒</h3>
-                
-                <!-- ОПИСАНИЕ -->
-                <p class="business-card-desc">
-                    <strong>Площадь:</strong> 300м²<br>
-                    <strong>Базовая производительность:</strong> 12,000 л/мес<br>
-                    <strong>Максимальная производительность:</strong> 90,000 л/мес<br>
-                    <strong>Оснащение:</strong> 4-линейная система, +96% эффективности
-                </p>
-                
-                <!-- ЦЕНА -->
-                <div class="business-price">Стоимость аренды: 500 BP</div>
-                
-                <!-- БАЛАНС -->
-                <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
-            </div>
+                <div class="business-card locked" data-type="bottling">
+                    <div class="business-image bottling-image"></div>
+                    <h3>Пивоваренный комплекс 🔒</h3>
+                    <p class="business-card-desc">
+                        <strong>Площадь:</strong> 300м²<br>
+                        <strong>Базовая производительность:</strong> 12,000 л/мес<br>
+                        <strong>Максимальная производительность:</strong> 90,000 л/мес<br>
+                        <strong>Оснащение:</strong> 4-линейная система, +96% эффективности
+                    </p>
+                    <div class="business-price">Стоимость аренды: 500 BP</div>
+                    <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
+                </div>
 
-            <!-- КАРТОЧКА 5: Пивоваренный концерн -->
-            <div class="business-card locked" data-type="production">
-                <!-- ИКОНКА -->
-                <div class="business-image production-image"></div>
-                
-                <!-- ЗАГОЛОВОК -->
-                <h3>Пивоваренный концерн 🔒</h3>
-                
-                <!-- ОПИСАНИЕ -->
-                <p class="business-card-desc">
-                    <strong>Площадь:</strong> 400м²<br>
-                    <strong>Базовая производительность:</strong> 24,000 л/мес<br>
-                    <strong>Максимальная производительность:</strong> 180,000 л/мес<br>
-                    <strong>Оснащение:</strong> Автоматизированная линия, x3 мощность
-                </p>
-                
-                <!-- ЦЕНА -->
-                <div class="business-price">Стоимость аренды: 800 BP</div>
-                
-                <!-- БАЛАНС -->
-                <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
-            </div>
+                <div class="business-card locked" data-type="production">
+                    <div class="business-image production-image"></div>
+                    <h3>Пивоваренный концерн 🔒</h3>
+                    <p class="business-card-desc">
+                        <strong>Площадь:</strong> 400м²<br>
+                        <strong>Базовая производительность:</strong> 24,000 л/мес<br>
+                        <strong>Максимальная производительность:</strong> 180,000 л/мес<br>
+                        <strong>Оснащение:</strong> Автоматизированная линия, x3 мощность
+                    </p>
+                    <div class="business-price">Стоимость аренды: 800 BP</div>
+                    <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
+                </div>
 
-            <!-- КАРТОЧКА 6: Пивоваренная империя -->
-            <div class="business-card locked" data-type="advanced">
-                <!-- ИКОНКА -->
-                <div class="business-image advanced-image"></div>
-                
-                <!-- ЗАГОЛОВОК -->
-                <h3>Пивоваренная империя 🔒</h3>
-                
-                <!-- ОПИСАНИЕ -->
-                <p class="business-card-desc">
-                    <strong>Площадь:</strong> 500м²<br>
-                    <strong>Базовая производительность:</strong> 47,000 л/мес<br>
-                    <strong>Максимальная производительность:</strong> 350,000 л/мес<br>
-                    <strong>Оснащение:</strong> +96% эффективности, непрерывное производство
-                </p>
-                
-                <!-- ЦЕНА -->
-                <div class="business-price">Стоимость аренды: 1200 BP</div>
-                
-                <!-- БАЛАНС -->
-                <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
-            </div>
+                <div class="business-card locked" data-type="advanced">
+                    <div class="business-image advanced-image"></div>
+                    <h3>Пивоваренная империя 🔒</h3>
+                    <p class="business-card-desc">
+                        <strong>Площадь:</strong> 500м²<br>
+                        <strong>Базовая производительность:</strong> 47,000 л/мес<br>
+                        <strong>Максимальная производительность:</strong> 350,000 л/мес<br>
+                        <strong>Оснащение:</strong> +96% эффективности, непрерывное производство
+                    </p>
+                    <div class="business-price">Стоимость аренды: 1200 BP</div>
+                    <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
+                </div>
 
-            <!-- КАРТОЧКА 7: Международный пивоваренный альянс -->
-            <div class="business-card locked" data-type="complex">
-                <!-- ИКОНКА -->
-                <div class="business-image complex-image"></div>
-                
-                <!-- ЗАГОЛОВОК -->
-                <h3>Международный пивоваренный альянс 🔒</h3>
-                
-                <!-- ОПИСАНИЕ -->
-                <p class="business-card-desc">
-                    <strong>Площадь:</strong> 1000м²<br>
-                    <strong>Базовая производительность:</strong> 160,000 л/мес<br>
-                    <strong>Максимальная производительность:</strong> 1,000,000 л/мес<br>
-                    <strong>Оснащение:</strong> Полная автоматизация, премиум оборудование
-                </p>
-                
-                <!-- ЦЕНА -->
-                <div class="business-price">Стоимость аренды: 2000 BP</div>
-                
-                <!-- БАЛАНС -->
-                <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
+                <div class="business-card locked" data-type="complex">
+                    <div class="business-image complex-image"></div>
+                    <h3>Международный пивоваренный альянс 🔒</h3>
+                    <p class="business-card-desc">
+                        <strong>Площадь:</strong> 1000м²<br>
+                        <strong>Базовая производительность:</strong> 160,000 л/мес<br>
+                        <strong>Максимальная производительность:</strong> 1,000,000 л/мес<br>
+                        <strong>Оснащение:</strong> Полная автоматизация, премиум оборудование
+                    </p>
+                    <div class="business-price">Стоимость аренды: 2000 BP</div>
+                    <div class="business-balance">Ваш баланс: <span>100</span> BP</div>
+                </div>
             </div>
-        </div>
-        
-        <div class="development-roadmap">
-            <h3>Ваш план развития:</h3>
-            <div class="roadmap-steps">
-                <div class="roadmap-step completed">✅ Ученик пивовара</div>
-                <div class="roadmap-step current">🔜 Пивоварня ресторанного типа</div>
-                <div class="roadmap-step locked">🔒 Пивоварня с дистрибуцией</div>
-                <div class="roadmap-step locked">🔒 Пивоваренный завод</div>
-                <div class="roadmap-step locked">🔒 Пивоваренный комплекс</div>
-                <div class="roadmap-step locked">🔒 Пивоваренный концерн</div>
-                <div class="roadmap-step locked">🔒 Пивоваренная империя</div>
-                <div class="roadmap-step locked">🔒 Международный пивоваренный альянс</div>
+            
+            <div class="development-roadmap">
+                <h3>Ваш план развития:</h3>
+                <div class="roadmap-steps">
+                    <div class="roadmap-step completed">✅ Ученик пивовара</div>
+                    <div class="roadmap-step current">🔜 Пивоварня ресторанного типа</div>
+                    <div class="roadmap-step locked">🔒 Пивоварня с дистрибуцией</div>
+                    <div class="roadmap-step locked">🔒 Пивоваренный завод</div>
+                    <div class="roadmap-step locked">🔒 Пивоваренный комплекс</div>
+                    <div class="roadmap-step locked">🔒 Пивоваренный концерн</div>
+                    <div class="roadmap-step locked">🔒 Пивоваренная империя</div>
+                    <div class="roadmap-step locked">🔒 Международный пивоваренный альянс</div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-    <!-- ЭКРАН: Оснащение помещения (НОВЫЙ ШИРОКИЙ ЭКРАН) -->
+    <!-- ЭКРАН: Оснащение помещения -->
     <div id="facility-equipment-screen" class="screen hidden">
         <div class="equipment-win-content">
             <h1 id="equipment-facility-name">Оснащение: <span class="facility-name-orange">Пивоварня ресторанного типа</span></h1>
@@ -373,274 +290,273 @@
             
             <div class="wide-equipment-store">
                 <div class="equipment-header">
-                    <!-- Обновите этот раздел в equipment-header -->
-            <div class="budget-display-wide">
-    <div class="budget-info-wide">
-        <div class="budget-item-wide">
-            <span class="budget-label">Бюджет</span>
-            <span class="budget-value" id="total-budget">50 BP</span>
-        </div>
-        <div class="budget-item-wide">
-            <span class="budget-label">Потрачено</span>
-            <span class="budget-value" id="total-cost">0 BP</span>
-        </div>
-        <div class="budget-item-wide">
-            <span class="budget-label">Осталось</span>
-            <span class="budget-value" id="remaining-budget">50 BP</span>
-        </div>
-    </div>
-</div>
+                    <div class="budget-display-wide">
+                        <div class="budget-info-wide">
+                            <div class="budget-item-wide">
+                                <span class="budget-label">Бюджет</span>
+                                <span class="budget-value" id="total-budget">50 BP</span>
+                            </div>
+                            <div class="budget-item-wide">
+                                <span class="budget-label">Потрачено</span>
+                                <span class="budget-value" id="total-cost">0 BP</span>
+                            </div>
+                            <div class="budget-item-wide">
+                                <span class="budget-label">Осталось</span>
+                                <span class="budget-value" id="remaining-budget">50 BP</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="equipment-categories-wide">
                     <!-- ВАРОЧНЫЕ АППАРАТЫ -->
-<div class="equipment-category-wide">
-    <h3><img src="assets/images/congestion-device.png" class="category-icon"> Варочные аппараты (ОБЯЗАТЕЛЬНО)</h3>
-    <div class="equipment-grid" id="brewing-equipment">
-        <div class="equipment-option-wide" data-type="mash" data-id="mash-250" data-price="8" data-volume="250">
-            <input type="radio" name="mashTun" id="mash-250" value="mash-250">
-            <label for="mash-250">
-                <strong>Заторный аппарат 250л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 250л</span>
-                    <span>2 рубашки нагрева</span>
-                    <span class="price-wide">8 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="mash" data-id="mash-500" data-price="15" data-volume="500">
-            <input type="radio" name="mashTun" id="mash-500" value="mash-500">
-            <label for="mash-500">
-                <strong>Заторно-сусловарочный 500л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 500л</span>
-                    <span>2 рубашки нагрева</span>
-                    <span class="price-wide">15 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="mash" data-id="mash-1000" data-price="25" data-volume="1000">
-            <input type="radio" name="mashTun" id="mash-1000" value="mash-1000">
-            <label for="mash-1000">
-                <strong>Заторно-сусловарочный 1000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 1000л</span>
-                    <span>2 рубашки нагрева</span>
-                    <span class="price-wide">25 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="mash" data-id="mash-3000" data-price="40" data-volume="3000">
-            <input type="radio" name="mashTun" id="mash-3000" value="mash-3000">
-            <label for="mash-3000">
-                <strong>Заторно-сусловарочный 3000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 3000л</span>
-                    <span>2 рубашки нагрева</span>
-                    <span class="price-wide">40 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="mash" data-id="mash-5000" data-price="60" data-volume="5000">
-            <input type="radio" name="mashTun" id="mash-5000" value="mash-5000">
-            <label for="mash-5000">
-                <strong>Заторно-сусловарочный 5000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 5000л</span>
-                    <span>2 рубашки нагрева</span>
-                    <span class="price-wide">60 BP</span>
-                </div>
-            </label>
-        </div>
-    </div>
-</div>
+                    <div class="equipment-category-wide">
+                        <h3><img src="assets/images/congestion-device.png" class="category-icon"> Варочные аппараты (ОБЯЗАТЕЛЬНО)</h3>
+                        <div class="equipment-grid" id="brewing-equipment">
+                            <div class="equipment-option-wide" data-type="mash" data-id="mash-250" data-price="8" data-volume="250">
+                                <input type="radio" name="mashTun" id="mash-250" value="mash-250" autocomplete="off">
+                                <label for="mash-250">
+                                    <strong>Заторный аппарат 250л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 250л</span>
+                                        <span>2 рубашки нагрева</span>
+                                        <span class="price-wide">8 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="mash" data-id="mash-500" data-price="15" data-volume="500">
+                                <input type="radio" name="mashTun" id="mash-500" value="mash-500" autocomplete="off">
+                                <label for="mash-500">
+                                    <strong>Заторно-сусловарочный 500л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 500л</span>
+                                        <span>2 рубашки нагрева</span>
+                                        <span class="price-wide">15 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="mash" data-id="mash-1000" data-price="25" data-volume="1000">
+                                <input type="radio" name="mashTun" id="mash-1000" value="mash-1000" autocomplete="off">
+                                <label for="mash-1000">
+                                    <strong>Заторно-сусловарочный 1000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 1000л</span>
+                                        <span>2 рубашки нагрева</span>
+                                        <span class="price-wide">25 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="mash" data-id="mash-3000" data-price="40" data-volume="3000">
+                                <input type="radio" name="mashTun" id="mash-3000" value="mash-3000" autocomplete="off">
+                                <label for="mash-3000">
+                                    <strong>Заторно-сусловарочный 3000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 3000л</span>
+                                        <span>2 рубашки нагрева</span>
+                                        <span class="price-wide">40 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="mash" data-id="mash-5000" data-price="60" data-volume="5000">
+                                <input type="radio" name="mashTun" id="mash-5000" value="mash-5000" autocomplete="off">
+                                <label for="mash-5000">
+                                    <strong>Заторно-сусловарочный 5000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 5000л</span>
+                                        <span>2 рубашки нагрева</span>
+                                        <span class="price-wide">60 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
-<!-- ФИЛЬТРАЦИОННЫЕ АППАРАТЫ -->
-<div class="equipment-category-wide">
-    <h3><img src="assets/images/filtration-unit.png" class="category-icon"> Фильтрационные аппараты</h3>
-    <div class="equipment-grid" id="filtration-equipment">
-        <div class="equipment-option-wide" data-type="filter" data-id="filter-250" data-price="6" data-volume="250">
-            <input type="checkbox" id="filter-250" value="filter-250">
-            <label for="filter-250">
-                <strong>Фильтрационный аппарат 250л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 250л</span>
-                    <span>Щелевое сито</span>
-                    <span class="price-wide">6 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="filter" data-id="filter-500" data-price="12" data-volume="500">
-            <input type="checkbox" id="filter-500" value="filter-500">
-            <label for="filter-500">
-                <strong>Фильтрационный аппарат 500л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 500л</span>
-                    <span>Разборное сито</span>
-                    <span class="price-wide">12 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="filter" data-id="filter-1000" data-price="18" data-volume="1000">
-            <input type="checkbox" id="filter-1000" value="filter-1000">
-            <label for="filter-1000">
-                <strong>Фильтрационный аппарат 1000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 1000л</span>
-                    <span>Разборное сито</span>
-                    <span class="price-wide">18 BP</span>
-                </div>
-            </label>
-        </div>
-    </div>
-</div>
+                    <!-- ФИЛЬТРАЦИОННЫЕ АППАРАТЫ -->
+                    <div class="equipment-category-wide">
+                        <h3><img src="assets/images/filtration-unit.png" class="category-icon"> Фильтрационные аппараты</h3>
+                        <div class="equipment-grid" id="filtration-equipment">
+                            <div class="equipment-option-wide" data-type="filter" data-id="filter-250" data-price="6" data-volume="250">
+                                <input type="checkbox" id="filter-250" value="filter-250" autocomplete="off">
+                                <label for="filter-250">
+                                    <strong>Фильтрационный аппарат 250л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 250л</span>
+                                        <span>Щелевое сито</span>
+                                        <span class="price-wide">6 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="filter" data-id="filter-500" data-price="12" data-volume="500">
+                                <input type="checkbox" id="filter-500" value="filter-500" autocomplete="off">
+                                <label for="filter-500">
+                                    <strong>Фильтрационный аппарат 500л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 500л</span>
+                                        <span>Разборное сито</span>
+                                        <span class="price-wide">12 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="filter" data-id="filter-1000" data-price="18" data-volume="1000">
+                                <input type="checkbox" id="filter-1000" value="filter-1000" autocomplete="off">
+                                <label for="filter-1000">
+                                    <strong>Фильтрационный аппарат 1000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 1000л</span>
+                                        <span>Разборное сито</span>
+                                        <span class="price-wide">18 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
-<!-- БАКИ ГОРЯЧЕЙ ВОДЫ -->
-<div class="equipment-category-wide">
-    <h3><img src="assets/images/hot-water-tank.png" class="category-icon"> Баки горячей воды</h3>
-    <div class="equipment-grid" id="hot-water-tanks">
-        <div class="equipment-option-wide" data-type="water" data-id="water-500" data-price="5" data-volume="500">
-            <input type="checkbox" id="water-500" value="water-500">
-            <label for="water-500">
-                <strong>Бак горячей воды 500л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 500л</span>
-                    <span>1 рубашка нагрева</span>
-                    <span class="price-wide">5 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="water" data-id="water-1000" data-price="8" data-volume="1000">
-            <input type="checkbox" id="water-1000" value="water-1000">
-            <label for="water-1000">
-                <strong>Бак горячей воды 1000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 1000л</span>
-                    <span>1 рубашка нагрева</span>
-                    <span class="price-wide">8 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="water" data-id="water-2000" data-price="12" data-volume="2000">
-            <input type="checkbox" id="water-2000" value="water-2000">
-            <label for="water-2000">
-                <strong>Бак горячей воды 2000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 2000л</span>
-                    <span>1 рубашка нагрева</span>
-                    <span class="price-wide">12 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="water" data-id="water-6000" data-price="20" data-volume="6000">
-            <input type="checkbox" id="water-6000" value="water-6000">
-            <label for="water-6000">
-                <strong>Бак горячей воды 6000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 6000л</span>
-                    <span>1 рубашка нагрева</span>
-                    <span class="price-wide">20 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="water" data-id="water-10000" data-price="30" data-volume="10000">
-            <input type="checkbox" id="water-10000" value="water-10000">
-            <label for="water-10000">
-                <strong>Бак горячей воды 10000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 10000л</span>
-                    <span>2 рубашки нагрева</span>
-                    <span class="price-wide">30 BP</span>
-                </div>
-            </label>
-        </div>
-    </div>
-</div>
+                    <!-- БАКИ ГОРЯЧЕЙ ВОДЫ -->
+                    <div class="equipment-category-wide">
+                        <h3><img src="assets/images/hot-water-tank.png" class="category-icon"> Баки горячей воды</h3>
+                        <div class="equipment-grid" id="hot-water-tanks">
+                            <div class="equipment-option-wide" data-type="water" data-id="water-500" data-price="5" data-volume="500">
+                                <input type="checkbox" id="water-500" value="water-500" autocomplete="off">
+                                <label for="water-500">
+                                    <strong>Бак горячей воды 500л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 500л</span>
+                                        <span>1 рубашка нагрева</span>
+                                        <span class="price-wide">5 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="water" data-id="water-1000" data-price="8" data-volume="1000">
+                                <input type="checkbox" id="water-1000" value="water-1000" autocomplete="off">
+                                <label for="water-1000">
+                                    <strong>Бак горячей воды 1000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 1000л</span>
+                                        <span>1 рубашка нагрева</span>
+                                        <span class="price-wide">8 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="water" data-id="water-2000" data-price="12" data-volume="2000">
+                                <input type="checkbox" id="water-2000" value="water-2000" autocomplete="off">
+                                <label for="water-2000">
+                                    <strong>Бак горячей воды 2000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 2000л</span>
+                                        <span>1 рубашка нагрева</span>
+                                        <span class="price-wide">12 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="water" data-id="water-6000" data-price="20" data-volume="6000">
+                                <input type="checkbox" id="water-6000" value="water-6000" autocomplete="off">
+                                <label for="water-6000">
+                                    <strong>Бак горячей воды 6000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 6000л</span>
+                                        <span>1 рубашка нагрева</span>
+                                        <span class="price-wide">20 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="water" data-id="water-10000" data-price="30" data-volume="10000">
+                                <input type="checkbox" id="water-10000" value="water-10000" autocomplete="off">
+                                <label for="water-10000">
+                                    <strong>Бак горячей воды 10000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 10000л</span>
+                                        <span>2 рубашки нагрева</span>
+                                        <span class="price-wide">30 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
-<!-- ЦКТ (ФЕРМЕНТАЦИОННЫЕ ТАНКИ) -->
-<div class="equipment-category-wide">
-    <h3><img src="assets/images/cylinder-conical-tank.png" class="category-icon"> ЦКТ (Ферментационные танки)</h3>
-    <div class="equipment-grid" id="fermentation-tanks">
-        <div class="equipment-option-wide" data-type="cct" data-id="cct-500" data-price="10" data-volume="500">
-            <input type="checkbox" id="cct-500" value="cct-500">
-            <label for="cct-500">
-                <strong>ЦКТ 500л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 500л</span>
-                    <span>2 рубашки охлаждения</span>
-                    <span class="price-wide">10 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="cct" data-id="cct-1000" data-price="15" data-volume="1000">
-            <input type="checkbox" id="cct-1000" value="cct-1000">
-            <label for="cct-1000">
-                <strong>ЦКТ 1000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 1000л</span>
-                    <span>2 рубашки охлаждения</span>
-                    <span class="price-wide">15 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="cct" data-id="cct-2000" data-price="22" data-volume="2000">
-            <input type="checkbox" id="cct-2000" value="cct-2000">
-            <label for="cct-2000">
-                <strong>ЦКТ 2000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 2000л</span>
-                    <span>2 рубашки охлаждения</span>
-                    <span class="price-wide">22 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="cct" data-id="cct-3000" data-price="28" data-volume="3000">
-            <input type="checkbox" id="cct-3000" value="cct-3000">
-            <label for="cct-3000">
-                <strong>ЦКТ 3000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 3000л</span>
-                    <span>2 рубашки охлаждения</span>
-                    <span class="price-wide">28 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="cct" data-id="cct-6000" data-price="35" data-volume="6000">
-            <input type="checkbox" id="cct-6000" value="cct-6000">
-            <label for="cct-6000">
-                <strong>ЦКТ 6000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 6000л</span>
-                    <span>2 рубашки охлаждения</span>
-                    <span class="price-wide">35 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="cct" data-id="cct-12000" data-price="45" data-volume="12000">
-            <input type="checkbox" id="cct-12000" value="cct-12000">
-            <label for="cct-12000">
-                <strong>ЦКТ 12000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 12000л</span>
-                    <span>3 рубашки охлаждения</span>
-                    <span class="price-wide">45 BP</span>
-                </div>
-            </label>
-        </div>
-        <div class="equipment-option-wide" data-type="cct" data-id="cct-40000" data-price="70" data-volume="40000">
-            <input type="checkbox" id="cct-40000" value="cct-40000">
-            <label for="cct-40000">
-                <strong>ЦКТ 40000л</strong>
-                <div class="equipment-details-wide">
-                    <span>Объем: 40000л</span>
-                    <span>4 рубашки охлаждения</span>
-                    <span class="price-wide">70 BP</span>
-                </div>
-            </label>
-        </div>
-    </div>
-    <p class="hint-text">💡 Можно выбрать несколько ЦКТ. Общий объем должен соответствовать производственным мощностям.</p>
-</div>
+                    <!-- ЦКТ (ФЕРМЕНТАЦИОННЫЕ ТАНКИ) -->
+                    <div class="equipment-category-wide">
+                        <h3><img src="assets/images/cylinder-conical-tank.png" class="category-icon"> ЦКТ (Ферментационные танки)</h3>
+                        <div class="equipment-grid" id="fermentation-tanks">
+                            <div class="equipment-option-wide" data-type="cct" data-id="cct-500" data-price="10" data-volume="500">
+                                <input type="checkbox" id="cct-500" value="cct-500" autocomplete="off">
+                                <label for="cct-500">
+                                    <strong>ЦКТ 500л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 500л</span>
+                                        <span>2 рубашки охлаждения</span>
+                                        <span class="price-wide">10 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="cct" data-id="cct-1000" data-price="15" data-volume="1000">
+                                <input type="checkbox" id="cct-1000" value="cct-1000" autocomplete="off">
+                                <label for="cct-1000">
+                                    <strong>ЦКТ 1000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 1000л</span>
+                                        <span>2 рубашки охлаждения</span>
+                                        <span class="price-wide">15 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="cct" data-id="cct-2000" data-price="22" data-volume="2000">
+                                <input type="checkbox" id="cct-2000" value="cct-2000" autocomplete="off">
+                                <label for="cct-2000">
+                                    <strong>ЦКТ 2000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 2000л</span>
+                                        <span>2 рубашки охлаждения</span>
+                                        <span class="price-wide">22 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="cct" data-id="cct-3000" data-price="28" data-volume="3000">
+                                <input type="checkbox" id="cct-3000" value="cct-3000" autocomplete="off">
+                                <label for="cct-3000">
+                                    <strong>ЦКТ 3000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 3000л</span>
+                                        <span>2 рубашки охлаждения</span>
+                                        <span class="price-wide">28 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="cct" data-id="cct-6000" data-price="35" data-volume="6000">
+                                <input type="checkbox" id="cct-6000" value="cct-6000" autocomplete="off">
+                                <label for="cct-6000">
+                                    <strong>ЦКТ 6000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 6000л</span>
+                                        <span>2 рубашки охлаждения</span>
+                                        <span class="price-wide">35 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="cct" data-id="cct-12000" data-price="45" data-volume="12000">
+                                <input type="checkbox" id="cct-12000" value="cct-12000" autocomplete="off">
+                                <label for="cct-12000">
+                                    <strong>ЦКТ 12000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 12000л</span>
+                                        <span>3 рубашки охлаждения</span>
+                                        <span class="price-wide">45 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="equipment-option-wide" data-type="cct" data-id="cct-40000" data-price="70" data-volume="40000">
+                                <input type="checkbox" id="cct-40000" value="cct-40000" autocomplete="off">
+                                <label for="cct-40000">
+                                    <strong>ЦКТ 40000л</strong>
+                                    <div class="equipment-details-wide">
+                                        <span>Объем: 40000л</span>
+                                        <span>4 рубашки охлаждения</span>
+                                        <span class="price-wide">70 BP</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <p class="hint-text">💡 Можно выбрать несколько ЦКТ. Общий объем должен соответствовать производственным мощностям.</p>
+                    </div>
 
                     <!-- ВСПОМОГАТЕЛЬНОЕ ОБОРУДОВАНИЕ -->
                     <div class="equipment-category-wide">
@@ -648,7 +564,7 @@
                         <div class="equipment-grid" id="auxiliary-equipment">
                             <!-- Парогенераторы -->
                             <div class="equipment-option-wide" data-type="steam" data-id="steam-20" data-price="8" data-capacity="20">
-                                <input type="checkbox" id="steam-20" value="steam-20">
+                                <input type="checkbox" id="steam-20" value="steam-20" autocomplete="off">
                                 <label for="steam-20">
                                     <strong>Парогенератор 20кг/ч</strong>
                                     <div class="equipment-details-wide">
@@ -658,7 +574,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="steam" data-id="steam-100" data-price="15" data-capacity="100">
-                                <input type="checkbox" id="steam-100" value="steam-100">
+                                <input type="checkbox" id="steam-100" value="steam-100" autocomplete="off">
                                 <label for="steam-100">
                                     <strong>Парогенератор 100кг/ч</strong>
                                     <div class="equipment-details-wide">
@@ -668,7 +584,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="steam" data-id="steam-150" data-price="20" data-capacity="150">
-                                <input type="checkbox" id="steam-150" value="steam-150">
+                                <input type="checkbox" id="steam-150" value="steam-150" autocomplete="off">
                                 <label for="steam-150">
                                     <strong>Парогенератор 150кг/ч</strong>
                                     <div class="equipment-details-wide">
@@ -678,7 +594,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="steam" data-id="steam-300" data-price="30" data-capacity="300">
-                                <input type="checkbox" id="steam-300" value="steam-300">
+                                <input type="checkbox" id="steam-300" value="steam-300" autocomplete="off">
                                 <label for="steam-300">
                                     <strong>Парогенератор 300кг/ч</strong>
                                     <div class="equipment-details-wide">
@@ -688,7 +604,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="steam" data-id="steam-400" data-price="40" data-capacity="400">
-                                <input type="checkbox" id="steam-400" value="steam-400">
+                                <input type="checkbox" id="steam-400" value="steam-400" autocomplete="off">
                                 <label for="steam-400">
                                     <strong>Парогенератор 400кг/ч</strong>
                                     <div class="equipment-details-wide">
@@ -698,7 +614,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="steam" data-id="steam-700" data-price="60" data-capacity="700">
-                                <input type="checkbox" id="steam-700" value="steam-700">
+                                <input type="checkbox" id="steam-700" value="steam-700" autocomplete="off">
                                 <label for="steam-700">
                                     <strong>Парогенератор 700кг/ч</strong>
                                     <div class="equipment-details-wide">
@@ -710,7 +626,7 @@
 
                             <!-- Холодильные агрегаты -->
                             <div class="equipment-option-wide" data-type="chiller" data-id="chiller-8" data-price="6" data-capacity="8">
-                                <input type="checkbox" id="chiller-8" value="chiller-8">
+                                <input type="checkbox" id="chiller-8" value="chiller-8" autocomplete="off">
                                 <label for="chiller-8">
                                     <strong>Холодильный агрегат 8кВт</strong>
                                     <div class="equipment-details-wide">
@@ -720,7 +636,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="chiller" data-id="chiller-12" data-price="10" data-capacity="12">
-                                <input type="checkbox" id="chiller-12" value="chiller-12">
+                                <input type="checkbox" id="chiller-12" value="chiller-12" autocomplete="off">
                                 <label for="chiller-12">
                                     <strong>Холодильный агрегат 12кВт</strong>
                                     <div class="equipment-details-wide">
@@ -730,7 +646,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="chiller" data-id="chiller-20" data-price="15" data-capacity="20">
-                                <input type="checkbox" id="chiller-20" value="chiller-20">
+                                <input type="checkbox" id="chiller-20" value="chiller-20" autocomplete="off">
                                 <label for="chiller-20">
                                     <strong>Холодильный агрегат 20кВт</strong>
                                     <div class="equipment-details-wide">
@@ -740,7 +656,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="chiller" data-id="chiller-50" data-price="25" data-capacity="50">
-                                <input type="checkbox" id="chiller-50" value="chiller-50">
+                                <input type="checkbox" id="chiller-50" value="chiller-50" autocomplete="off">
                                 <label for="chiller-50">
                                     <strong>Холодильный агрегат 50кВт</strong>
                                     <div class="equipment-details-wide">
@@ -750,7 +666,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="chiller" data-id="chiller-150" data-price="40" data-capacity="150">
-                                <input type="checkbox" id="chiller-150" value="chiller-150">
+                                <input type="checkbox" id="chiller-150" value="chiller-150" autocomplete="off">
                                 <label for="chiller-150">
                                     <strong>Холодильный агрегат 150кВт</strong>
                                     <div class="equipment-details-wide">
@@ -762,18 +678,18 @@
 
                             <!-- Теплообменники -->
                             <div class="equipment-option-wide" data-type="heat" data-id="heat-300" data-price="5" data-capacity="300">
-                                <input type="checkbox" id="heat-300" value="heat-300">
+                                <input type="checkbox" id="heat-300" value="heat-300" autocomplete="off">
                                 <label for="heat-300">
                                     <strong>Теплообменник 300л/ч</strong>
                                     <div class="equipment-details-wide">
                                         <span class="price-wide" style="color: #dc2626; text-decoration: line-through;">5 BP</span>
-            <span class="price-wide" style="color: #059669; font-weight: bold;">1 BP</span>
-            <span style="color: #dc2626; font-size: 11px;">🔥 АКЦИЯ!</span>
+                                        <span class="price-wide" style="color: #059669; font-weight: bold;">1 BP</span>
+                                        <span style="color: #dc2626; font-size: 11px;">🔥 АКЦИЯ!</span>
                                     </div>
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="heat" data-id="heat-600" data-price="8" data-capacity="600">
-                                <input type="checkbox" id="heat-600" value="heat-600">
+                                <input type="checkbox" id="heat-600" value="heat-600" autocomplete="off">
                                 <label for="heat-600">
                                     <strong>Теплообменник 600л/ч</strong>
                                     <div class="equipment-details-wide">
@@ -783,7 +699,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="heat" data-id="heat-1000" data-price="12" data-capacity="1000">
-                                <input type="checkbox" id="heat-1000" value="heat-1000">
+                                <input type="checkbox" id="heat-1000" value="heat-1000" autocomplete="off">
                                 <label for="heat-1000">
                                     <strong>Теплообменник 1000л/ч</strong>
                                     <div class="equipment-details-wide">
@@ -793,7 +709,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="heat" data-id="heat-3000" data-price="18" data-capacity="3000">
-                                <input type="checkbox" id="heat-3000" value="heat-3000">
+                                <input type="checkbox" id="heat-3000" value="heat-3000" autocomplete="off">
                                 <label for="heat-3000">
                                     <strong>Теплообменник 3000л/ч</strong>
                                     <div class="equipment-details-wide">
@@ -803,7 +719,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="heat" data-id="heat-5000" data-price="25" data-capacity="5000">
-                                <input type="checkbox" id="heat-5000" value="heat-5000">
+                                <input type="checkbox" id="heat-5000" value="heat-5000" autocomplete="off">
                                 <label for="heat-5000">
                                     <strong>Теплообменник 5000л/ч</strong>
                                     <div class="equipment-details-wide">
@@ -815,7 +731,7 @@
 
                             <!-- Дробилки солода -->
                             <div class="equipment-option-wide required-item" data-type="crusher" data-id="crusher-100" data-price="4" data-capacity="100">
-                                <input type="checkbox" id="crusher-100" value="crusher-100" checked>
+                                <input type="checkbox" id="crusher-100" value="crusher-100" checked autocomplete="off">
                                 <label for="crusher-100">
                                     <strong>Дробилка солода 100кг/ч</strong>
                                     <div class="equipment-details-wide">
@@ -825,7 +741,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="crusher" data-id="crusher-200" data-price="6" data-capacity="200">
-                                <input type="checkbox" id="crusher-200" value="crusher-200">
+                                <input type="checkbox" id="crusher-200" value="crusher-200" autocomplete="off">
                                 <label for="crusher-200">
                                     <strong>Дробилка солода 200кг/ч</strong>
                                     <div class="equipment-details-wide">
@@ -835,7 +751,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="crusher" data-id="crusher-300" data-price="8" data-capacity="300">
-                                <input type="checkbox" id="crusher-300" value="crusher-300">
+                                <input type="checkbox" id="crusher-300" value="crusher-300" autocomplete="off">
                                 <label for="crusher-300">
                                     <strong>Дробилка солода 300кг/ч</strong>
                                     <div class="equipment-details-wide">
@@ -845,7 +761,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="crusher" data-id="crusher-500" data-price="12" data-capacity="500">
-                                <input type="checkbox" id="crusher-500" value="crusher-500">
+                                <input type="checkbox" id="crusher-500" value="crusher-500" autocomplete="off">
                                 <label for="crusher-500">
                                     <strong>Дробилка солода 500кг/ч</strong>
                                     <div class="equipment-details-wide">
@@ -855,7 +771,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="crusher" data-id="crusher-1000" data-price="20" data-capacity="1000">
-                                <input type="checkbox" id="crusher-1000" value="crusher-1000">
+                                <input type="checkbox" id="crusher-1000" value="crusher-1000" autocomplete="off">
                                 <label for="crusher-1000">
                                     <strong>Дробилка солода 1000кг/ч</strong>
                                     <div class="equipment-details-wide">
@@ -867,7 +783,7 @@
 
                             <!-- Насосы -->
                             <div class="equipment-option-wide required-item" data-type="pump" data-id="pump-1" data-price="2" data-count="1">
-                                <input type="checkbox" id="pump-1" value="pump-1" checked>
+                                <input type="checkbox" id="pump-1" value="pump-1" checked autocomplete="off">
                                 <label for="pump-1">
                                     <strong>Насос (1 шт)</strong>
                                     <div class="equipment-details-wide">
@@ -877,7 +793,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="pump" data-id="pump-4" data-price="6" data-count="4">
-                                <input type="checkbox" id="pump-4" value="pump-4">
+                                <input type="checkbox" id="pump-4" value="pump-4" autocomplete="off">
                                 <label for="pump-4">
                                     <strong>Набор насосов (4 шт)</strong>
                                     <div class="equipment-details-wide">
@@ -887,7 +803,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="pump" data-id="pump-5" data-price="8" data-count="5">
-                                <input type="checkbox" id="pump-5" value="pump-5">
+                                <input type="checkbox" id="pump-5" value="pump-5" autocomplete="off">
                                 <label for="pump-5">
                                     <strong>Набор насосов (5 шт)</strong>
                                     <div class="equipment-details-wide">
@@ -897,7 +813,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="pump" data-id="pump-6" data-price="10" data-count="6">
-                                <input type="checkbox" id="pump-6" value="pump-6">
+                                <input type="checkbox" id="pump-6" value="pump-6" autocomplete="off">
                                 <label for="pump-6">
                                     <strong>Набор насосов (6 шт)</strong>
                                     <div class="equipment-details-wide">
@@ -907,7 +823,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="pump" data-id="pump-7" data-price="12" data-count="7">
-                                <input type="checkbox" id="pump-7" value="pump-7">
+                                <input type="checkbox" id="pump-7" value="pump-7" autocomplete="off">
                                 <label for="pump-7">
                                     <strong>Набор насосов (7 шт)</strong>
                                     <div class="equipment-details-wide">
@@ -919,7 +835,7 @@
 
                             <!-- Автоматика -->
                             <div class="equipment-option-wide" data-type="automation" data-id="automation-basic" data-price="10">
-                                <input type="checkbox" id="automation-basic" value="automation-basic">
+                                <input type="checkbox" id="automation-basic" value="automation-basic" autocomplete="off">
                                 <label for="automation-basic">
                                     <strong>Автоматика управления</strong>
                                     <div class="equipment-details-wide">
@@ -931,7 +847,7 @@
 
                             <!-- Дополнительное оборудование -->
                             <div class="equipment-option-wide" data-type="additional" data-id="hydrocyclone" data-price="8">
-                                <input type="checkbox" id="hydrocyclone" value="hydrocyclone">
+                                <input type="checkbox" id="hydrocyclone" value="hydrocyclone" autocomplete="off">
                                 <label for="hydrocyclone">
                                     <strong>Гидроциклонный аппарат</strong>
                                     <div class="equipment-details-wide">
@@ -941,7 +857,7 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide" data-type="additional" data-id="condensate" data-price="3">
-                                <input type="checkbox" id="condensate" value="condensate">
+                                <input type="checkbox" id="condensate" value="condensate" autocomplete="off">
                                 <label for="condensate">
                                     <strong>Ёмкость сбора пароконденсата</strong>
                                     <div class="equipment-details-wide">
@@ -951,15 +867,15 @@
                                 </label>
                             </div>
                             <div class="equipment-option-wide required-item" data-type="additional" data-id="chemical" data-price="0">
-    <input type="checkbox" id="chemical" value="chemical" checked>
-    <label for="chemical">
-        <strong>Химраствор для мойки</strong>
-        <div class="equipment-details-wide">
-            <span class="price-wide">0 BP</span>
-            <span class="warning">⚠️ Без этого нельзя!</span>
-        </div>
-    </label>
-</div>
+                                <input type="checkbox" id="chemical" value="chemical" checked autocomplete="off">
+                                <label for="chemical">
+                                    <strong>Химраствор для мойки</strong>
+                                    <div class="equipment-details-wide">
+                                        <span class="price-wide">0 BP</span>
+                                        <span class="warning">⚠️ Без этого нельзя!</span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -990,7 +906,7 @@
         </div>
     </div>
 
-       <!-- Модальное окно для подсказок -->
+    <!-- Модальное окно для подсказок -->
     <div id="hint-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -1004,11 +920,109 @@
             <span class="close-modal">&times;</span>
             <h3>Вход в систему</h3>
             <div class="auth-form">
-                <input type="email" id="modal-login-email" placeholder="Ваш email" class="auth-input">
-                <input type="password" id="modal-login-password" placeholder="Пароль" class="auth-input">
+                <input type="email" id="modal-login-email" placeholder="Ваш email" class="auth-input" autocomplete="email">
+                <input type="password" id="modal-login-password" placeholder="Пароль" class="auth-input" autocomplete="current-password">
                 <button id="modal-login-btn" class="auth-btn login-btn">Войти</button>
                 <button id="modal-register-btn" class="auth-btn register-btn">Создать аккаунт</button>
                 <p class="auth-message" id="modal-auth-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН: Мой завод -->
+    <div id="my-factory-screen" class="screen hidden">
+        <div class="win-content">
+            <h1>🏭 Мой завод</h1>
+            <p class="business-description">
+                Здесь вы можете управлять своим пивоваренным оборудованием.
+            </p>
+            
+            <div class="my-factory-content">
+                <div class="factory-stats">
+                    <h3>📊 Статистика завода</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Тип помещения:</span>
+                            <span class="stat-value" id="factory-type">Пивоварня ресторанного типа</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Оборудование:</span>
+                            <span class="stat-value" id="equipment-count">8 шт</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Общая стоимость:</span>
+                            <span class="stat-value" id="total-equipment-cost">36 BP</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="equipment-list">
+                    <h3>⚙️ Мое оборудование</h3>
+                    <div id="my-equipment-container" class="my-equipment-container">
+                        <div class="equipment-item">
+                            <span>✅ Заторный аппарат 250л</span>
+                            <span class="equipment-price">8 BP</span>
+                        </div>
+                        <div class="equipment-item">
+                            <span>✅ Дробилка солода 100кг/ч</span>
+                            <span class="equipment-price">4 BP</span>
+                        </div>
+                        <div class="equipment-item">
+                            <span>✅ Насос (1 шт)</span>
+                            <span class="equipment-price">2 BP</span>
+                        </div>
+                        <div class="equipment-item">
+                            <span>✅ Химраствор для мойки</span>
+                            <span class="equipment-price">0 BP</span>
+                        </div>
+                        <div class="equipment-item">
+                            <span>✅ Теплообменник 300л/ч</span>
+                            <span class="equipment-price">1 BP</span>
+                        </div>
+                        <div class="equipment-item">
+                            <span>✅ Фильтрационный аппарат 250л</span>
+                            <span class="equipment-price">6 BP</span>
+                        </div>
+                        <div class="equipment-item">
+                            <span>✅ Бак горячей воды 500л</span>
+                            <span class="equipment-price">5 BP</span>
+                        </div>
+                        <div class="equipment-item">
+                            <span>✅ ЦКТ 500л</span>
+                            <span class="equipment-price">10 BP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Блок информации о мощностях -->
+<div class="factory-capacity">
+    <h3>📈 Производственные мощности</h3>
+    <div class="capacity-info">
+        <div class="capacity-item">
+            <div class="capacity-label">Тип пивоварни</div>
+            <div class="capacity-value">Пивоварня ресторанного типа</div>
+        </div>
+        <div class="capacity-item">
+            <div class="capacity-label">Объем за варку</div>
+            <div class="capacity-value">250л</div>
+        </div>
+        <div class="capacity-item">
+            <div class="capacity-label">Номинальная производительность</div>
+            <div class="capacity-value">1,500 л/месяц</div>
+        </div>
+        <div class="capacity-item">
+            <div class="capacity-label">Предел производительности</div>
+            <div class="capacity-value">10,000 л/месяц</div>
+        </div>
+    </div>
+</div>
+            <div class="factory-controls">
+                <button id="back-from-factory" class="equipment-action-btn secondary">
+                    ← Назад к игре
+                </button>
+                <button id="manage-production" class="equipment-action-btn primary" disabled>
+                    🚀 Управление производством (скоро)
+                </button>
             </div>
         </div>
     </div>
