@@ -4439,3 +4439,114 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
         display: none !important;
     }
 }
+/* === ИСПРАВЛЕНИЯ ДЛЯ ЭКРАНА ОБОРУДОВАНИЯ НА МОБИЛЬНЫХ === */
+@media (max-width: 768px) {
+    /* Уменьшаем заголовок "Оснащение:" в 2 раза */
+    #equipment-facility-name {
+        font-size: 1.1rem !important;
+        margin-bottom: 8px !important;
+        line-height: 1.2 !important;
+    }
+    
+    .facility-name-orange {
+        font-size: 1rem !important;
+    }
+    
+    /* Бюджет в оборудовании увеличиваем на 30% */
+    .budget-display-wide {
+        padding: 15px 10px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .budget-info-wide {
+        gap: 15px !important;
+    }
+    
+    .budget-item-wide {
+        transform: scale(1.3);
+        margin: 8px 0 !important;
+    }
+    
+    .budget-label {
+        font-size: 9px !important;
+    }
+    
+    .budget-value {
+        font-size: 9px !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Делаем сетку оборудования в 2 колонки */
+    .equipment-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+    }
+    
+    /* Элементы оборудования компактнее */
+    .equipment-option-wide {
+        padding: 10px 6px !important;
+        min-height: 85px !important;
+        margin: 0 !important;
+    }
+    
+    .equipment-option-wide label {
+        font-size: 12px !important;
+        line-height: 1.2 !important;
+    }
+    
+    .equipment-details-wide {
+        margin-top: 6px !important;
+        gap: 3px !important;
+    }
+    
+    .equipment-details-wide span {
+        font-size: 10px !important;
+        line-height: 1.1 !important;
+    }
+    
+    .price-wide {
+        font-size: 11px !important;
+        margin-top: 3px !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Увеличиваем общую ширину блоков */
+    .wide-equipment-store {
+        padding: 12px 8px !important;
+        margin: 10px 0 !important;
+        width: calc(100% - 10px) !important;
+        margin-left: 5px !important;
+        margin-right: 5px !important;
+    }
+    
+    .equipment-category-wide {
+        padding: 12px 8px !important;
+        margin: 8px 0 !important;
+    }
+    
+    .equipment-category-wide h3 {
+        font-size: 14px !important;
+        height: auto !important;
+        min-height: 45px !important;
+        padding: 8px 10px !important;
+        margin-bottom: 10px !important;
+        line-height: 1.2 !important;
+    }
+    
+    .equipment-category-wide h3 .category-icon {
+        width: 35px !important;
+        height: 35px !important;
+        margin-right: 6px !important;
+    }
+}
+
+/* Для очень маленьких экранов - одна колонка */
+@media (max-width: 380px) {
+    .equipment-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .budget-item-wide {
+        transform: scale(1.2);
+    }
+}
