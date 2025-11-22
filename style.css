@@ -1917,7 +1917,6 @@ body:has(#my-factory-screen:not(.hidden)) #game-header {
     }
     
     #global-back-btn::before {
-        content: "Уровни";
         font-size: 11px !important;
         font-weight: 600;
         color: #1f2937;
@@ -4094,4 +4093,349 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
     min-height: auto !important;
     height: auto !important;
     padding: 20px 25px !important;
+}
+/* === ФИКС ГЛАВНОГО ХЕДЕРА ДЛЯ МОБИЛЬНЫХ === */
+
+@media (max-width: 768px) {
+    .game-header {
+        height: 50px !important;
+        padding: 5px 8px !important;
+    }
+    
+    .header-container {
+        padding: 0 5px !important;
+    }
+    
+    .header-content {
+        height: 40px !important;
+        gap: 5px !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    /* ЛЕВАЯ ЧАСТЬ - КНОПКА УРОВНИ */
+    .header-left {
+        min-width: 70px !important;
+        max-width: 75px !important;
+        flex-shrink: 0;
+    }
+    
+    #global-back-btn {
+        height: 30px !important;
+        width: 100% !important;
+        padding: 5px 8px !important;
+        border-radius: 6px !important;
+        font-size: 11px !important;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* ЦЕНТР - БЮДЖЕТ */
+    .header-center {
+        min-width: 80px !important;
+        max-width: 85px !important;
+        margin: 0 2px !important;
+        flex-shrink: 0;
+    }
+    
+    .budget-display {
+        height: 30px !important;
+        min-width: 80px !important;
+        max-width: 85px !important;
+        padding: 5px 8px !important;
+        border-radius: 6px !important;
+    }
+    
+    .budget-label {
+        font-size: 9px !important;
+        margin-right: 3px !important;
+    }
+    
+    .budget-value {
+        font-size: 9px !important;
+        font-weight: 700;
+    }
+    
+    /* КНОПКА МОЙ ЗАВОД */
+    .header-my-factory {
+        min-width: 75px !important;
+        max-width: 80px !important;
+        flex-shrink: 0;
+    }
+    
+    .my-factory-btn {
+        height: 30px !important;
+        width: 100% !important;
+        font-size: 10px !important;
+        padding: 5px 8px !important;
+        border-radius: 6px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* ПРАВАЯ ЧАСТЬ - АВТОРИЗАЦИЯ */
+    .header-right {
+        min-width: 60px !important;
+        max-width: 65px !important;
+        flex-shrink: 0;
+    }
+    
+    #header-login-btn {
+        height: 30px !important;
+        width: 100% !important;
+        font-size: 10px !important;
+        padding: 5px 8px !important;
+        border-radius: 6px !important;
+        white-space: nowrap;
+    }
+    
+    /* АВТОРИЗОВАННЫЙ СТАТУС */
+    .auth-status-block {
+        height: 30px !important;
+        min-width: 60px !important;
+        max-width: 65px !important;
+        padding: 4px 6px !important;
+        border-radius: 6px !important;
+    }
+    
+    .auth-greeting {
+        display: none !important;
+    }
+    
+    #user-email-display {
+        font-size: 8px !important;
+        max-width: 25px !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .logout-btn {
+        font-size: 8px !important;
+        height: 20px !important;
+        padding: 2px 5px !important;
+        border-radius: 4px !important;
+        min-width: 30px !important;
+    }
+}
+
+/* ДЛЯ iPhone 10 */
+@media (max-width: 375px) {
+    .game-header {
+        height: 48px !important;
+        padding: 4px 6px !important;
+    }
+    
+    .header-content {
+        height: 38px !important;
+        gap: 4px !important;
+    }
+    
+    .header-left {
+        min-width: 65px !important;
+        max-width: 65px !important;
+    }
+    
+    #global-back-btn {
+        height: 28px !important;
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+    }
+    
+    .header-center {
+        min-width: 75px !important;
+        max-width: 75px !important;
+    }
+    
+    .budget-display {
+        height: 28px !important;
+        min-width: 75px !important;
+        max-width: 75px !important;
+        padding: 4px 6px !important;
+    }
+    
+    .header-my-factory {
+        min-width: 70px !important;
+        max-width: 70px !important;
+    }
+    
+    .my-factory-btn {
+        height: 28px !important;
+        font-size: 9px !important;
+        padding: 4px 6px !important;
+    }
+    
+    .header-right {
+        min-width: 55px !important;
+        max-width: 55px !important;
+    }
+    
+    #header-login-btn {
+        height: 28px !important;
+        font-size: 9px !important;
+        padding: 4px 6px !important;
+    }
+    
+    .auth-status-block {
+        height: 28px !important;
+        min-width: 55px !important;
+        max-width: 55px !important;
+        padding: 3px 5px !important;
+    }
+}
+
+/* ОТСТУПЫ */
+@media (max-width: 768px) {
+    #level-select-screen:not(.hidden),
+    #game-screen:not(.hidden),
+    #win-screen:not(.hidden),
+    #lose-screen:not(.hidden),
+    #business-start-screen:not(.hidden),
+    #facility-equipment-screen:not(.hidden) {
+        padding-top: 45px !important;
+    }
+    
+    #game-screen {
+        padding: 40px 5px 5px !important;
+    }
+}
+@media (max-width: 768px) {
+    /* Увеличиваем кнопку Уровни на 30% */
+    .header-left {
+        min-width: 95px !important; /* было 70px */
+        max-width: 100px !important; /* было 75px */
+    }
+    
+    #global-back-btn {
+        width: 100% !important;
+        min-width: 95px !important;
+    }
+    
+    /* Сдвигаем остальные элементы левее */
+    .header-center {
+        margin-left: -8px !important;
+        min-width: 75px !important;
+        max-width: 80px !important;
+    }
+    
+    .header-my-factory {
+        margin-left: -5px !important;
+        min-width: 70px !important;
+        max-width: 75px !important;
+    }
+    
+    .header-right {
+        min-width: 60px !important;
+        max-width: 65px !important;
+    }
+    
+    /* Уменьшаем отступы между элементами */
+    .header-content {
+        gap: 2px !important;
+    }
+    
+    /* Делаем текст в кнопке Уровни чуть больше */
+    #global-back-btn::before {
+        font-size: 12px !important;
+        font-weight: 700;
+    }
+}
+@media (max-width: 375px) {
+    .header-left {
+        min-width: 85px !important;
+        max-width: 90px !important;
+    }
+    
+    #global-back-btn {
+        min-width: 85px !important;
+    }
+    
+    .header-center {
+        min-width: 65px !important;
+        max-width: 70px !important;
+    }
+    
+    .header-my-factory {
+        min-width: 60px !important;
+        max-width: 65px !important;
+    }
+    
+    .header-right {
+        min-width: 50px !important;
+        max-width: 55px !important;
+    }
+}
+/* ФИКС ЛОКАЛЬНОГО ХЕДЕРА НА МОБИЛЕ */
+@media (max-width: 768px) {
+    #game-screen .game-header {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        min-height: 40px !important;
+        padding: 5px 10px !important;
+        margin: 0 auto 5px auto !important;
+        width: calc(100% - 20px) !important;
+        gap: 10px !important;
+        overflow: visible !important; /* Разрешаем выход за границы */
+    }
+
+    /* ЛЕВАЯ ЧАСТЬ - НАЗВАНИЕ */
+    #game-screen .header-left {
+        flex: 1 !important;
+        min-width: 0 !important;
+        text-align: left !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important; /* Убираем скрытие */
+        width: auto !important; /* Авто ширина */
+        max-width: none !important; /* Снимаем ограничение */
+        flex-shrink: 1 !important; /* Может сжиматься но не обрезаться */
+    }
+
+    /* Название уровня - ОДНА СТРОКА БЕЗ ВСЯКИХ ОГРАНИЧЕНИЙ */
+    #game-screen .level-name {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        width: auto !important;
+        max-width: none !important;
+        margin: 0 !important;
+        line-height: 1.2 !important;
+        display: block !important;
+        flex-shrink: 0 !important; /* Не сжимается */
+    }
+
+    /* ПРАВАЯ ЧАСТЬ - ТАЙМЕР */
+    #game-screen .header-right {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        flex-shrink: 0 !important;
+        text-align: right !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+    }
+
+    /* Таймер */
+    #game-screen .timer {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        color: #059669 !important;
+        white-space: nowrap !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Сообщения скрываем */
+    #game-screen .feedback-message {
+        display: none !important;
+    }
 }
