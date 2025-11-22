@@ -4550,3 +4550,77 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
         transform: scale(1.2);
     }
 }
+/* Исправление цвета текста подсказки для всех устройств */
+.hint-text {
+    color: #1f2937 !important; /* Темный цвет для читаемости */
+    font-size: 14px !important;
+    margin-top: 10px !important;
+    text-align: center !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+    border-left: 3px solid #f59e0b !important;
+}
+
+/* Для мобильных можно сделать чуть компактнее */
+@media (max-width: 768px) {
+    .hint-text {
+        font-size: 12px !important;
+        padding: 8px !important;
+    }
+}
+/* Скрываем описание только в карточках уровней (бизнес-блок) */
+.level-card .business-card-desc {
+    display: none !important;
+}
+
+/* Делаем карточки уровней компактнее */
+.level-card.business-card {
+    min-height: 80px !important;
+    max-height: 80px !important;
+    padding: 15px 15px 15px 60px !important;
+}
+
+.level-card.business-card .level-card-info h3 {
+    margin-bottom: 5px !important;
+}
+
+.level-card.business-card .business-status {
+    margin-top: 0 !important;
+    font-size: 14px !important;
+}
+/* Скрываем описание в карточках уровней (бизнес-блок и первая варка) */
+.level-card .business-card-desc,
+.level-card .chapter-card-desc {
+    display: none !important;
+}
+
+/* Делаем все специальные карточки компактными */
+.level-card.business-card,
+.level-card.chapter2-card {
+    min-height: 80px !important;
+    max-height: 80px !important;
+    padding: 15px 15px 15px 60px !important;
+}
+
+.level-card.business-card .level-card-info h3,
+.level-card.chapter2-card .level-card-info h3 {
+    margin-bottom: 5px !important;
+}
+
+.level-card.business-card .business-status,
+.level-card.chapter2-card .chapter-status {
+    margin-top: 0 !important;
+    font-size: 14px !important;
+}
+/* Скрываем описание ТОЛЬКО в карточке "Первая варка" */
+.level-card.business-card .business-card-desc {
+    display: none !important;
+}
+
+/* Делаем эту карточку компактнее */
+.level-card.business-card {
+    min-height: 70px !important;
+    max-height: 70px !important;
+    padding: 12px 15px 12px 55px !important;
+}
