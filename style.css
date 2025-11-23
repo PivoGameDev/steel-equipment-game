@@ -4629,3 +4629,18 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
     background: #4b5563 !important;
     border-color: #6b7280 !important;
 }
+/* ПРОСТО МЕНЯЕМ БЛОКИ МЕСТАМИ */
+.level-cards {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Бизнес-карточка становится первой */
+.level-card.business-card {
+    order: -1;
+}
+
+/* Заголовок бизнеса становится перед карточкой */
+.chapter-header.business {
+    order: -2;
+}

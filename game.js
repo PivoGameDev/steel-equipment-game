@@ -1601,45 +1601,7 @@ businessHeader.className = 'chapter-header business';
     }
     
     this.elements.levelCardsContainer.appendChild(businessCard);
-
-    // === ГЛАВА 2 ===
-    const chapter2Header = document.createElement('div');
-    chapter2Header.className = 'chapter-header';
-    chapter2Header.innerHTML = `
-      <h2>🍺 Глава 2: Первая варка</h2>
-      <p>Мойка оборудования и первая варка</p>
-    `;
-    this.elements.levelCardsContainer.appendChild(chapter2Header);
-
-    const chapter2Card = document.createElement('div');
-    chapter2Card.className = 'level-card chapter2-card';
-    
-    // ФИКС: Глава 2 доступна после покупки оборудования
-    const isChapter2Unlocked = this.state.myFactoryUnlocked;
-
-    chapter2Card.innerHTML = `
-    <div class="level-card-content">
-      <div class="level-card-info">
-        <h3>🚀 Первая варка</h3>
-        <p>Мойка оборудования и запуск производства</p>
-        <div class="chapter-status">
-          ${isChapter2Unlocked ? '✅ Доступно' : '🔒 Завершите бизнес'}
-        </div>
-      </div>
-    </div>
-  `;
-
-    if (isChapter2Unlocked) {
-      chapter2Card.addEventListener('click', () => this.startChapter2());
-      chapter2Card.style.background = 'linear-gradient(135deg, #ff8c00 0%, #ff4500 100%)';
-    } else {
-      chapter2Card.style.opacity = '0.6';
-      chapter2Card.style.background = '#666';
-    }
-    
-    this.elements.levelCardsContainer.appendChild(chapter2Card);
-
-  }
+}
 
   startLevel(levelNum) {
     // Останавливаем любой предыдущий таймер
@@ -2487,21 +2449,6 @@ businessHeader.className = 'chapter-header business';
     ]);
   }
 
-  startChapter2() {
-    console.log('Запуск Главы 2');
-    
-    // Сохраняем прогресс Главы 1
-    this.saveProgress();
-    
-    // Показываем сообщение о переходе
-    this.showFeedback('🚀 Переходим к Главе 2: Первая варка...', 'correct');
-    
-    // Плавный переход через 2 секунды
-    setTimeout(() => {
-      // Переходим на страницу Главы 2
-      window.location.href = 'chapter2.html';
-    }, 2000);
-  }
 
   startBusiness() {
     this.showBusinessStartScreen();
