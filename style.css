@@ -41,7 +41,7 @@ body {
 /* === ЭКРАНЫ === */
 /* Стартовый экран */
 #start-screen {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(to right, #ffd700, #ff8c00, #ff4500);
     color: white;
     z-index: 100;
     justify-content: flex-start;
@@ -4133,7 +4133,7 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
     
     /* ЦЕНТР - БЮДЖЕТ */
     .header-center {
-        min-width: 80px !important;
+        min-width: 85px !important;
         max-width: 85px !important;
         margin: 0 2px !important;
         flex-shrink: 0;
@@ -4251,8 +4251,8 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
     
     .budget-display {
         height: 28px !important;
-        min-width: 75px !important;
-        max-width: 75px !important;
+        min-width: 85px !important;
+        max-width: 85px !important;
         padding: 4px 6px !important;
     }
     
@@ -4623,4 +4623,9 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
     min-height: 70px !important;
     max-height: 70px !important;
     padding: 12px 15px 12px 55px !important;
+}
+.my-factory-btn:disabled {
+    opacity: 0.4 !important;
+    background: #4b5563 !important;
+    border-color: #6b7280 !important;
 }
