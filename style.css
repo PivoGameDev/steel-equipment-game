@@ -5992,3 +5992,40 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
         font-weight: 700 !important;
     }
 }
+/* СТИЛЬ ДЛЯ КАРТОЧКИ "МОЙ ЗАВОД" */
+.my-factory-card {
+    background: white;
+    border: 3px solid #3b82f6;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px 0;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+}
+
+.my-factory-card h1 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #1e293b;
+}
+
+.my-factory-image {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+    background: #f0f9ff;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    border: 2px solid #3b82f6;
+}
+
+.my-factory-description {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    color: #4b5563;
+    max-width: 400px;
+    margin: 0 auto;
+}
