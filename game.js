@@ -365,7 +365,7 @@ class BreweryGame {
     if (equipmentDescription) {
       equipmentDescription.innerHTML = `
         Теперь нужно закупить оборудование для вашей пивоварни. 
-        У вас есть <strong style="color: #10b981; font-weight: bold;">${this.state.business.balance} BP</strong> на оборудование.
+        У вас есть <strong style="color: #FBBF24; font-weight: bold;">${this.state.business.balance} BP</strong> на оборудование.
       `;
     }
     
@@ -502,7 +502,8 @@ class BreweryGame {
   }
 
   initBusinessScreen() {
-    const continueBtn = document.createElement('button');
+    // ЗАКОММЕНТИРОВАТЬ ВЕСЬ ЭТОТ БЛОК
+    /*const continueBtn = document.createElement('button');
     continueBtn.id = 'continue-to-business';
     continueBtn.textContent = 'Начать свой бизнес →';
     continueBtn.className = 'restart-btn';
@@ -519,7 +520,7 @@ class BreweryGame {
       }
       
       continueBtn.addEventListener('click', () => this.showBusinessStartScreen());
-    }
+    } */
 
     // Инициализируем обработчики для бизнес-карточек
     this.initBusinessEventListeners();
@@ -729,7 +730,14 @@ class BreweryGame {
 
   initEventListeners() {
     this.elements.startBtn.addEventListener('click', () => this.showLevelSelect());
-    
+    // ДОБАВИТЬ ЭТОТ КОД
+    const continueBusinessBtn = document.getElementById('continue-to-business');
+    if (continueBusinessBtn) {
+        continueBusinessBtn.addEventListener('click', () => {
+            this.playSound('click');
+            this.showBusinessStartScreen();
+        });
+    }
     
     // Обработчик для кнопки "Мой завод" в хедере
     if (this.elements.myFactoryBtn) {
@@ -2703,9 +2711,7 @@ function completeEquipmentPurchase() {
     // 4. Обновляем цифру в хедере
     updateBudgetDisplay();
     
-    // 5. Показываем сообщение
-    alert("🎉 Оборудование успешно куплено! Бюджет использован полностью.");
-    
+
     // 6. Переходим на экран "Мой завод"
     hideAllScreens();
     document.getElementById('my-factory-screen').classList.remove('hidden');
