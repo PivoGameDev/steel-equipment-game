@@ -6,6 +6,43 @@
     <title>Собери пивоварню!</title>
     <link rel="stylesheet" href="style.css">
 </head>
+<!-- ЭКРАН АДМИНКИ -->
+<div id="admin-screen" class="screen hidden">
+    <div class="win-content">
+        <h1>👑 Админ-панель</h1>
+        <p>Список зарегистрированных игроков</p>
+        
+        <div class="admin-controls">
+            <button id="refresh-admin" class="admin-btn">🔄 Обновить</button>
+            <button id="back-from-admin" class="admin-btn secondary">← Назад</button>
+        </div>
+        
+        <div class="players-list">
+            <h3>🎮 Зарегистрированные игроки:</h3>
+            <div id="players-container" class="players-container">
+                <p class="no-players">Пока нет зарегистрированных игроков</p>
+            </div>
+        </div>
+        
+        <div class="admin-stats">
+            <h3>📊 Статистика:</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Всего игроков:</span>
+                    <span class="stat-value" id="total-players">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Сегодня:</span>
+                    <span class="stat-value" id="today-players">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Скрытая ссылка в админку -->
+<div style="position: fixed; bottom: 10px; right: 10px; opacity: 0.3; font-size: 12px;">
+    <a href="#" id="admin-link" style="color: #666; text-decoration: none;">👑</a>
+</div>
 <body>
 <header id="game-header" class="game-header hidden">
     <div class="header-container">
@@ -915,19 +952,25 @@
     </div>
 
     <!-- Модальное окно для авторизации -->
-    <div id="auth-modal" class="modal hidden">
-        <div class="modal-content auth-modal-content">
-            <span class="close-modal">&times;</span>
-            <h3>Вход в систему</h3>
-            <div class="auth-form">
-                <input type="email" id="modal-login-email" placeholder="Ваш email" class="auth-input" autocomplete="email">
-                <input type="password" id="modal-login-password" placeholder="Пароль" class="auth-input" autocomplete="current-password">
-                <button id="modal-login-btn" class="auth-btn login-btn">Войти</button>
-                <button id="modal-register-btn" class="auth-btn register-btn">Создать аккаунт</button>
-                <p class="auth-message" id="modal-auth-message"></p>
+<div id="auth-modal" class="modal hidden">
+    <div class="modal-content auth-modal-content">
+        <span class="close-modal">&times;</span>
+        <h3>Вход в систему</h3>
+        <div class="auth-form">
+            <input type="email" id="modal-login-email" placeholder="Ваш email" class="auth-input" autocomplete="email">
+            <input type="password" id="modal-login-password" placeholder="Пароль" class="auth-input" autocomplete="current-password">
+            
+            <div class="remember-me">
+                <input type="checkbox" id="remember-me" checked>
+                <label for="remember-me">Запомнить меня</label>
             </div>
+            
+            <button id="modal-login-btn" class="auth-btn login-btn">Войти</button>
+            <button id="modal-register-btn" class="auth-btn register-btn">Создать аккаунт</button>
+            <p class="auth-message" id="modal-auth-message"></p>
         </div>
     </div>
+</div>
 
     <!-- ЭКРАН: Мой завод -->
     <div id="my-factory-screen" class="screen hidden">

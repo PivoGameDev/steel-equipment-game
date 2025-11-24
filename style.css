@@ -5654,3 +5654,279 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
         font-size: 15px !important;
     }
 }
+/* ========== СТИЛИ ДЛЯ АВТОРИЗАЦИИ ========== */
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.remember-me input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #3b82f6;
+}
+
+.remember-me label {
+    font-size: 14px;
+    color: #6b7280;
+    cursor: pointer;
+}
+
+/* Улучшаем стили модального окна */
+.auth-modal-content {
+    max-width: 400px;
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.auth-input {
+    padding: 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px;
+    background: #f9fafb;
+    transition: all 0.3s;
+}
+
+.auth-input:focus {
+    border-color: #3b82f6;
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.auth-btn {
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.login-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+}
+
+.register-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.auth-btn:active {
+    transform: translateY(0);
+}
+
+.auth-message {
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.auth-message.error {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.auth-message.success {
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+/* ========== СТИЛИ АДМИНКИ ========== */
+.admin-controls {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+    justify-content: center;
+}
+
+.admin-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.admin-btn:not(.secondary) {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+}
+
+.admin-btn.secondary {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.admin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.players-list {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 2px solid #e2e8f0;
+}
+
+.players-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+.player-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    margin: 8px 0;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.player-email {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.player-date {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.no-players {
+    text-align: center;
+    color: #9ca3af;
+    font-style: italic;
+    padding: 20px;
+}
+
+.admin-stats {
+    background: #f0f9ff;
+    border-radius: 12px;
+    padding: 20px;
+    border: 2px solid #bae6fd;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.stat-label {
+    font-weight: 500;
+    color: #374151;
+}
+
+.stat-value {
+    font-weight: 700;
+    color: #059669;
+    font-size: 18px;
+}
+/* ФИКС ДЛЯ АДМИНКИ */
+#admin-screen {
+    position: center !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: white !important;
+    z-index: 9999 !important;
+    overflow-y: auto !important;
+    padding: 20px !important;
+}
+
+#admin-screen.hidden {
+    display: none !important;
+}
+/* АДМИНКА НА ВСЮ ШИРИНУ ЭКРАНА */
+#admin-screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: white !important;
+    z-index: 9999 !important;
+    overflow-y: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#admin-screen .win-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 40px 20px !important;
+    background: white !important;
+    min-height: 100vh !important;
+    box-sizing: border-box !important;
+}
+/* Стили для сообщений авторизации */
+.auth-message.success {
+    color: #10b981;
+    font-weight: 500;
+}
+
+.auth-message.info {
+    color: #3b82f6;
+    font-weight: 500;
+}
+
+.auth-message.error {
+    color: #ef4444;
+    font-weight: 500;
+}
+
+/* Плавные переходы для кнопок */
+.auth-btn {
+    transition: all 0.3s ease;
+}
+
+/* Стили для неактивных кнопок */
+.auth-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}

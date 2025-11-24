@@ -101,7 +101,6 @@ class BreweryGame {
       }
     };
 
-    // Бизнес-уровни (помещения)
     this.businessLevels = {
       'preparation': {
         name: "Пивоварня ресторанного типа",
@@ -204,6 +203,11 @@ class BreweryGame {
     this.initEmailForm();
     this.initBusinessScreen();
 
+    // ЗАГРУЗКА ПРОГРЕССА ПРИ ЗАПУСКЕ ИГРЫ
+    console.log('🎮 ЗАПУСК ИГРЫ - проверка авторизации');
+    this.checkAuthStatus();
+    this.loadProgress();
+
     this.IMAGE_BASE = 'assets/images/';
     this.PLACEHOLDER = this.IMAGE_BASE + 'placeholder.png';
     this.CUSTOM_IMAGE_MAP = {};
@@ -215,7 +219,6 @@ class BreweryGame {
     this.initializeScreens();
 
     this.initEventListeners();
-    this.loadProgress();
     this.renderLevelCards();
     this.preloadAssets();
 
@@ -228,7 +231,18 @@ class BreweryGame {
     setTimeout(() => {
       this.updateBudgetEverywhere();
     }, 1000);
-  }
+    
+    console.log('🎮 ИНИЦИАЛИЗАЦИЯ ИГРЫ');
+    
+    // Проверка localStorage при запуске
+    setTimeout(() => {
+        console.log('=== ПРОВЕРКА LOCALSTORAGE ПРИ ЗАПУСКЕ ===');
+        console.log('userEmail:', localStorage.getItem('userEmail'));
+        console.log('isLoggedIn:', localStorage.getItem('isLoggedIn'));
+        console.log('allGameProgress:', JSON.parse(localStorage.getItem('allGameProgress') || '{}'));
+        console.log('====================================');
+    }, 1000);
+}
 
   // НОВЫЙ МЕТОД: Правильная инициализация экранов
   initializeScreens() {
@@ -303,6 +317,9 @@ class BreweryGame {
       this.state.business.purchasedFacilities.push(facilityType);
       this.playSound('success');
       
+      // СОХРАНЯЕМ ПРОГРЕСС ПРИ ПОКУПКЕ
+      this.saveProgress();
+      
       this.updateBusinessDisplay();
       this.renderBusinessCards();
       
@@ -319,7 +336,7 @@ class BreweryGame {
     } else {
       this.showFeedback('Недостаточно средств или помещение уже куплено', 'incorrect');
     }
-  }
+}
 
   // Обновляем метод showFacilityEquipment
   showFacilityEquipment(facilityType) {
@@ -730,8 +747,87 @@ class BreweryGame {
 
   initEventListeners() {
     this.elements.startBtn.addEventListener('click', () => this.showLevelSelect());
-    // ДОБАВИТЬ ЭТОТ КОД
-    const continueBusinessBtn = document.getElementById('continue-to-business');
+    
+// ========== КОД АВТОРИЗАЦИИ - НАЧАЛО ==========
+// Обработчики для авторизации
+const headerLoginBtn = document.getElementById('header-login-btn');
+const authModal = document.getElementById('auth-modal');
+const closeAuthModal = authModal?.querySelector('.close-modal');
+const modalLoginBtn = document.getElementById('modal-login-btn');
+const modalRegisterBtn = document.getElementById('modal-register-btn');
+const emailInput = document.getElementById('modal-login-email');
+const passwordInput = document.getElementById('modal-login-password');
+
+if (headerLoginBtn && authModal) {
+    headerLoginBtn.addEventListener('click', () => {
+        this.playSound('click');
+        authModal.classList.remove('hidden');
+        
+        // Сбрасываем состояние при открытии
+        document.getElementById('modal-login-email').value = '';
+        document.getElementById('modal-login-password').value = '';
+        document.getElementById('modal-auth-message').textContent = '';
+        document.getElementById('modal-auth-message').className = 'auth-message';
+        
+        // Показываем обе кнопки изначально
+        const loginBtn = document.getElementById('modal-login-btn');
+        const registerBtn = document.getElementById('modal-register-btn');
+        
+        if (loginBtn) {
+            loginBtn.style.display = 'block';
+            loginBtn.disabled = true;
+        }
+        if (registerBtn) {
+            registerBtn.style.display = 'block';
+            registerBtn.disabled = true;
+        }
+    });
+}
+
+if (closeAuthModal) {
+    closeAuthModal.addEventListener('click', () => {
+        this.playSound('click');
+        authModal.classList.add('hidden');
+    });
+}
+
+if (modalLoginBtn) {
+    modalLoginBtn.addEventListener('click', () => {
+        this.handleLogin();
+    });
+}
+
+if (modalRegisterBtn) {
+    modalRegisterBtn.addEventListener('click', () => {
+        this.handleRegister(); // ДОЛЖЕН ВЫЗЫВАТЬСЯ ПРИ РЕГИСТРАЦИИ
+    });
+}
+
+// Обработчик для выхода
+const logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        this.handleLogout();
+    });
+}
+
+// Обработчик ввода email для динамического изменения кнопок
+if (emailInput) {
+    emailInput.addEventListener('input', () => {
+        this.updateAuthButtons();
+    });
+}
+
+// Обработчик ввода пароля
+if (passwordInput) {
+    passwordInput.addEventListener('input', () => {
+        this.updateAuthButtons();
+    });
+}
+// ========== КОД АВТОРИЗАЦИИ - КОНЕЦ ==========
+
+// ДОБАВИТЬ ЭТОТ КОД
+const continueBusinessBtn = document.getElementById('continue-to-business');
     if (continueBusinessBtn) {
         continueBusinessBtn.addEventListener('click', () => {
             this.playSound('click');
@@ -783,6 +879,37 @@ class BreweryGame {
     document.querySelectorAll('.restart-btn').forEach(btn => {
       btn.addEventListener('click', () => this.restartLevel()); 
     });
+        // Обработчики для админки
+    const refreshAdminBtn = document.getElementById('refresh-admin');
+    const backFromAdminBtn = document.getElementById('back-from-admin');
+    
+    if (refreshAdminBtn) {
+        refreshAdminBtn.addEventListener('click', () => {
+            this.updateAdminPanel();
+            this.showFeedback('Список обновлен', 'correct');
+        });
+    }
+    
+    if (backFromAdminBtn) {
+        backFromAdminBtn.addEventListener('click', () => {
+            this.showLevelSelect();
+        });
+    }
+    
+        // Простая ссылка в админку с паролем
+    const adminLink = document.getElementById('admin-link');
+    if (adminLink) {
+        adminLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const password = prompt('Введите пароль администратора:');
+            if (password === '12345') { // Простой пароль
+                this.showAdminPanel();
+            } else {
+                alert('Неверный пароль');
+            }
+        });
+    }
+
   }
 
   initSelectionHandlers() {
@@ -1006,9 +1133,97 @@ class BreweryGame {
     }
   }
 
-  saveProgress() { 
-    localStorage.setItem('breweryGameProgress', JSON.stringify(this.progress)); 
-  }
+  // Обновленный метод сохранения прогресса
+saveProgress() {
+    const userEmail = localStorage.getItem('userEmail');
+    console.log('💾 СОХРАНЕНИЕ ПРОГРЕССА ДЛЯ:', userEmail);
+    
+    if (!userEmail) {
+        console.log('❌ НЕТ userEmail, сохранение отменено');
+        return;
+    }
+    
+    // Создаем полный объект прогресса
+    const progressData = {
+        unlockedLevels: this.progress.unlockedLevels,
+        bestScores: this.progress.bestScores,
+        business: {
+            balance: this.state.business.balance,
+            purchasedFacilities: [...this.state.business.purchasedFacilities]
+        },
+        myFactoryUnlocked: this.state.myFactoryUnlocked,
+        currentLevel: this.state.currentLevel,
+        levelResults: {...this.state.levelResults},
+        savedLayouts: {...this.state.savedLayouts},
+        lastSave: new Date().toISOString(),
+        saveVersion: '2.0'
+    };
+    
+    console.log('📦 ДАННЫЕ ДЛЯ СОХРАНЕНИЯ:', progressData);
+    
+    // Получаем ВСЕ сохраненные прогрессы всех пользователей
+    let allProgress = {};
+    try {
+        allProgress = JSON.parse(localStorage.getItem('allGameProgress') || '{}');
+    } catch (e) {
+        console.log('⚠️ Ошибка чтения allGameProgress, создаем новый');
+        allProgress = {};
+    }
+    
+    // Сохраняем прогресс для текущего пользователя
+    allProgress[userEmail] = progressData;
+    
+    // Сохраняем обратно в localStorage
+    try {
+        localStorage.setItem('allGameProgress', JSON.stringify(allProgress));
+        console.log('✅ ПРОГРЕСС УСПЕШНО СОХРАНЕН!');
+        console.log('👥 Всего пользователей в базе:', Object.keys(allProgress).length);
+        console.log('📊 Текущий пользователь:', userEmail);
+        console.log('🎮 Разблокированные уровни:', progressData.unlockedLevels);
+        console.log('💰 Баланс:', progressData.business.balance);
+    } catch (e) {
+        console.error('❌ ОШИБКА СОХРАНЕНИЯ:', e);
+    }
+}
+
+// Обновленный метод загрузки прогресса
+loadProgress() {
+    const userEmail = localStorage.getItem('userEmail');
+    const saved = localStorage.getItem('breweryGameProgress');
+    
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            
+            if (userEmail && parsed[userEmail]) {
+                // Загружаем прогресс конкретного пользователя
+                const userProgress = parsed[userEmail];
+                this.progress.unlockedLevels = userProgress.unlockedLevels || [1];
+                this.progress.bestScores = userProgress.bestScores || {};
+                this.state.business = userProgress.business || { balance: 100, purchasedFacilities: [] };
+                this.state.myFactoryUnlocked = userProgress.myFactoryUnlocked || false;
+                console.log('📁 Загружен прогресс пользователя:', userEmail);
+            } else {
+                // Загружаем общий прогресс (для гостей)
+                this.progress.unlockedLevels = parsed.unlockedLevels || [1];
+                this.progress.bestScores = parsed.bestScores || {};
+                console.log('📁 Загружен общий прогресс');
+            }
+            
+            // ФИКС: Убеждаемся, что уровень 1 всегда открыт
+            if (!this.progress.unlockedLevels.includes(1)) {
+                this.progress.unlockedLevels = [1];
+            }
+            
+        } catch (e) { 
+            console.error('Ошибка загрузки прогресса:', e);
+            this.progress.unlockedLevels = [1];
+        }
+    } else {
+        this.progress.unlockedLevels = [1];
+        console.log('📁 Создан новый прогресс с уровнем 1');
+    }
+}
 
   startGame() {
     // ДОБАВЬ ЭТОТ КОД В САМОЕ НАЧАЛО МЕТОДА
@@ -1323,30 +1538,60 @@ class BreweryGame {
   }
 
   endGame(isWin) {
+    console.log('🎯 КОНЕЦ ИГРЫ, isWin:', isWin);
+    console.log('Текущий уровень:', this.state.currentLevel);
+    console.log('Результаты ВСЕХ уровней:', this.state.levelResults);
+    
     this.stopHintPulse();
 
     if (isWin) {
-      // ФИКС: Правильная разблокировка уровней
-      const nextLevel = this.state.currentLevel + 1;
-      if (nextLevel <= 5 && !this.progress.unlockedLevels.includes(nextLevel)) {
-        this.progress.unlockedLevels.push(nextLevel);
-        // Убираем дубликаты на всякий случай
-        this.progress.unlockedLevels = [...new Set(this.progress.unlockedLevels)];
-        this.saveProgress();
-        console.log('✅ Уровень ' + nextLevel + ' разблокирован!');
-      }
+        console.log('✅ Уровень завершен успешно:', this.state.currentLevel);
+        console.log('✅ Правильных ответов на этом уровне:', this.state.levelResults[this.state.currentLevel].correct);
+        
+        // ФИКС: Правильная разблокировка уровней
+        const nextLevel = this.state.currentLevel + 1;
+        if (nextLevel <= 5 && !this.progress.unlockedLevels.includes(nextLevel)) {
+            this.progress.unlockedLevels.push(nextLevel);
+            // Убираем дубликаты на всякий случай
+            this.progress.unlockedLevels = [...new Set(this.progress.unlockedLevels)];
+            this.saveProgress();
+            console.log('✅ Уровень ' + nextLevel + ' разблокирован!');
+        }
 
-      const emailForm = document.getElementById('email-form');
-      const sendBtn = document.getElementById('send-results-btn');
-      
-      if (emailForm) emailForm.reset();
-      if (sendBtn) {
-        sendBtn.disabled = true;
-        sendBtn.textContent = 'Отправить результаты';
-        sendBtn.style.background = '';
-      }
-      
-      this.prepareEmailData();
+        const totalScore = this.calculateTotalScore();
+        console.log('🏆 ОБЩИЙ СЧЕТ:', totalScore);
+        
+        // Вызываем обновление прогресса
+        this.updateProgress(totalScore);
+        
+        const emailForm = document.getElementById('email-form');
+        const sendBtn = document.getElementById('send-results-btn');
+        
+        if (emailForm) emailForm.reset();
+        if (sendBtn) {
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Отправить результаты';
+            sendBtn.style.background = '';
+        }
+        
+        this.prepareEmailData();
+        
+        // НЕМЕДЛЕННО ПРОВЕРЯЕМ СОХРАНЕНИЕ
+        setTimeout(() => {
+            console.log('=== ПРОВЕРКА СОХРАНЕНИЯ ПОСЛЕ ПОБЕДЫ ===');
+            const userEmail = localStorage.getItem('userEmail');
+            const allProgress = JSON.parse(localStorage.getItem('allGameProgress') || '{}');
+            const userProgress = allProgress[userEmail];
+            console.log('userEmail:', userEmail);
+            console.log('userProgress:', userProgress);
+            if (userProgress) {
+                console.log('🎮 Разблокированные уровни:', userProgress.unlockedLevels);
+                console.log('⭐ Лучшие счета:', userProgress.bestScores);
+            } else {
+                console.log('❌ userProgress НЕ НАЙДЕН!');
+            }
+            console.log('====================================');
+        }, 500);
     }
 
     clearInterval(this.timer);
@@ -1448,19 +1693,19 @@ class BreweryGame {
     }, 100);
 
     if (isWin) {
-      this.updateProgress(totalScore);
-      this.elements.gameScreen.classList.add('hidden');
-      this.elements.winScreen.classList.remove('hidden');
-      this.playSound('success');
-      this.createConfetti();
-      
-      // ОБНОВЛЯЕМ БЮДЖЕТ ПРИ ПОБЕДЕ
-      this.updateBudgetEverywhere();
+        this.updateProgress(totalScore);
+        this.elements.gameScreen.classList.add('hidden');
+        this.elements.winScreen.classList.remove('hidden');
+        this.playSound('success');
+        this.createConfetti();
+        
+        // ОБНОВЛЯЕМ БЮДЖЕТ ПРИ ПОБЕДЕ
+        this.updateBudgetEverywhere();
     } else {
-      this.elements.gameScreen.classList.add('hidden');
-      this.elements.loseScreen.classList.remove('hidden');
+        this.elements.gameScreen.classList.add('hidden');
+        this.elements.loseScreen.classList.remove('hidden');
     }
-  }
+}
 
   calculateTotalScore() {
     let score = 100;
@@ -1473,20 +1718,43 @@ class BreweryGame {
   }
 
   updateProgress(score) {
+    console.log('🔄 ОБНОВЛЕНИЕ ПРОГРЕССА - НАЧАЛО');
+    console.log('userEmail:', localStorage.getItem('userEmail'));
+    
+    let needsSave = false;
+    
+    // Обновляем лучший счет если нужно
     if (!this.progress.bestScores[this.state.currentLevel] || score > this.progress.bestScores[this.state.currentLevel]) {
-      this.progress.bestScores[this.state.currentLevel] = score;
+        this.progress.bestScores[this.state.currentLevel] = score;
+        needsSave = true;
+        console.log('⭐ Обновлен лучший счет для уровня', this.state.currentLevel);
     }
     
-    // ФИКС: Разблокируем следующий уровень только для обучения (1-5)
+    // Разблокируем следующий уровень если нужно
     const nextLevel = this.state.currentLevel + 1;
     if (nextLevel <= 5 && !this.progress.unlockedLevels.includes(nextLevel)) {
-      this.progress.unlockedLevels.push(nextLevel);
-      this.saveProgress();
-      console.log('🔓 Разблокирован уровень:', nextLevel);
+        this.progress.unlockedLevels.push(nextLevel);
+        needsSave = true;
+        console.log('🎉 УРОВЕНЬ РАЗБЛОКИРОВАН:', nextLevel);
     }
     
+    // ВСЕГДА СОХРАНЯЕМ ПРИ ОБНОВЛЕНИИ ПРОГРЕССА
+    console.log('💾 ПРИНУДИТЕЛЬНОЕ СОХРАНЕНИЕ...');
+    this.saveProgress();
+    
+    // Двойная проверка
+    setTimeout(() => {
+        console.log('=== ПРОВЕРКА ПОСЛЕ СОХРАНЕНИЯ ===');
+        const userEmail = localStorage.getItem('userEmail');
+        const allProgress = JSON.parse(localStorage.getItem('allGameProgress') || '{}');
+        const userProgress = allProgress[userEmail];
+        console.log('userProgress после сохранения:', userProgress);
+        console.log('================================');
+    }, 100);
+    
     this.renderLevelCards();
-  }
+    console.log('🔄 ОБНОВЛЕНИЕ ПРОГРЕССА - ЗАВЕРШЕНО');
+}
 
   showStartScreen() {
     console.log('🎮 Показ стартового экрана');
@@ -1809,15 +2077,19 @@ businessHeader.className = 'chapter-header business';
   }
 
   nextLevel() {
+    console.log('➡️ ПЕРЕХОД НА СЛЕДУЮЩИЙ УРОВЕНЬ');
+    console.log('Текущий уровень:', this.state.currentLevel);
+    console.log('Результаты текущего уровня:', this.state.levelResults[this.state.currentLevel]);
+    
     this.playSound('click');
     this.elements.gameScreen.classList.add('hidden');
     const nextLevel = this.state.currentLevel + 1;
     
-    // ДОБАВЬ ЭТОТ КОД ДЛЯ СОХРАНЕНИЯ ПРОГРЕССА
+    // ДОБАВЬТЕ ЭТОТ КОД ДЛЯ СОХРАНЕНИЯ ПРОГРЕССА
     if (nextLevel <= 5 && !this.progress.unlockedLevels.includes(nextLevel)) {
         this.progress.unlockedLevels.push(nextLevel);
-        this.saveProgress();
-        console.log('✅ Уровень ' + nextLevel + ' сохранен в прогресс!');
+        console.log('🎉 РАЗБЛОКИРУЕМ УРОВЕНЬ:', nextLevel);
+        this.saveProgress(); // СОХРАНЯЕМ СРАЗУ ПРИ РАЗБЛОКИРОВКЕ
     }
     
     // Если закончили уровень 5 - переходим к бизнесу
@@ -2600,9 +2872,503 @@ businessHeader.className = 'chapter-header business';
     if (equipmentCount) equipmentCount.textContent = '8 шт';
     if (totalCost) totalCost.textContent = '36 BP';
   }
+  // ========== МЕТОДЫ АВТОРИЗАЦИИ - НАЧАЛО ==========
+  
+  handleLogin() {
+    const email = document.getElementById('modal-login-email').value;
+    const password = document.getElementById('modal-login-password').value;
+    
+    console.log('🔐 Попытка входа:', email);
+    
+    if (!email || !password) {
+        this.showAuthMessage('Заполните все поля', 'error');
+        return;
+    }
+    
+    if (!this.isValidEmail(email)) {
+        this.showAuthMessage('Введите корректный email', 'error');
+        return;
+    }
+    
+    // Проверяем существует ли пользователь
+    if (!this.isEmailRegistered(email)) {
+        this.showAuthMessage('Аккаунт не найден. Создайте новый.', 'error');
+        return;
+    }
+    
+    // ПРОВЕРЯЕМ ПАРОЛЬ
+    if (!this.verifyPassword(email, password)) {
+        this.showAuthMessage('Неверный пароль', 'error');
+        this.playSound('error');
+        return;
+    }
+    
+    // Если все ок - логиним
+    this.loginUser(email);
+}
+  
+  handleRegister() {
+    const email = document.getElementById('modal-login-email').value;
+    const password = document.getElementById('modal-login-password').value;
+    const rememberMe = document.getElementById('remember-me').checked;
+    
+    console.log('🔐 РЕГИСТРАЦИЯ - НАЧАЛО');
+    console.log('Email:', email);
+    console.log('Пароль:', password ? 'есть' : 'нет');
+    console.log('Remember:', rememberMe);
+    
+    if (!email || !password) {
+        console.log('❌ Пустые поля');
+        this.showAuthMessage('Заполните все поля', 'error');
+        return;
+    }
+    
+    if (!this.isValidEmail(email)) {
+        console.log('❌ Невалидный email');
+        this.showAuthMessage('Введите корректный email', 'error');
+        return;
+    }
+    
+    // ВАЖНО: Сохраняем в админку ПЕРЕД регистрацией
+    console.log('📋 Вызов savePlayerToAdminList...');
+    this.savePlayerToAdminList(email);
+    
+    // ВАЖНО: Регистрируем пользователя
+    console.log('👤 Вызов registerUser...');
+    this.registerUser(email, password, rememberMe);
+    
+    console.log('✅ РЕГИСТРАЦИЯ - ЗАВЕРШЕНО');
+}
+  
+  loginUser(email) {
+    // ВАЖНО: Сохраняем email в localStorage
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('isLoggedIn', 'true');
+    
+    // ЗАГРУЖАЕМ ПРОГРЕСС ПОЛЬЗОВАТЕЛЯ
+    this.loadProgress();
+    
+    // Обновляем интерфейс
+    this.updateAuthUI();
+    
+    // Закрываем модальное окно
+    document.getElementById('auth-modal').classList.add('hidden');
+    
+    // Очищаем поля
+    document.getElementById('modal-login-email').value = '';
+    document.getElementById('modal-login-password').value = '';
+    this.showAuthMessage('', '');
+    
+    this.showFeedback(`Добро пожаловать, ${email}! Прогресс загружен.`, 'correct');
+    this.playSound('success');
+    
+    console.log('✅ Успешный вход, прогресс загружен');
+}
+  
+  handleLogout() {
+    // СОХРАНЯЕМ ПРОГРЕСС ПЕРЕД ВЫХОДОМ
+    this.saveProgress();
+    
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userData');
+    sessionStorage.removeItem('tempUser');
+    sessionStorage.removeItem('tempPassword');
+    
+    this.updateAuthUI();
+    this.showFeedback('Вы вышли из системы. Прогресс сохранен.', 'correct');
+    
+    console.log('🚪 Выход из системы, прогресс сохранен');
+}
+    
+  savePlayerToAdminList(email) {
+    console.log('🟢 === НАЧАЛО СОХРАНЕНИЯ ИГРОКА В АДМИНКУ ===');
+    console.log('📧 Получен email:', email);
+    
+    // Получаем текущий список игроков
+    const players = JSON.parse(localStorage.getItem('adminPlayers') || '[]');
+    console.log('📊 Текущее количество игроков в списке:', players.length);
+    console.log('👥 Текущие игроки:', players.map(p => p.email));
+    
+    // Проверяем нет ли дубликата
+    const existingPlayer = players.find(player => player.email === email);
+    console.log('🔍 Поиск дубликата:', existingPlayer ? 'Найден дубликат' : 'Дубликат не найден');
+    
+    if (!existingPlayer) {
+        // Добавляем нового игрока
+        const newPlayer = {
+            email: email,
+            date: new Date().toISOString(),
+            timestamp: Date.now(),
+            registeredAt: new Date().toLocaleString('ru-RU')
+        };
+        
+        players.push(newPlayer);
+        localStorage.setItem('adminPlayers', JSON.stringify(players));
+        
+        console.log('✅ Игрок УСПЕШНО добавлен в админку:', email);
+        console.log('📈 Новое количество игроков:', players.length);
+        
+        // Проверяем что сохранилось
+        const verifyPlayers = JSON.parse(localStorage.getItem('adminPlayers') || '[]');
+        console.log('🔎 Проверка сохранения:', verifyPlayers.length === players.length ? 'УСПЕХ' : 'ОШИБКА');
+    } else {
+        console.log('⚠️ Игрок уже существует в списке, пропускаем добавление');
+    }
+    
+    console.log('🔴 === КОНЕЦ СОХРАНЕНИЯ ИГРОКА ===');
+}
+// Проверка пароля
+verifyPassword(email, inputPassword) {
+    // Получаем сохраненные данные пользователя
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    const savedPassword = userData.password;
+    
+    // Проверяем пароль
+    if (savedPassword && savedPassword === inputPassword) {
+        console.log('✅ Пароль верный');
+        return true;
+    }
+    
+    // Дополнительная проверка в старом формате
+    const localStoragePassword = localStorage.getItem('userPassword');
+    const sessionStoragePassword = sessionStorage.getItem('tempPassword');
+    
+    if ((localStoragePassword && localStoragePassword === inputPassword) ||
+        (sessionStoragePassword && sessionStoragePassword === inputPassword)) {
+        console.log('✅ Пароль верный (старый формат)');
+        return true;
+    }
+    
+    console.log('❌ Неверный пароль');
+    return false;
+}
 
+showAdminPanel() {
+    console.log('🔄 Показываем админку');
+    
+    // Скрываем ВСЕ экраны
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.add('hidden');
+    });
+    
+    // Показываем админку
+    const adminScreen = document.getElementById('admin-screen');
+    adminScreen.classList.remove('hidden');
+    adminScreen.style.display = 'block';
+    
+    // Обновляем список игроков
+    this.updateAdminPanel();
+    
+    console.log('✅ Админка показана');
+}
+
+updateAdminPanel() {
+    const players = JSON.parse(localStorage.getItem('adminPlayers') || '[]');
+    const container = document.getElementById('players-container');
+    const totalPlayers = document.getElementById('total-players');
+    const todayPlayers = document.getElementById('today-players');
+    
+    // Обновляем статистику
+    if (totalPlayers) totalPlayers.textContent = players.length;
+    
+    // Считаем игроков за сегодня
+    const today = new Date().toDateString();
+    const todayCount = players.filter(player => {
+        const playerDate = new Date(player.date).toDateString();
+        return playerDate === today;
+    }).length;
+    
+    if (todayPlayers) todayPlayers.textContent = todayCount;
+    
+    // Обновляем список игроков
+    if (container) {
+        if (players.length === 0) {
+            container.innerHTML = '<p class="no-players">Пока нет зарегистрированных игроков</p>';
+        } else {
+            container.innerHTML = players.map(player => `
+                <div class="player-item">
+                    <span class="player-email">${player.email}</span>
+                    <span class="player-date">${new Date(player.date).toLocaleString()}</span>
+                </div>
+            `).join('');
+        }
+    }
+}
+
+  registerUser(email, password, rememberMe) {
+    console.log('🎯 REGISTERUSER - НАЧАЛО');
+    console.log('Полученные данные:', { email, password, rememberMe });
+    
+    // ВАЖНО: Сохраняем email в localStorage
+    console.log('💾 Сохраняем userEmail в localStorage...');
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('isLoggedIn', 'true');
+    
+    console.log('✅ userEmail сохранен:', localStorage.getItem('userEmail'));
+    
+    // Сохраняем данные пользователя С ПАРОЛЕМ
+    const userData = {
+        email: email,
+        password: password,
+        registeredAt: new Date().toISOString(),
+        rememberMe: rememberMe,
+        playerName: 'Ivan' // Добавляем имя игрока
+    };
+    localStorage.setItem('userData', JSON.stringify(userData));
+    
+    // Сохраняем в админку
+    this.savePlayerToAdminList(email);
+    
+    // 🔥 ОТПРАВЛЯЕМ УВЕДОМЛЕНИЕ В TELEGRAM
+    console.log('📤 Отправляем уведомление в Telegram...');
+    setTimeout(async () => {
+        const success = await telegramNotifier.sendNewUserNotification(email);
+        if (success) {
+            console.log('✅ Уведомление успешно отправлено');
+        } else {
+            console.log('❌ Не удалось отправить уведомление');
+        }
+    }, 500);
+    
+    // ИНИЦИАЛИЗИРУЕМ ПРОГРЕСС ДЛЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
+    this.progress.unlockedLevels = [1];
+    this.progress.bestScores = {};
+    this.state.business = { balance: 100, purchasedFacilities: [] };
+    this.state.myFactoryUnlocked = false;
+    
+    // СОХРАНЯЕМ ПРОГРЕСС СРАЗУ ПОСЛЕ РЕГИСТРАЦИИ
+    this.saveProgress();
+    
+    // Если "Запомнить меня" не выбрано - используем sessionStorage для пароля
+    if (!rememberMe) {
+        sessionStorage.setItem('tempUser', email);
+        sessionStorage.setItem('tempPassword', password);
+    } else {
+        localStorage.setItem('userPassword', password);
+    }
+    
+    // Обновляем интерфейс
+    this.updateAuthUI();
+    
+    // Закрываем модальное окно
+    document.getElementById('auth-modal').classList.add('hidden');
+    
+    // Очищаем поля
+    document.getElementById('modal-login-email').value = '';
+    document.getElementById('modal-login-password').value = '';
+    this.showAuthMessage('', '');
+    
+    this.showFeedback(`🎉 Добро пожаловать, ${email}! Создан новый аккаунт.`, 'correct');
+    this.playSound('success');
+    
+    console.log('✅ Пользователь зарегистрирован, прогресс инициализирован');
+}
+  
+  updateAuthUI() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const userEmail = localStorage.getItem('userEmail');
+    const loginBtn = document.getElementById('header-login-btn');
+    const authStatusBlock = document.getElementById('auth-status-block');
+    const userEmailDisplay = document.getElementById('user-email-display');
+    
+    if (isLoggedIn && userEmail) {
+        // Пользователь авторизован
+        if (loginBtn) loginBtn.classList.add('hidden');
+        if (authStatusBlock) authStatusBlock.classList.remove('hidden');
+        if (userEmailDisplay) userEmailDisplay.textContent = userEmail;
+    } else {
+        // Пользователь не авторизован
+        if (loginBtn) loginBtn.classList.remove('hidden');
+        if (authStatusBlock) authStatusBlock.classList.add('hidden');
+    }
+  }
+  
+  showAuthMessage(message, type) {
+    const messageEl = document.getElementById('modal-auth-message');
+    if (messageEl) {
+        messageEl.textContent = message;
+        messageEl.className = `auth-message ${type}`;
+    }
+  }
+  
+  checkAuthStatus() {
+    this.updateAuthUI();
+    // Инициализируем кнопки при загрузке
+    setTimeout(() => this.updateAuthButtons(), 100);
+}
+  // Метод для проверки существования email
+isEmailRegistered(email) {
+    const players = JSON.parse(localStorage.getItem('adminPlayers') || '[]');
+    return players.some(player => player.email.toLowerCase() === email.toLowerCase());
+}
+// Обновление состояния кнопок авторизации
+updateAuthButtons() {
+    const email = document.getElementById('modal-login-email').value;
+    const password = document.getElementById('modal-login-password').value;
+    const loginBtn = document.getElementById('modal-login-btn');
+    const registerBtn = document.getElementById('modal-register-btn');
+    const messageEl = document.getElementById('modal-auth-message');
+    
+    if (!email || !this.isValidEmail(email)) {
+        // Если email пустой или невалидный - обе кнопки неактивны
+        if (loginBtn) loginBtn.disabled = true;
+        if (registerBtn) registerBtn.disabled = true;
+        if (messageEl) messageEl.textContent = '';
+        return;
+    }
+    
+    const isRegistered = this.isEmailRegistered(email);
+    
+    if (isRegistered) {
+        // Email уже зарегистрирован - показываем только ВОЙТИ
+        if (loginBtn) {
+            loginBtn.disabled = false;
+            loginBtn.style.display = 'block';
+        }
+        if (registerBtn) {
+            registerBtn.disabled = true;
+            registerBtn.style.display = 'none';
+        }
+        if (messageEl) {
+            // Проверяем пароль если он введен
+            if (password && this.verifyPassword(email, password)) {
+                messageEl.textContent = '✅ Пароль верный. Можете войти.';
+                messageEl.className = 'auth-message success';
+            } else if (password) {
+                messageEl.textContent = '❌ Неверный пароль';
+                messageEl.className = 'auth-message error';
+            } else {
+                messageEl.textContent = '✅ Аккаунт найден. Введите пароль.';
+                messageEl.className = 'auth-message success';
+            }
+        }
+    } else {
+        // Email новый - показываем только СОЗДАТЬ АККАУНТ
+        if (loginBtn) {
+            loginBtn.disabled = true;
+            loginBtn.style.display = 'none';
+        }
+        if (registerBtn) {
+            registerBtn.disabled = false;
+            registerBtn.style.display = 'block';
+        }
+        if (messageEl) {
+            messageEl.textContent = '🆕 Новый email. Создайте аккаунт.';
+            messageEl.className = 'auth-message info';
+        }
+    }
+}
+  // ========== МЕТОДЫ АВТОРИЗАЦИИ - КОНЕЦ ==========
 } // ← КОНЕЦ КЛАССА BreweryGame
+// === ТЕЛЕГРАМ БОТ ДЛЯ УВЕДОМЛЕНИЙ ===
 
+class TelegramNotifier {
+  constructor() {
+    this.botToken = '8382889622:AAGYqQS4ZWalQiwruLjhOfA-VGaI1npVpys';
+    this.chatId = '1163907662';
+    this.enabled = !!this.botToken && !!this.chatId;
+    
+    if (this.enabled) {
+      console.log('✅ Telegram бот инициализирован');
+      console.log('👤 Chat ID:', this.chatId);
+    } else {
+      console.log('❌ Telegram бот не настроен');
+    }
+  }
+
+  // Метод для отправки сообщения
+  async sendMessage(message) {
+    if (!this.enabled) {
+      console.log('📱 Telegram отключен:', message);
+      return false;
+    }
+
+    try {
+      const url = `https://api.telegram.org/bot${this.botToken}/sendMessage`;
+      
+      console.log('📤 Отправка в Telegram...');
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: this.chatId,
+          text: message,
+          parse_mode: 'HTML'
+        })
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.ok) {
+        console.log('✅ Уведомление отправлено в Telegram');
+        return true;
+      } else {
+        console.error('❌ Ошибка отправки в Telegram:', result);
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Ошибка подключения к Telegram:', error);
+      return false;
+    }
+  }
+
+  // Форматированное сообщение о новой регистрации
+  async sendNewUserNotification(email) {
+    const message = `
+🎉 <b>НОВАЯ РЕГИСТРАЦИЯ В ИГРЕ!</b>
+
+📧 <b>Email:</b> <code>${this.escapeHtml(email)}</code>
+👤 <b>Игрок:</b> Ivan
+🕐 <b>Время:</b> ${new Date().toLocaleString('ru-RU')}
+🌐 <b>Источник:</b> Brewery Game
+
+📊 <b>Всего игроков:</b> ${this.getTotalPlayersCount()}
+    `.trim();
+
+    return await this.sendMessage(message);
+  }
+
+  // Экранирование HTML символов
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // Получаем общее количество игроков
+  getTotalPlayersCount() {
+    try {
+      const players = JSON.parse(localStorage.getItem('adminPlayers') || '[]');
+      return players.length;
+    } catch (e) {
+      return 'неизвестно';
+    }
+  }
+
+  // Тестовое сообщение
+  async sendTestNotification() {
+    const testEmail = 'test-' + new Date().toLocaleTimeString('ru-RU') + '@test.com';
+    const message = `
+🧪 <b>ТЕСТОВОЕ УВЕДОМЛЕНИЕ</b>
+
+📧 <b>Email:</b> <code>${testEmail}</code>
+👤 <b>Получатель:</b> Ivan
+🕐 <b>Время:</b> ${new Date().toLocaleString('ru-RU')}
+✅ <b>Статус:</b> Бот работает корректно!
+
+📊 <b>Всего игроков:</b> ${this.getTotalPlayersCount()}
+    `.trim();
+
+    return await this.sendMessage(message);
+  }
+}
+
+// Создаем глобальный экземпляр
+const telegramNotifier = new TelegramNotifier();
 // Создаем глобальную переменную для доступа из HTML
 const game = new BreweryGame();
 
@@ -2800,3 +3566,17 @@ window.setInterval = function(callback, delay) {
 };
 
 console.log("✅ Безопасный фикс таймера активирован");
+// Тестируем админку
+function testAdminSave() {
+    console.log('🧪 ТЕСТ: Проверка сохранения в админку');
+    const testEmail = 'test' + Date.now() + '@test.com';
+    game.savePlayerToAdminList(testEmail);
+    
+    // Проверяем что сохранилось
+    const players = JSON.parse(localStorage.getItem('adminPlayers') || '[]');
+    console.log('🧪 РЕЗУЛЬТАТ ТЕСТА:', players.length > 0 ? 'УСПЕХ' : 'ОШИБКА');
+    console.log('🧪 Игроки в списке:', players);
+}
+
+// Запускаем тест при загрузке (можно временно раскомментировать)
+// setTimeout(testAdminSave, 1000);
