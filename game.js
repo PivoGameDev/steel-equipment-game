@@ -204,9 +204,17 @@ class BreweryGame {
     this.initBusinessScreen();
 
     // ЗАГРУЗКА ПРОГРЕССА ПРИ ЗАПУСКЕ ИГРЫ
-    console.log('🎮 ЗАПУСК ИГРЫ - проверка авторизации');
-    this.checkAuthStatus();
+console.log('🎮 ЗАПУСК ИГРЫ - проверка авторизации');
+this.checkAuthStatus();
+
+// 🔥 ЗАМЕНИТЕ НА ЭТОТ КОД:
+if (localStorage.getItem('isLoggedIn') === 'true') {
+    console.log('🔑 Пользователь авторизован, загружаем прогресс');
     this.loadProgress();
+} else {
+    console.log('👤 Гостевой режим');
+    this.loadGuestProgress();
+}
 
     this.IMAGE_BASE = 'assets/images/';
     this.PLACEHOLDER = this.IMAGE_BASE + 'placeholder.png';
@@ -1108,30 +1116,6 @@ const continueBusinessBtn = document.getElementById('continue-to-business');
     this.deselectEquipment();
   }
 
-  // ФИКС: Правильная загрузка прогресса
-  loadProgress() {
-    const saved = localStorage.getItem('breweryGameProgress');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        this.progress.unlockedLevels = parsed.unlockedLevels || [1]; // Только первый уровень открыт
-        this.progress.bestScores = parsed.bestScores || {};
-        
-        // ФИКС: Убеждаемся, что уровень 1 всегда открыт
-        if (!this.progress.unlockedLevels.includes(1)) {
-          this.progress.unlockedLevels = [1];
-        }
-        
-        console.log('📁 Загружен прогресс:', this.progress.unlockedLevels);
-      } catch (e) { 
-        console.error('Ошибка загрузки прогресса:', e);
-        this.progress.unlockedLevels = [1];
-      }
-    } else {
-      this.progress.unlockedLevels = [1];
-      console.log('📁 Создан новый прогресс с уровнем 1');
-    }
-  }
 
   // Обновленный метод сохранения прогресса
 saveProgress() {
@@ -1186,43 +1170,119 @@ saveProgress() {
     }
 }
 
-// Обновленный метод загрузки прогресса
 loadProgress() {
     const userEmail = localStorage.getItem('userEmail');
-    const saved = localStorage.getItem('breweryGameProgress');
+    console.log('📁 ЗАГРУЗКА ПРОГРЕССА ДЛЯ:', userEmail);
     
-    if (saved) {
-        try {
-            const parsed = JSON.parse(saved);
-            
-            if (userEmail && parsed[userEmail]) {
-                // Загружаем прогресс конкретного пользователя
-                const userProgress = parsed[userEmail];
-                this.progress.unlockedLevels = userProgress.unlockedLevels || [1];
-                this.progress.bestScores = userProgress.bestScores || {};
-                this.state.business = userProgress.business || { balance: 100, purchasedFacilities: [] };
-                this.state.myFactoryUnlocked = userProgress.myFactoryUnlocked || false;
-                console.log('📁 Загружен прогресс пользователя:', userEmail);
-            } else {
-                // Загружаем общий прогресс (для гостей)
-                this.progress.unlockedLevels = parsed.unlockedLevels || [1];
-                this.progress.bestScores = parsed.bestScores || {};
-                console.log('📁 Загружен общий прогресс');
-            }
-            
-            // ФИКС: Убеждаемся, что уровень 1 всегда открыт
-            if (!this.progress.unlockedLevels.includes(1)) {
-                this.progress.unlockedLevels = [1];
-            }
-            
-        } catch (e) { 
-            console.error('Ошибка загрузки прогресса:', e);
-            this.progress.unlockedLevels = [1];
-        }
-    } else {
-        this.progress.unlockedLevels = [1];
-        console.log('📁 Создан новый прогресс с уровнем 1');
+    if (!userEmail) {
+        console.log('❌ Нет userEmail, загружаем гостевой прогресс');
+        this.loadGuestProgress();
+        return;
     }
+    
+    // Загружаем ВСЕ прогрессы из allGameProgress
+    let allProgress = {};
+    try {
+        allProgress = JSON.parse(localStorage.getItem('allGameProgress') || '{}');
+        console.log('📦 Все прогрессы:', Object.keys(allProgress));
+    } catch (e) {
+        console.log('⚠️ Ошибка чтения allGameProgress, создаем новый');
+        allProgress = {};
+    }
+    
+    // Ищем прогресс текущего пользователя
+    const userProgress = allProgress[userEmail];
+    
+    if (userProgress) {
+        console.log('✅ Найден прогресс пользователя:', userEmail);
+        
+        // ВОССТАНАВЛИВАЕМ ВСЕ ДАННЫЕ
+        this.progress.unlockedLevels = userProgress.unlockedLevels || [1];
+        this.progress.bestScores = userProgress.bestScores || {};
+        
+        this.state.business = userProgress.business || { 
+            balance: 100, 
+            purchasedFacilities: [] 
+        };
+        
+        this.state.myFactoryUnlocked = userProgress.myFactoryUnlocked || false;
+        this.state.currentLevel = userProgress.currentLevel || 1;
+        this.state.levelResults = userProgress.levelResults || {
+            1: { correct: 0, total: 2 },
+            2: { correct: 0, total: 2 },
+            3: { correct: 0, total: 7 },
+            4: { correct: 0, total: 2 },
+            5: { correct: 0, total: 3 }
+        };
+        
+        this.state.savedLayouts = userProgress.savedLayouts || {
+            1: { settings: {} }, 2: { settings: {} }, 3: {}, 
+            4: { settings: {} }, 5: {}
+        };
+        
+        console.log('🔄 Прогресс восстановлен:');
+        console.log('- Уровни:', this.progress.unlockedLevels);
+        console.log('- Баланс:', this.state.business.balance);
+        console.log('- Купленные помещения:', this.state.business.purchasedFacilities);
+        
+    } else {
+        console.log('🆕 Прогресс не найден, создаем новый для:', userEmail);
+        this.initializeNewUserProgress(userEmail);
+    }
+    
+    // ОБНОВЛЯЕМ ИНТЕРФЕЙС
+    this.updateBudgetEverywhere();
+    this.renderLevelCards();
+}
+// Метод для гостевого режима
+loadGuestProgress() {
+    console.log('👤 Гостевой режим');
+    this.progress.unlockedLevels = [1];
+    this.progress.bestScores = {};
+    this.state.business = { balance: 100, purchasedFacilities: [] };
+    this.state.myFactoryUnlocked = false;
+    this.state.currentLevel = 1;
+    this.state.levelResults = {
+        1: { correct: 0, total: 2 },
+        2: { correct: 0, total: 2 },
+        3: { correct: 0, total: 7 },
+        4: { correct: 0, total: 2 },
+        5: { correct: 0, total: 3 }
+    };
+    this.state.savedLayouts = {
+        1: { settings: {} }, 2: { settings: {} }, 3: {}, 
+        4: { settings: {} }, 5: {}
+    };
+}
+// Новый метод для инициализации нового пользователя
+initializeNewUserProgress(email) {
+    console.log('🎯 Инициализация нового пользователя:', email);
+    
+    this.progress.unlockedLevels = [1];
+    this.progress.bestScores = {};
+    
+    this.state.business = { 
+        balance: 100, 
+        purchasedFacilities: [] 
+    };
+    
+    this.state.myFactoryUnlocked = false;
+    this.state.currentLevel = 1;
+    this.state.levelResults = {
+        1: { correct: 0, total: 2 },
+        2: { correct: 0, total: 2 },
+        3: { correct: 0, total: 7 },
+        4: { correct: 0, total: 2 },
+        5: { correct: 0, total: 3 }
+    };
+    
+    this.state.savedLayouts = {
+        1: { settings: {} }, 2: { settings: {} }, 3: {}, 
+        4: { settings: {} }, 5: {}
+    };
+    
+    // СОХРАНЯЕМ СРАЗУ
+    this.saveProgress();
 }
 
   startGame() {
@@ -2941,12 +3001,14 @@ businessHeader.className = 'chapter-header business';
 }
   
   loginUser(email) {
+    console.log('🔐 Вход пользователя:', email);
+    
     // ВАЖНО: Сохраняем email в localStorage
     localStorage.setItem('userEmail', email);
     localStorage.setItem('isLoggedIn', 'true');
     
-    // ЗАГРУЖАЕМ ПРОГРЕСС ПОЛЬЗОВАТЕЛЯ
-    this.loadProgress();
+    // 🔥 ДОБАВЬТЕ ЭТУ СТРОЧКУ:
+    this.loadProgress(); // ЗАГРУЖАЕМ ПРОГРЕСС ПОСЛЕ ВХОДА
     
     // Обновляем интерфейс
     this.updateAuthUI();
@@ -2963,6 +3025,8 @@ businessHeader.className = 'chapter-header business';
     this.playSound('success');
     
     console.log('✅ Успешный вход, прогресс загружен');
+    console.log('🎮 Разблокированные уровни:', this.progress.unlockedLevels);
+    console.log('💰 Баланс:', this.state.business.balance);
 }
   
   handleLogout() {
@@ -3176,13 +3240,29 @@ updateAdminPanel() {
         // Пользователь авторизован
         if (loginBtn) loginBtn.classList.add('hidden');
         if (authStatusBlock) authStatusBlock.classList.remove('hidden');
-        if (userEmailDisplay) userEmailDisplay.textContent = userEmail;
+        if (userEmailDisplay) {
+            // 🔥 СОКРАЩАЕМ EMAIL: первые 3 буквы + ..
+            const shortEmail = this.shortenEmail(userEmail);
+            userEmailDisplay.textContent = shortEmail;
+        }
     } else {
         // Пользователь не авторизован
         if (loginBtn) loginBtn.classList.remove('hidden');
         if (authStatusBlock) authStatusBlock.classList.add('hidden');
     }
-  }
+}
+
+// 🔥 НОВЫЙ МЕТОД ДЛЯ СОКРАЩЕНИЯ EMAIL
+shortenEmail(email) {
+    if (!email) return '';
+    
+    const atIndex = email.indexOf('@');
+    if (atIndex === -1) return email;
+    
+    // Только имя пользователя (первые 3 символа + ..)
+    const username = email.substring(0, atIndex);
+    return username.length > 3 ? username.substring(0, 3) + '..' : username;
+}
   
   showAuthMessage(message, type) {
     const messageEl = document.getElementById('modal-auth-message');

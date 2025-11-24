@@ -2261,7 +2261,7 @@ body:has(#my-factory-screen:not(.hidden)) #game-header {
 /* Восстанавливаем оригинальный текст на ПК */
 @media (min-width: 769px) {
     #global-back-btn {
-        font-size: 14px !important;
+        font-size: 9px !important;
     }
     
     #global-back-btn::before {
@@ -2713,7 +2713,7 @@ body {
     transition: all 0.3s;
     position: relative;
     margin: 8px auto !important;
-    min-height: 90px; /* Увеличили высоту */
+    min-height: 100px; /* Увеличили высоту */
     display: flex;
     flex-direction: column;
     justify-content: center; /* Центрируем по вертикали */
@@ -2814,7 +2814,7 @@ body {
 @media (max-width: 768px) {
     .level-card {
         padding: 12px 12px 12px 50px;
-        min-height: 85px;
+        min-height: 95px;
     }
     
     .level-card::before {
@@ -2840,7 +2840,7 @@ body {
 @media (max-width: 480px) {
     .level-card {
         padding: 10px 10px 10px 45px;
-        min-height: 80px;
+        min-height: 90px;
     }
     
     .level-card::before {
@@ -4123,7 +4123,7 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
         width: 100% !important;
         padding: 5px 8px !important;
         border-radius: 5px !important;
-        font-size: 11px !important;
+        font-size: 9px !important;
         font-weight: 600;
         white-space: nowrap;
         overflow: hidden;
@@ -4303,12 +4303,12 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
 @media (max-width: 768px) {
     /* Увеличиваем кнопку Уровни на 30% */
     .header-left {
-        min-width: 95px !important; /* было 70px */
-        max-width: 100px !important; /* было 75px */
+        min-width: 85px !important; /* было 70px */
+        max-width: 90px !important; /* было 75px */
     }
     
     #global-back-btn {
-        width: 100% !important;
+        width: 80% !important;
         min-width: 95px !important;
     }
     
@@ -4337,7 +4337,7 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
     
     /* Делаем текст в кнопке Уровни чуть больше */
     #global-back-btn::before {
-        font-size: 12px !important;
+        font-size: 10px !important;
         font-weight: 700;
     }
 }
@@ -4348,7 +4348,7 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
     }
     
     #global-back-btn {
-        min-width: 85px !important;
+        min-width: 65px !important;
     }
     
     .header-center {
@@ -5929,4 +5929,10 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
     opacity: 0.5;
     cursor: not-allowed;
     transform: none !important;
+}
+@media (max-width: 768px) {
+    .header-left {
+        min-width: 90px !important;  /* Уменьшаем с 80px */
+        max-width: 80px !important;  /* Уменьшаем с 85px */
+    }
 }
