@@ -2117,7 +2117,7 @@ body:has(#my-factory-screen:not(.hidden)) #game-header {
     }
     
     #global-back-btn::before {
-        font-size: 10px !important;
+        font-size: 9px !important;
     }
     
     .header-center {
@@ -4337,7 +4337,7 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
     
     /* Делаем текст в кнопке Уровни чуть больше */
     #global-back-btn::before {
-        font-size: 10px !important;
+        font-size: 9px !important;
         font-weight: 700;
     }
 }
