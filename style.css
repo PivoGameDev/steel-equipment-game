@@ -5936,3 +5936,59 @@ body:has(#my-factory-screen:not(.hidden)) #game-header,
         max-width: 80px !important;  /* Уменьшаем с 85px */
     }
 }
+/* АГРЕССИВНЫЙ ФИКС ДЛЯ МОБИЛЬНЫХ */
+@media (max-width: 768px) {
+    #my-factory-screen {
+        width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    
+    #my-factory-screen .win-content {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+        padding: 20px 10px !important;
+        transform: none !important;
+    }
+    
+    .my-factory-content {
+        display: block !important; /* Вместо grid */
+        width: 100% !important;
+    }
+    
+    .factory-stats, 
+    .equipment-list {
+        width: 100% !important;
+        margin: 10px 0 !important;
+        padding: 15px !important;
+    }
+}
+@media (max-width: 768px) {
+    .stats-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .stat-item {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 10px 12px !important;
+        background: white !important;
+        border-radius: 8px !important;
+        border: 1px solid #e5e7eb !important;
+        font-size: 12px !important;
+    }
+    
+    .stat-label {
+        font-size: 11px !important;
+        color: #4b5563 !important;
+    }
+    
+    .stat-value {
+        font-size: 12px !important;
+        color: #059669 !important;
+        font-weight: 700 !important;
+    }
+}
